@@ -4,11 +4,13 @@ import type { Card } from "../../models/Card";
 
 import {
   addCardToDeck,
+  canAddCardToSection,
   createEmptyDeck,
   getCardQuantityInDeck,
   getDeckCardCount,
   removeAllCardsFromDeck,
   removeCardFromDeck,
+  validateCardPlacement,
   validateDeck,
 } from "../deckService";
 
@@ -23,6 +25,31 @@ const testCard: Card = {
   imageUrlSmall: "https://example.com/test-card-small.jpg",
 };
 
+const createTestCard = (
+    id: number,
+    name: string,
+    banlistStatus?:
+        | "Forbidden"
+        | "Limited"
+        | "Semi-Limited"
+): Card => {
+    return {
+        id,
+        name,
+        type: "Effect Monster",
+        frameType: "effect",
+        description: "Test card",
+        race: "Warrior",
+        imageUrl: "",
+        imageUrlSmall: "",
+        banlistInfo: banlistStatus
+            ? {
+                  tcg: banlistStatus,
+              }
+            : undefined,
+    };
+};
+
 const testCards: Card[] = Array.from(
   { length: 14 },
   (_, index) => ({
@@ -31,6 +58,34 @@ const testCards: Card[] = Array.from(
     name: `Test Card ${index + 1}`,
   })
 );
+
+const fusionCard: Card = {
+  ...testCard,
+  id: 100,
+  name: "Test Fusion Monster",
+  type: "Fusion Monster",
+};
+
+const synchroCard: Card = {
+  ...testCard,
+  id: 101,
+  name: "Test Synchro Monster",
+  type: "Synchro Monster",
+};
+
+const xyzCard: Card = {
+  ...testCard,
+  id: 102,
+  name: "Test Xyz Monster",
+  type: "XYZ Monster",
+};
+
+const linkCard: Card = {
+  ...testCard,
+  id: 103,
+  name: "Test Link Monster",
+  type: "Link Monster",
+};
 
 describe("createEmptyDeck", () => {
   it("creates an empty deck", () => {
@@ -77,6 +132,137 @@ describe("addCardToDeck", () => {
     deck = addCardToDeck(deck, testCard, "main");
 
     expect(getCardQuantityInDeck(deck, testCard.id)).toBe(3);
+  });
+
+  it("does not add an Extra Deck monster to the Main Deck", () => {
+    const deck = createEmptyDeck();
+
+    const updatedDeck = addCardToDeck(
+      deck,
+      fusionCard,
+      "main"
+    );
+
+    expect(updatedDeck.main).toHaveLength(0);
+    expect(updatedDeck.extra).toHaveLength(0);
+  });
+
+  it("adds an Extra Deck monster to the Extra Deck", () => {
+    const deck = createEmptyDeck();
+
+    const updatedDeck = addCardToDeck(
+      deck,
+      fusionCard,
+      "extra"
+    );
+
+    expect(updatedDeck.extra).toHaveLength(1);
+    expect(
+      updatedDeck.extra[0].card.id
+    ).toBe(fusionCard.id);
+  });
+});
+
+describe("card placement rules", () => {
+  it("allows normal monsters in the Main Deck", () => {
+    expect(
+      canAddCardToSection(
+        testCard,
+        "main"
+      )
+    ).toBe(true);
+  });
+
+  it("allows Fusion Monsters in the Extra Deck", () => {
+    expect(
+      canAddCardToSection(
+        fusionCard,
+        "extra"
+      )
+    ).toBe(true);
+  });
+
+  it("allows Synchro Monsters in the Extra Deck", () => {
+    expect(
+      canAddCardToSection(
+        synchroCard,
+        "extra"
+      )
+    ).toBe(true);
+  });
+
+  it("allows Xyz Monsters in the Extra Deck", () => {
+    expect(
+      canAddCardToSection(
+        xyzCard,
+        "extra"
+      )
+    ).toBe(true);
+  });
+
+  it("allows Link Monsters in the Extra Deck", () => {
+    expect(
+      canAddCardToSection(
+        linkCard,
+        "extra"
+      )
+    ).toBe(true);
+  });
+
+  it("does not allow Fusion Monsters in the Main Deck", () => {
+    expect(
+      canAddCardToSection(
+        fusionCard,
+        "main"
+      )
+    ).toBe(false);
+  });
+
+  it("does not allow Synchro Monsters in the Main Deck", () => {
+    expect(
+      canAddCardToSection(
+        synchroCard,
+        "main"
+      )
+    ).toBe(false);
+  });
+
+  it("does not allow Xyz Monsters in the Main Deck", () => {
+    expect(
+      canAddCardToSection(
+        xyzCard,
+        "main"
+      )
+    ).toBe(false);
+  });
+
+  it("does not allow Link Monsters in the Main Deck", () => {
+    expect(
+      canAddCardToSection(
+        linkCard,
+        "main"
+      )
+    ).toBe(false);
+  });
+
+  it("returns an error for invalid placement", () => {
+    expect(
+      validateCardPlacement(
+        fusionCard,
+        "main"
+      )
+    ).toBe(
+      "Test Fusion Monster cannot be placed in the Main Deck."
+    );
+  });
+
+  it("returns null for valid placement", () => {
+    expect(
+      validateCardPlacement(
+        fusionCard,
+        "extra"
+      )
+    ).toBe(null);
   });
 });
 
@@ -164,7 +350,240 @@ describe("validateDeck", () => {
     expect(validation.mainCount).toBe(0);
     expect(validation.errors.length).toBeGreaterThan(0);
   });
+
+  it("detects an Extra Deck monster incorrectly placed in the Main Deck", () => {
+    const deck = {
+      ...createEmptyDeck(),
+      main: [
+        {
+          card: fusionCard,
+          quantity: 1,
+        },
+      ],
+    };
+
+    const validation = validateDeck(deck);
+
+    expect(validation.isDeckValid).toBe(false);
+
+    expect(
+      validation.errors
+    ).toContain(
+      "Test Fusion Monster cannot be placed in the Main Deck."
+    );
+  });
 });
+
+describe("Banlist rules", () => {
+  it("allows up to 3 copies of an Unlimited card", () => {
+      const card = createTestCard(
+          1001,
+          "Unlimited Test Card"
+      );
+
+      let deck = createEmptyDeck();
+
+      deck = addCardToDeck(
+          deck,
+          card,
+          "main"
+      );
+
+      deck = addCardToDeck(
+          deck,
+          card,
+          "main"
+      );
+
+      deck = addCardToDeck(
+          deck,
+          card,
+          "main"
+      );
+
+      deck = addCardToDeck(
+          deck,
+          card,
+          "main"
+      );
+
+      expect(
+          getCardQuantityInDeck(
+              deck,
+              card.id
+          )
+      ).toBe(3);
+  });
+
+  it("allows only 2 copies of a Semi-Limited card", () => {
+    const card = createTestCard(
+        1002,
+        "Semi-Limited Test Card",
+        "Semi-Limited"
+    );
+
+    let deck = createEmptyDeck();
+
+    deck = addCardToDeck(
+        deck,
+        card,
+        "main"
+    );
+
+    deck = addCardToDeck(
+        deck,
+        card,
+        "main"
+    );
+
+    deck = addCardToDeck(
+        deck,
+        card,
+        "main"
+    );
+
+    expect(
+        getCardQuantityInDeck(
+            deck,
+            card.id
+        )
+    ).toBe(2);
+  });
+
+  it("allows only 1 copy of a Limited card", () => {
+    const card = createTestCard(
+        1003,
+        "Limited Test Card",
+        "Limited"
+    );
+
+    let deck = createEmptyDeck();
+
+    deck = addCardToDeck(
+        deck,
+        card,
+        "main"
+    );
+
+    deck = addCardToDeck(
+        deck,
+        card,
+        "main"
+    );
+
+    expect(
+        getCardQuantityInDeck(
+            deck,
+            card.id
+        )
+    ).toBe(1);
+  });
+
+  it("does not allow a Forbidden card", () => {
+    const card = createTestCard(
+        1004,
+        "Forbidden Test Card",
+        "Forbidden"
+    );
+
+    let deck = createEmptyDeck();
+
+    deck = addCardToDeck(
+        deck,
+        card,
+        "main"
+    );
+
+    expect(
+        getCardQuantityInDeck(
+            deck,
+            card.id
+        )
+    ).toBe(0);
+  });
+
+  it("counts copies across Main, Extra, and Side Deck", () => {
+    const card = createTestCard(
+        1005,
+        "Cross Section Test Card",
+        "Semi-Limited"
+    );
+
+    let deck = createEmptyDeck();
+
+    deck = addCardToDeck(
+        deck,
+        card,
+        "main"
+    );
+
+    deck = addCardToDeck(
+        deck,
+        card,
+        "main"
+    );
+
+    deck = addCardToDeck(
+        deck,
+        card,
+        "side"
+    );
+
+    expect(
+        getCardQuantityInDeck(
+            deck,
+            card.id
+        )
+    ).toBe(2);
+
+    expect(
+        getDeckCardCount(
+            deck,
+            "main"
+        )
+    ).toBe(2);
+
+    expect(
+        getDeckCardCount(
+            deck,
+            "side"
+        )
+    ).toBe(0);
+  });
+
+  it("detects a banlist violation during deck validation", () => {
+      const card = createTestCard(
+          1006,
+          "Limited Test Card",
+          "Limited"
+      );
+
+      const deck = createEmptyDeck();
+
+      deck.main.push({
+          card,
+          quantity: 2,
+      });
+
+      const validation = validateDeck(
+          deck
+      );
+
+      expect(
+          validation.isDeckValid
+      ).toBe(false);
+
+      expect(
+          validation.errors.some(
+              (error) =>
+                  error.includes(
+                      "Limited Test Card"
+                  )
+          )
+      ).toBe(true);
+  });
+});
+
 
 it("accepts a 40-card Main Deck", () => {
   let deck = createEmptyDeck();
@@ -206,9 +625,18 @@ it("accepts a 40-card Main Deck", () => {
 });
 
 it("allows up to 15 Extra Deck cards", () => {
+  const extraCards: Card[] = Array.from(
+    { length: 15 },
+    (_, index) => ({
+      ...fusionCard,
+      id: 200 + index,
+      name: `Test Fusion ${index + 1}`,
+    })
+  );
+
   let deck = createEmptyDeck();
 
-  for (const card of testCards) {
+  for (const card of extraCards) {
     deck = addCardToDeck(
       deck,
       card,
@@ -218,7 +646,7 @@ it("allows up to 15 Extra Deck cards", () => {
 
   const validation = validateDeck(deck);
 
-  expect(validation.extraCount).toBe(14);
+  expect(validation.extraCount).toBe(15);
   expect(validation.isExtraDeckValid).toBe(true);
 });
 
@@ -257,7 +685,7 @@ it("enforces the 3-copy limit across all deck sections", () => {
   deck = addCardToDeck(
     deck,
     testCard,
-    "extra"
+    "side"
   );
 
   expect(

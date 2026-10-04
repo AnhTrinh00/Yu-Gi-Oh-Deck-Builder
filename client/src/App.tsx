@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Deck, DeckSection } from "./models/Deck";
-import { 
-  createEmptyDeck, 
+import {
+  createEmptyDeck,
   addCardToDeck,
   removeCardFromDeck,
   removeAllCardsFromDeck,
@@ -9,7 +9,10 @@ import {
   validateDeck,
   saveDeck,
   loadDeck,
-  clearSavedDeck
+  clearSavedDeck,
+  canAddCardToSection,
+  getCardQuantityInDeck,
+  DECK_LIMITS,
 } from "./services/deckService";
 import "./App.css";
 import { searchCards } from "./services/cardApi";
@@ -113,6 +116,75 @@ function App() {
     setDeck(createEmptyDeck());
   }
 
+  function isCardAddable(card: Card): boolean {
+    if (!canAddCardToSection(card, selectedSection)) {
+      return false;
+    }
+
+    if (
+      getCardQuantityInDeck(deck, card.id) >=
+      DECK_LIMITS.MAX_COPIES
+    ) {
+      return false;
+    }
+
+    if (
+      getDeckCardCount(deck, selectedSection) >=
+      (selectedSection === "main"
+        ? DECK_LIMITS.MAIN_MAX
+        : selectedSection === "extra"
+        ? DECK_LIMITS.EXTRA_MAX
+        : DECK_LIMITS.SIDE_MAX)
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  function getAddCardDisabledReason(
+    card: Card
+  ): string | null {
+    if (!canAddCardToSection(card, selectedSection)) {
+      if (selectedSection === "main") {
+        return "This card cannot be placed in the Main Deck.";
+      }
+
+      if (selectedSection === "extra") {
+        return "This card cannot be placed in the Extra Deck.";
+      }
+
+      return "This card cannot be placed in the Side Deck.";
+    }
+
+    if (
+      getCardQuantityInDeck(deck, card.id) >=
+      DECK_LIMITS.MAX_COPIES
+    ) {
+      return "You already have 3 copies of this card in the deck.";
+    }
+
+    const sectionLimit =
+      selectedSection === "main"
+        ? DECK_LIMITS.MAIN_MAX
+        : selectedSection === "extra"
+        ? DECK_LIMITS.EXTRA_MAX
+        : DECK_LIMITS.SIDE_MAX;
+
+    if (
+      getDeckCardCount(deck, selectedSection) >=
+      sectionLimit
+    ) {
+      return `${selectedSection === "main"
+        ? "Main"
+        : selectedSection === "extra"
+        ? "Extra"
+        : "Side"} Deck is full.`;
+    }
+
+    return null;
+  }
+
   const selectedDeckCards = deck[selectedSection];
   
   const mainCount = getDeckCardCount(deck, "main");
@@ -186,9 +258,29 @@ function App() {
                   Add to Collection
                 </button>
 
-                <button onClick={() => handleAddToDeck(card)}>
-                  Add to Deck
-                </button>
+                {(() => {
+                  const disabledReason =
+                    getAddCardDisabledReason(card);
+
+                  return (
+                    <>
+                      <button
+                        onClick={() => handleAddToDeck(card)}
+                        disabled={!isCardAddable(card)}
+                      >
+                        {disabledReason
+                          ? "Cannot Add"
+                          : "Add to Deck"}
+                      </button>
+
+                      {disabledReason && (
+                        <p className="card-add-warning">
+                          {disabledReason}
+                        </p>
+                      )}
+                    </>
+                  );
+                })()}
 
                 {getCardQuantity(card.id) > 0 && (
                   <p>
@@ -318,19 +410,46 @@ function App() {
           </div>
 
           <div className="deck-status">
+
             <div className="deck-stat">
               <span>Main</span>
-              <strong>{mainCount} / 40–60</strong>
+              <strong
+                className={
+                  mainCount >= DECK_LIMITS.MAIN_MIN &&
+                  mainCount <= DECK_LIMITS.MAIN_MAX
+                    ? "count-valid"
+                    : "count-invalid"
+                }
+              >
+                {mainCount} / {DECK_LIMITS.MAIN_MIN}–
+                {DECK_LIMITS.MAIN_MAX}
+              </strong>
             </div>
 
             <div className="deck-stat">
               <span>Extra</span>
-              <strong>{extraCount} / 15</strong>
+              <strong
+                className={
+                  extraCount <= DECK_LIMITS.EXTRA_MAX
+                    ? "count-valid"
+                    : "count-invalid"
+                }
+              >
+                {extraCount} / {DECK_LIMITS.EXTRA_MAX}
+              </strong>
             </div>
 
             <div className="deck-stat">
               <span>Side</span>
-              <strong>{sideCount} / 15</strong>
+              <strong
+                className={
+                  sideCount <= DECK_LIMITS.SIDE_MAX
+                    ? "count-valid"
+                    : "count-invalid"
+                }
+              >
+                {sideCount} / {DECK_LIMITS.SIDE_MAX}
+              </strong>
             </div>
 
             <div className="deck-stat">
@@ -398,6 +517,7 @@ function App() {
                       onClick={() =>
                         handleAddToDeck(deckCard.card)
                       }
+                      disabled={!isCardAddable(deckCard.card)}
                       aria-label={`Add one ${deckCard.card.name}`}
                     >
                       +

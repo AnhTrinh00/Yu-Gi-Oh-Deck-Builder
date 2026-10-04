@@ -25,6 +25,12 @@ export interface YuGiOhCard {
         image_url: string;
         image_url_small: string;
     }[];
+
+    banlist_info?: {
+        ban_tcg?: "Forbidden" | "Limited" | "Semi-Limited";
+        ban_ocg?: "Forbidden" | "Limited" | "Semi-Limited";
+        ban_goat?: "Forbidden" | "Limited" | "Semi-Limited";
+    };
 }
 
 interface CardApiResponse {
@@ -52,6 +58,12 @@ function mapApiCardToCard(apiCard: YuGiOhCard): Card {
 
     imageUrl: apiCard.card_images[0].image_url,
     imageUrlSmall: apiCard.card_images[0].image_url_small,
+
+    banlistInfo: {
+        tcg: apiCard.banlist_info?.ban_tcg,
+        ocg: apiCard.banlist_info?.ban_ocg,
+        goat: apiCard.banlist_info?.ban_goat,
+    },
   };
 }
 

@@ -18,4 +18,16 @@ export interface Card {
 
     imageUrl: string;
     imageUrlSmall: string;
+
+    banlistInfo?: {
+        tcg?: BanlistStatus;
+        ocg?: BanlistStatus;
+        goat?: BanlistStatus;
+    };
 }
+
+export type BanlistStatus =
+  | "Forbidden"
+  | "Limited"
+  | "Semi-Limited"
+  | "Unlimited";
