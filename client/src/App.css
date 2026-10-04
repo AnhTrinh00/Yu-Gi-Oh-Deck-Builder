@@ -78,3 +78,187 @@ header {
 .collection-info button {
   min-width: 35px;
 }
+
+.deck-section {
+  margin-top: 2rem;
+}
+
+.deck-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.deck-tabs button {
+  padding: 0.6rem 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f5f5f5;
+  cursor: pointer;
+}
+
+.deck-tabs button:hover {
+  background: #e8e8e8;
+}
+
+.deck-tabs button.active {
+  font-weight: bold;
+}
+
+.deck-status {
+  margin-bottom: 1rem;
+}
+
+.deck-errors {
+  margin-bottom: 1rem;
+}
+
+.deck-errors p {
+  margin: 0.25rem 0;
+}
+
+.deck-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.deck-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.deck-card img {
+  width: 60px;
+  height: auto;
+  border-radius: 4px;
+}
+
+.deck-card-info {
+  flex: 1;
+}
+
+.deck-card-info h3 {
+  margin: 0;
+}
+
+.deck-card-info p {
+  margin: 0.25rem 0;
+}
+
+.deck-card-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.deck-card-controls button {
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+}
+
+.deck-card-controls span {
+  min-width: 2rem;
+  text-align: center;
+}
+
+.empty-deck {
+  padding: 1rem;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+}
+
+.deck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.deck-header label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: bold;
+}
+
+.deck-header input {
+  width: 300px;
+  max-width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.deck-save-status {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.deck-status {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.deck-stat {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.deck-stat span {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.deck-stat strong {
+  font-size: 1.1rem;
+}
+
+.deck-valid,
+.deck-invalid {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.deck-valid {
+  border: 1px solid #4caf50;
+  background: #e8f5e9;
+}
+
+.deck-invalid {
+  border: 1px solid #f44336;
+  background: #ffebee;
+}
+
+.deck-errors {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #f44336;
+  border-radius: 6px;
+}
+
+.deck-errors p {
+  margin: 0.25rem 0;
+}
+
+@media (max-width: 700px) {
+  .deck-status {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .deck-header input {
+    width: 100%;
+  }
+}
