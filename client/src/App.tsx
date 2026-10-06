@@ -23,6 +23,10 @@ import {
 } from "./services/collectionService";
 import type { Card } from "./models/Card";
 import type { CollectionCard } from "./models/CollectionCard";
+import {
+  getBanlistCopyLimit,
+  getBanlistStatus,
+} from "./services/banlistService";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -118,25 +122,32 @@ function App() {
 
   function isCardAddable(card: Card): boolean {
     if (!canAddCardToSection(card, selectedSection)) {
-      return false;
+        return false;
+    }
+
+    const currentQuantity = getCardQuantityInDeck(
+        deck,
+        card.id
+    );
+
+    const banlistLimit = getBanlistCopyLimit(
+        card,
+        "advanced"
+    );
+
+    if (currentQuantity >= banlistLimit) {
+        return false;
     }
 
     if (
-      getCardQuantityInDeck(deck, card.id) >=
-      DECK_LIMITS.MAX_COPIES
+        getDeckCardCount(deck, selectedSection) >=
+        (selectedSection === "main"
+            ? DECK_LIMITS.MAIN_MAX
+            : selectedSection === "extra"
+            ? DECK_LIMITS.EXTRA_MAX
+            : DECK_LIMITS.SIDE_MAX)
     ) {
-      return false;
-    }
-
-    if (
-      getDeckCardCount(deck, selectedSection) >=
-      (selectedSection === "main"
-        ? DECK_LIMITS.MAIN_MAX
-        : selectedSection === "extra"
-        ? DECK_LIMITS.EXTRA_MAX
-        : DECK_LIMITS.SIDE_MAX)
-    ) {
-      return false;
+        return false;
     }
 
     return true;
@@ -157,11 +168,35 @@ function App() {
       return "This card cannot be placed in the Side Deck.";
     }
 
-    if (
-      getCardQuantityInDeck(deck, card.id) >=
-      DECK_LIMITS.MAX_COPIES
-    ) {
-      return "You already have 3 copies of this card in the deck.";
+    const banlistStatus = getBanlistStatus(
+        card,
+        "advanced"
+    );
+
+    const banlistLimit = getBanlistCopyLimit(
+        card,
+        "advanced"
+    );
+
+    const currentQuantity = getCardQuantityInDeck(
+        deck,
+        card.id
+    );
+
+    if (currentQuantity >= banlistLimit) {
+        if (banlistStatus === "Forbidden") {
+            return "This card is Forbidden in Advanced Format.";
+        }
+
+        if (banlistStatus === "Limited") {
+            return "This card is Limited to 1 copy in Advanced Format.";
+        }
+
+        if (banlistStatus === "Semi-Limited") {
+            return "This card is Semi-Limited to 2 copies in Advanced Format.";
+        }
+
+        return "You already have the maximum allowed copies of this card.";
     }
 
     const sectionLimit =

@@ -275,3 +275,22 @@ header {
 .deck-card-controls button:disabled:hover {
   background: #f5f5f5;
 }
+
+.card-result button:disabled,
+.deck-card-controls button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.card-result button:disabled:hover,
+.deck-card-controls button:disabled:hover {
+    background: #f5f5f5;
+}
+
+.card-result small,
+.deck-card-controls small {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: #777;
+}
