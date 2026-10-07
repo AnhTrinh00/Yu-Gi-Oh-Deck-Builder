@@ -294,3 +294,73 @@ header {
     font-size: 0.75rem;
     color: #777;
 }
+
+.deck-statistics {
+    margin-top: 20px;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.deck-statistics h3 {
+    margin-top: 0;
+}
+
+.statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.statistics-grid > div {
+    padding: 12px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.statistics-grid span {
+    display: block;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.statistics-grid strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 1.1rem;
+}
+
+.archetype-analysis {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.archetype-analysis h3 {
+  margin-top: 0;
+}
+
+.archetype-list {
+  display: grid;
+  gap: 10px;
+}
+
+.archetype-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.archetype-summary strong {
+  font-size: 1.05rem;
+}
+
+.archetype-summary span {
+  font-size: 0.9rem;
+}

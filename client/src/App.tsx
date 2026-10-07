@@ -27,6 +27,8 @@ import {
   getBanlistCopyLimit,
   getBanlistStatus,
 } from "./services/banlistService";
+import { getDeckStatistics } from "./services/deckStatisticsService";
+import { getArchetypeSummaries } from "./services/archetypeService";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -225,6 +227,9 @@ function App() {
   const mainCount = getDeckCardCount(deck, "main");
   const extraCount = getDeckCardCount(deck, "extra");
   const sideCount = getDeckCardCount(deck, "side");
+
+  const deckStatistics = getDeckStatistics(deck);
+  const archetypeSummaries = getArchetypeSummaries(deck);
   
   const selectedDifferentCardCount = selectedDeckCards.length;
   
@@ -491,6 +496,93 @@ function App() {
               <span>Different Cards</span>
               <strong>{selectedDifferentCardCount}</strong>
             </div>
+
+            <div className="deck-statistics">
+              <h3>Deck Statistics</h3>
+
+              <div className="statistics-grid">
+                  <div>
+                      <span>Unique Main Cards</span>
+                      <strong>
+                          {deckStatistics.uniqueMainCards}
+                      </strong>
+                  </div>
+
+                  <div>
+                      <span>Unique Extra Cards</span>
+                      <strong>
+                          {deckStatistics.uniqueExtraCards}
+                      </strong>
+                  </div>
+
+                  <div>
+                      <span>Unique Side Cards</span>
+                      <strong>
+                          {deckStatistics.uniqueSideCards}
+                      </strong>
+                  </div>
+
+                  <div>
+                      <span>Monsters</span>
+                      <strong>
+                          {deckStatistics.monsterCount}
+                          {" "}
+                          ({deckStatistics.monsterPercentage.toFixed(1)}%)
+                      </strong>
+                  </div>
+
+                  <div>
+                      <span>Spells</span>
+                      <strong>
+                          {deckStatistics.spellCount}
+                          {" "}
+                          ({deckStatistics.spellPercentage.toFixed(1)}%)
+                      </strong>
+                  </div>
+
+                  <div>
+                      <span>Traps</span>
+                      <strong>
+                          {deckStatistics.trapCount}
+                          {" "}
+                          ({deckStatistics.trapPercentage.toFixed(1)}%)
+                      </strong>
+                  </div>
+              </div>
+
+            </div>
+
+            <div className="archetype-analysis">
+              <h3>Archetype Analysis</h3>
+
+              {archetypeSummaries.length === 0 ? (
+                <p>No archetypes detected in the Main Deck.</p>
+              ) : (
+                <div className="archetype-list">
+                  {archetypeSummaries.map((summary) => (
+                    <div
+                      className="archetype-summary"
+                      key={summary.archetype}
+                    >
+                      <strong>{summary.archetype}</strong>
+
+                      <span>
+                        {summary.cardCount}{" "}
+                        {summary.cardCount === 1 ? "card" : "cards"}
+                      </span>
+
+                      <span>
+                        {summary.uniqueCards}{" "}
+                        {summary.uniqueCards === 1
+                          ? "unique card"
+                          : "unique cards"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
           </div>
           
           <div
