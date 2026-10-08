@@ -364,3 +364,360 @@ header {
 .archetype-summary span {
   font-size: 0.9rem;
 }
+
+.relationship-analysis {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.relationship-analysis h3 {
+  margin-top: 0;
+}
+
+.relationship-statistics {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(160px, 1fr)
+  );
+  gap: 12px;
+}
+
+.relationship-editor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.relationship-editor select {
+  flex: 1;
+  min-width: 160px;
+  padding: 10px;
+}
+
+.relationship-list {
+  display: grid;
+  gap: 10px;
+}
+
+.relationship-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.relationship-item span {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .relationship-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+
+.relationship-graph {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #475569;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 16px 0;
+}
+
+.relationship-graph svg {
+  display: block;
+  width: 100%;
+  min-width: 500px;
+  height: auto;
+}
+
+.graph-help {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  margin-top: 10px;
+}
+
+
+.graph-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin: 16px 0;
+}
+
+.graph-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 150px;
+}
+
+.graph-filters select {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #64748b;
+  background: inherit;
+  color: inherit;
+}
+
+.graph-filters button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+.graph-analysis {
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid #475569;
+  border-radius: 12px;
+}
+
+.graph-analysis-summary {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(160px, 1fr)
+  );
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.graph-analysis-summary p {
+  padding: 12px;
+  border: 1px solid #64748b;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.graph-analysis-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 20px;
+}
+
+.graph-analysis-table th,
+.graph-analysis-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #475569;
+}
+
+.graph-analysis-table th {
+  font-weight: 600;
+}
+
+
+.combo-section {
+  margin-top: 32px;
+  padding: 20px;
+  border: 1px solid #475569;
+  border-radius: 12px;
+}
+
+.combo-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  margin-top: 16px;
+  border: 1px solid #64748b;
+  border-radius: 10px;
+}
+
+.combo-editor label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.combo-editor-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.combo-editor input,
+.combo-editor select,
+.combo-editor textarea {
+  padding: 8px;
+  border: 1px solid #64748b;
+  border-radius: 6px;
+  background: inherit;
+  color: inherit;
+}
+
+.combo-editor textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+.combo-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.combo-card {
+  padding: 16px;
+  border: 1px solid #64748b;
+  border-radius: 10px;
+}
+
+.combo-card li,
+.combo-editor li {
+  margin-bottom: 8px;
+}
+
+.combo-card li button,
+.combo-editor li button {
+  margin-left: 10px;
+}
+
+.combo-errors {
+  color: #ef4444;
+}
+
+.combo-warnings {
+  color: #eab308;
+}
+
+
+.combo-discovery {
+  margin-top: 32px;
+  padding: 20px;
+  border: 1px solid #475569;
+  border-radius: 12px;
+}
+
+.combo-discovery-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.combo-discovery-controls label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 160px;
+}
+
+.combo-discovery-controls select {
+  padding: 8px;
+  border: 1px solid #64748b;
+  border-radius: 6px;
+  background: inherit;
+  color: inherit;
+}
+
+.combo-candidate-list {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, 340px), 1fr)
+  );
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.combo-candidate-card {
+  padding: 16px;
+  border: 1px solid #64748b;
+  border-radius: 10px;
+}
+
+.combo-candidate-card ol {
+  padding-left: 24px;
+}
+
+.combo-candidate-card li {
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+}
+
+.combo-candidate-warning {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.combo-candidate-note {
+  font-size: 0.85rem;
+  opacity: 0.8;
+  border-top: 1px solid #64748b;
+  padding-top: 10px;
+}
+
+
+.combo-evaluation {
+  margin-top: 32px;
+  padding: 20px;
+  border: 1px solid #475569;
+  border-radius: 12px;
+}
+
+.combo-evaluation label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 400px;
+  margin: 16px 0;
+}
+
+.combo-evaluation select {
+  padding: 10px;
+  border: 1px solid #64748b;
+  border-radius: 6px;
+  background: inherit;
+  color: inherit;
+}
+
+.combo-evaluation-results {
+  margin-top: 20px;
+}
+
+.game-state-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, 220px), 1fr)
+  );
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.game-zone {
+  padding: 14px;
+  border: 1px solid #64748b;
+  border-radius: 8px;
+  min-width: 0;
+}
+
+.game-zone h5 {
+  margin-top: 0;
+  text-transform: capitalize;
+}
+
+.game-zone ul {
+  padding-left: 20px;
+  overflow-wrap: anywhere;
+}
+
+.game-zone li {
+  margin-bottom: 6px;
+}
