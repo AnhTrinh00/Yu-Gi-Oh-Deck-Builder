@@ -721,3 +721,233 @@ header {
 .game-zone li {
   margin-bottom: 6px;
 }
+
+
+.deck-recommendations {
+  margin-top: 32px;
+  padding: 20px;
+  border: 1px solid #475569;
+  border-radius: 12px;
+}
+
+.recommendation-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 18px 0;
+}
+
+.recommendation-summary p {
+  margin: 0;
+  padding: 12px 18px;
+  border: 1px solid #64748b;
+  border-radius: 8px;
+}
+
+.recommendation-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 220px;
+  margin-bottom: 20px;
+}
+
+.recommendation-filter select {
+  padding: 9px;
+  border: 1px solid #64748b;
+  border-radius: 6px;
+  background: inherit;
+  color: inherit;
+}
+
+.recommendation-list {
+  display: grid;
+  gap: 14px;
+}
+
+.recommendation-card {
+  padding: 16px;
+  border: 1px solid #64748b;
+  border-radius: 10px;
+}
+
+.recommendation-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.recommendation-header h3 {
+  margin: 0;
+}
+
+.recommendation-header span {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.recommendation-card details {
+  margin-top: 12px;
+}
+
+.recommendation-card li {
+  margin-top: 6px;
+}
+
+
+.deck-analysis-workspace {
+  margin-top: 32px;
+  padding: 20px;
+  border: 1px solid #475569;
+  border-radius: 12px;
+}
+
+.analysis-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #475569;
+}
+
+.analysis-tabs button {
+  padding: 10px 14px;
+  border: 1px solid #64748b;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.analysis-tabs button.active {
+  border-color: #3b82f6;
+  font-weight: 700;
+}
+
+.analysis-panel {
+  padding: 12px 0;
+}
+
+.analysis-metrics {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, 150px), 1fr)
+  );
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.analysis-metrics > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid #64748b;
+  border-radius: 10px;
+}
+
+.analysis-metrics strong {
+  font-size: 1.6rem;
+}
+
+.analysis-metrics span {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.analysis-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.analysis-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.analysis-filters select {
+  padding: 8px;
+  border: 1px solid #64748b;
+  border-radius: 6px;
+  background: inherit;
+  color: inherit;
+}
+
+.analysis-result-list {
+  display: grid;
+  gap: 14px;
+}
+
+.analysis-result-card {
+  padding: 16px;
+  border: 1px solid #64748b;
+  border-radius: 10px;
+  overflow-wrap: anywhere;
+}
+
+.analysis-result-card h4 {
+  margin-top: 0;
+}
+
+.analysis-result-card li {
+  margin-bottom: 8px;
+}
+
+.analysis-result-card details {
+  margin-top: 12px;
+}
+
+.analysis-draft {
+  margin-top: 20px;
+}
+
+.analysis-disclaimer {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+
+.analysis-health {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #64748b;
+}
+
+.analysis-health-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.analysis-health-issues {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.analysis-health-issue {
+  padding: 12px 16px;
+  border: 1px solid #64748b;
+  border-radius: 8px;
+}
+
+.analysis-health-issue p {
+  margin-bottom: 0;
+}
+
+.analysis-health-issue.error {
+  border-left: 4px solid #ef4444;
+}
+
+.analysis-health-issue.warning {
+  border-left: 4px solid #f59e0b;
+}
+
+.analysis-health-issue.info {
+  border-left: 4px solid #3b82f6;
+}

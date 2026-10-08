@@ -161,4 +161,47 @@ describe("gameStateService", () => {
     expect(result.state).toBe(state);
     expect(result.state.normalSummonUsed).toBe(false);
   });
+  
+  it("preserves state when an effect activation fails", () => {
+    let state = createGameState(deck);
+
+    state = moveCard(
+      state,
+      1,
+      "deck",
+      "field"
+    )!;
+
+    const first = executeGameAction(state, {
+      id: "effect-1",
+      type: "activate-effect",
+      cardId: 1,
+      effectKey: "card-1-effect",
+      oncePerTurn: true,
+    });
+
+    expect(first.success).toBe(true);
+
+    const beforeFailure = first.state;
+
+    const second = executeGameAction(beforeFailure, {
+      id: "effect-2",
+      type: "activate-effect",
+      cardId: 1,
+      effectKey: "card-1-effect",
+      oncePerTurn: true,
+    });
+
+    expect(second.success).toBe(false);
+
+    expect(second.state).toBe(beforeFailure);
+
+    expect(
+      second.state.usedEffects
+    ).toEqual(["card-1-effect"]);
+
+    expect(
+      second.state.actionHistory
+    ).toHaveLength(1);
+  });
 });

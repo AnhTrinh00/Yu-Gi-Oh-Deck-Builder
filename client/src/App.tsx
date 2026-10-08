@@ -62,8 +62,7 @@ import {
 } from "./services/comboRegistryService";
 import { validateCombo } from "./services/comboValidationService";
 import { calculateComboOpeningProbability } from "./services/comboProbabilityService";
-import ComboDiscovery from "./components/ComboDiscovery";
-import ComboEvaluation from "./components/ComboEvaluation";
+import DeckAnalysisWorkspace from "./components/DeckAnalysisWorkspace";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -313,21 +312,25 @@ function App() {
 
     setRelationships(updated);
   }
-  function handleSaveCombo(combo: Combo) {
+  function handleSaveCombo(combo: Combo): boolean {
     const result = validateCombo(combo, deck);
 
     if (!result.valid) {
       window.alert(result.errors.join("\n"));
-      return;
+      return false;
     }
 
     try {
       const updated = upsertCombo(combo);
+
       setCombos(updated);
       setEditingCombo(null);
       setShowComboEditor(false);
+
+      return true;
     } catch {
-      window.alert("Unable to save combo to localStorage.");
+      window.alert("Unable to save combo.");
+      return false;
     }
   }
   function handleDeleteCombo(comboId: string) {
@@ -1285,17 +1288,14 @@ function App() {
                 </div>
               )}
             </section>
-     
-            <ComboDiscovery
+          
+            <DeckAnalysisWorkspace
               deck={deck}
-              cards={uniqueDeckCards}
-              relationships={visibleRelationships}
-            />
-
-            <ComboEvaluation
-              deck={deck}
+              collection={collection}
+              relationships={relationships}
               combos={combos}
-              cards={uniqueDeckCards}
+              format="advanced"
+              onSaveCombo={handleSaveCombo}
             />
 
           </div>
