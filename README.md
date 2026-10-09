@@ -159,47 +159,120 @@ Build the project:
 npm run build
 ```
 
-## Roadmap
+## Current Features
 
-* [x] Phase 0 — Project Setup
-* [x] Phase 1 — Card Search & Collection
-* [x] Phase 2 — Deck Building
-* [ ] Phase 3 — Advanced Deck Building
-* [ ] Phase 4 — Deck Statistics & Analysis
-* [ ] Phase 5 — Combo Analysis
-* [ ] Phase 6 — AI-Assisted Deck Building
+### Card Database
 
-Future phases will gradually introduce more advanced Yu-Gi-Oh! rules, deck analysis, combo detection, and AI-assisted recommendations.
+- Search Yu-Gi-Oh! cards using the YGOPRODeck API.
+- View card information and images.
+- Add cards to a personal collection.
 
-````
+### Collection Management
 
-### One change I'd specifically recommend
+- Track owned card quantities.
+- Search, filter, and sort owned cards.
+- View collection statistics.
+- Compare owned quantities with cards currently assigned to a deck.
+- Identify missing copies.
 
-I would **not** put "build decks using only cards in their collection" under *Current Features* yet.
+### Deck Building
 
-Right now, the application can add cards from the search results directly to the deck, so the architecture isn't enforcing:
+- Manage Main, Extra, and Side Decks.
+- Enforce deck section and copy limits.
+- Apply Advanced Format banlist restrictions.
+- Restrict card additions based on collection ownership.
+- Save deck information locally.
 
-> "You can only add cards that you own."
+### Deck Analysis
 
-That's something we should implement in a future deck-building phase.
+- View deck statistics and archetype information.
+- Create and manage card relationships.
+- Explore relationship graphs and paths.
+- Create and save combos.
+- Analyze combo candidates and probabilities.
+- Run supported combo simulations.
+- Generate rule-based deck recommendations.
 
-Likewise, I would keep:
+### User Interface
 
-- combo analysis
-- end-board identification
-- AI recommendations
+- Dedicated Builder, Collection, My Deck, and Analysis pages.
+- Responsive card displays.
+- Deck editing controls.
+- Ownership and validation warnings.
 
-under **Project Goals**, because those aren't implemented yet.
+## Project Structure
 
-That distinction makes the README much stronger as a portfolio project: it clearly separates **what exists today** from **what you're building toward**.
+```text
+client/
+├── docs/
+│   └── ARCHITECTURE.md
+├── src/
+│   ├── components/
+│   │   ├── analysis/
+│   │   ├── collection/
+│   │   └── deck/
+│   ├── hooks/
+│   ├── models/
+│   ├── services/
+│   │   └── __tests__/
+│   ├── App.tsx
+│   └── main.tsx
+├── package.json
+├── vite.config.ts
+└── vitest.config.ts
+```
 
-After saving this README, you can proceed with:
+## Development Commands
 
-```powershell
-git status
-git add .
-git commit -m "Complete Phase 2 deck building system"
-git push origin main
-````
+Install dependencies:
 
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Run the test suite:
+
+```bash
+npm run test -- --run
+```
+
+Check code quality:
+
+```bash
+npm run lint
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+## Development Roadmap
+
+- **Phase 0:** Project setup and tooling — Complete
+- **Phase 1:** Card API integration and models — Complete
+- **Phase 2:** Collection and deck services — Complete
+- **Phase 3:** User interface, relationship graphs, combo analysis, and integration testing — Complete, pending final verification
+- **Phase 4:** Structured card effects and advanced combo engine — Planned
+- **Phase 5:** AI-assisted deck analysis and recommendations — Planned
+
+## Documentation
+
+See [Architecture](docs/ARCHITECTURE.md) for an overview of the application's structure and major services.
+
+## Current Limitations
+
+- Deck and collection data are primarily stored locally.
+- Combo analysis depends on the relationships and actions represented in the application.
+- The system does not yet fully interpret arbitrary Yu-Gi-Oh! card effects.
+- Automated recommendations should not be treated as proof that a combo is legal.
+
+The long-term goal is to combine structured game-state simulation with AI-assisted reasoning to provide useful, explainable deck-building recommendations.
 Then Phase 2 is officially finished.

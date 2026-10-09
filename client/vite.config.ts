@@ -1,4 +1,6 @@
-import { defineConfig } from "vite";
+// @vitest-environment jsdom
+
+import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
@@ -11,5 +13,11 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+  },
+
+  test: {
+    environment: "node",
+    clearMocks: true,
+    maxWorkers: 2,
   },
 });
