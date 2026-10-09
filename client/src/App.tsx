@@ -9,13 +9,9 @@ import {
   addCardToDeck,
   removeCardFromDeck,
   removeAllCardsFromDeck,
-  getDeckCardCount,
   saveDeck,
   loadDeck,
-  clearSavedDeck,
-  canAddCardToSection,
-  getCardQuantityInDeck,
-  DECK_LIMITS,
+  clearSavedDeck
 } from "./services/deckService";
 import "./App.css";
 import { searchCards } from "./services/cardApi";
@@ -26,10 +22,6 @@ import {
 } from "./services/collectionService";
 import type { Card } from "./models/Card";
 import type { CollectionCard } from "./models/CollectionCard";
-import {
-  getBanlistCopyLimit,
-  getBanlistStatus,
-} from "./services/banlistService";
 import { getDeckStatistics } from "./services/deckStatisticsService";
 import { getArchetypeSummaries } from "./services/archetypeService";
 import type { CardRelationship, CardRelationshipType } from "./models/CardRelationship";
@@ -70,6 +62,7 @@ import CollectionPage from "./components/collection/CollectionPage";
 import DeckManager from "./components/deck/DeckManager";
 import AnalysisTabs from "./components/analysis/AnalysisTabs";
 import AnalysisOverview from "./components/analysis/AnalysisOverview";
+import { checkDeckAddition } from "./services/deckAdditionPolicyService";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -130,11 +123,37 @@ function App() {
   function handleAddCard(card: Card) {
     addToCollection(card, 1);
     setCollection([...getCollection()]);
-  }
+  } 
   function handleAddToDeck(card: Card) {
-    setDeck((currentDeck) =>
-      addCardToDeck(currentDeck, card, selectedSection)
+    const result = checkDeckAddition(
+      deck,
+      collection,
+      card,
+      selectedSection
     );
+
+    if (!result.allowed) {
+      return;
+    }
+
+    setDeck((currentDeck) => {
+      const latestResult = checkDeckAddition(
+        currentDeck,
+        collection,
+        card,
+        selectedSection
+      );
+
+      if (!latestResult.allowed) {
+        return currentDeck;
+      }
+
+      return addCardToDeck(
+        currentDeck,
+        card,
+        selectedSection
+      );
+    });
   }
   function handleRemoveCard(cardId: number) {
     removeFromCollection(cardId, 1);
@@ -147,102 +166,22 @@ function App() {
     return collectionCard?.quantity ?? 0;
   }
   function isCardAddable(card: Card): boolean {
-    if (!canAddCardToSection(card, selectedSection)) {
-        return false;
-    }
-
-    const currentQuantity = getCardQuantityInDeck(
-        deck,
-        card.id
-    );
-
-    const banlistLimit = getBanlistCopyLimit(
-        card,
-        "advanced"
-    );
-
-    if (currentQuantity >= banlistLimit) {
-        return false;
-    }
-
-    if (
-        getDeckCardCount(deck, selectedSection) >=
-        (selectedSection === "main"
-            ? DECK_LIMITS.MAIN_MAX
-            : selectedSection === "extra"
-            ? DECK_LIMITS.EXTRA_MAX
-            : DECK_LIMITS.SIDE_MAX)
-    ) {
-        return false;
-    }
-
-    return true;
+    return checkDeckAddition(
+      deck,
+      collection,
+      card,
+      selectedSection
+    ).allowed;
   }
   function getAddCardDisabledReason(
     card: Card
   ): string | null {
-    if (!canAddCardToSection(card, selectedSection)) {
-      if (selectedSection === "main") {
-        return "This card cannot be placed in the Main Deck.";
-      }
-
-      if (selectedSection === "extra") {
-        return "This card cannot be placed in the Extra Deck.";
-      }
-
-      return "This card cannot be placed in the Side Deck.";
-    }
-
-    const banlistStatus = getBanlistStatus(
-        card,
-        "advanced"
-    );
-
-    const banlistLimit = getBanlistCopyLimit(
-        card,
-        "advanced"
-    );
-
-    const currentQuantity = getCardQuantityInDeck(
-        deck,
-        card.id
-    );
-
-    if (currentQuantity >= banlistLimit) {
-        if (banlistStatus === "Forbidden") {
-            return "This card is Forbidden in Advanced Format.";
-        }
-
-        if (banlistStatus === "Limited") {
-            return "This card is Limited to 1 copy in Advanced Format.";
-        }
-
-        if (banlistStatus === "Semi-Limited") {
-            return "This card is Semi-Limited to 2 copies in Advanced Format.";
-        }
-
-        return "You already have the maximum allowed copies of this card.";
-    }
-
-    const sectionLimit =
-      selectedSection === "main"
-        ? DECK_LIMITS.MAIN_MAX
-        : selectedSection === "extra"
-        ? DECK_LIMITS.EXTRA_MAX
-        : DECK_LIMITS.SIDE_MAX;
-
-    if (
-      getDeckCardCount(deck, selectedSection) >=
-      sectionLimit
-    ) {
-      return `${selectedSection === "main"
-        ? "Main"
-        : selectedSection === "extra"
-        ? "Extra"
-        : "Side"} Deck is full.`;
-    }
-
-    return null;
+    return checkDeckAddition(
+      deck,
+      collection,
+      card,
+      selectedSection
+    ).reason;
   }
   function handleAddRelationship() {
     if (!sourceCardId || !targetCardId) {
@@ -343,9 +282,24 @@ function App() {
     card: Card,
     section: DeckSection
   ) {
-    setDeck((current) =>
-      addCardToDeck(current, card, section)
-    );
+    setDeck((currentDeck) => {
+      const result = checkDeckAddition(
+        currentDeck,
+        collection,
+        card,
+        section
+      );
+
+      if (!result.allowed) {
+        return currentDeck;
+      }
+
+      return addCardToDeck(
+        currentDeck,
+        card,
+        section
+      );
+    });
   }
   function handleManagerRemoveCard(
     cardId: number,

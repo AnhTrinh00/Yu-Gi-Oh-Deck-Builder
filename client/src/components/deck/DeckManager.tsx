@@ -7,12 +7,10 @@ import type { Deck, DeckSection } from "../../models/Deck";
 import {
   DECK_LIMITS,
   getDeckCardCount,
-  getCardQuantityInDeck,
-  getAllowedSections,
   validateDeck,
 } from "../../services/deckService";
-import { getBanlistCopyLimit } from "../../services/banlistService";
 import DeckCardTile from "./DeckCardTile";
+import { checkDeckAddition } from "../../services/deckAdditionPolicyService";
 
 interface DeckManagerProps {
   deck: Deck;
@@ -54,23 +52,12 @@ export default function DeckManager({
   const selectedCards = deck[selectedSection];
 
   function canAddAnother(card: Card): boolean {
-    const owned = collection.find(
-      (entry) => entry.card.id === card.id
-    )?.quantity ?? 0;
-
-    const totalInDeck = getCardQuantityInDeck(deck, card.id);
-    const sectionCount = getDeckCardCount(deck, selectedSection);
-    const max = sections.find(
-      (section) => section.key === selectedSection
-    )!.max;
-
-    return (
-      getAllowedSections(card).includes(selectedSection) &&
-      sectionCount < max &&
-      totalInDeck < owned &&
-      totalInDeck < DECK_LIMITS.MAX_COPIES &&
-      totalInDeck < getBanlistCopyLimit(card, "advanced")
-    );
+    return checkDeckAddition(
+      deck,
+      collection,
+      card,
+      selectedSection
+    ).allowed;
   }
 
   return (
