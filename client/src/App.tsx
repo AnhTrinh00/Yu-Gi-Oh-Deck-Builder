@@ -68,6 +68,8 @@ import { calculateComboOpeningProbability } from "./services/comboProbabilitySer
 import DeckAnalysisWorkspace from "./components/DeckAnalysisWorkspace";
 import CollectionPage from "./components/collection/CollectionPage";
 import DeckManager from "./components/deck/DeckManager";
+import AnalysisTabs from "./components/analysis/AnalysisTabs";
+import AnalysisOverview from "./components/analysis/AnalysisOverview";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -616,615 +618,670 @@ function App() {
     />
   );
 
-  const analysisContent = (
-    <section className="analysis-page">
-      <h2>Deck Analysis</h2>
-            <div className="deck-statistics">
-              <h3>Deck Statistics</h3>
+  const overviewDetails = (
+    <>
+      <div className="deck-statistics">
+        <h3>Deck Statistics</h3>
 
-              <div className="statistics-grid">
-                  <div>
-                      <span>Unique Main Cards</span>
-                      <strong>
-                          {deckStatistics.uniqueMainCards}
-                      </strong>
-                  </div>
-
-                  <div>
-                      <span>Unique Extra Cards</span>
-                      <strong>
-                          {deckStatistics.uniqueExtraCards}
-                      </strong>
-                  </div>
-
-                  <div>
-                      <span>Unique Side Cards</span>
-                      <strong>
-                          {deckStatistics.uniqueSideCards}
-                      </strong>
-                  </div>
-
-                  <div>
-                      <span>Monsters</span>
-                      <strong>
-                          {deckStatistics.monsterCount}
-                          {" "}
-                          ({deckStatistics.monsterPercentage.toFixed(1)}%)
-                      </strong>
-                  </div>
-
-                  <div>
-                      <span>Spells</span>
-                      <strong>
-                          {deckStatistics.spellCount}
-                          {" "}
-                          ({deckStatistics.spellPercentage.toFixed(1)}%)
-                      </strong>
-                  </div>
-
-                  <div>
-                      <span>Traps</span>
-                      <strong>
-                          {deckStatistics.trapCount}
-                          {" "}
-                          ({deckStatistics.trapPercentage.toFixed(1)}%)
-                      </strong>
-                  </div>
-              </div>
-
+        <div className="statistics-grid">
+            <div>
+                <span>Unique Main Cards</span>
+                <strong>
+                    {deckStatistics.uniqueMainCards}
+                </strong>
             </div>
 
-            <div className="archetype-analysis">
-              <h3>Archetype Analysis</h3>
-
-              {archetypeSummaries.length === 0 ? (
-                <p>No archetypes detected in the Main Deck.</p>
-              ) : (
-                <div className="archetype-list">
-                  {archetypeSummaries.map((summary) => (
-                    <div
-                      className="archetype-summary"
-                      key={summary.archetype}
-                    >
-                      <strong>{summary.archetype}</strong>
-
-                      <span>
-                        {summary.cardCount}{" "}
-                        {summary.cardCount === 1 ? "card" : "cards"}
-                      </span>
-
-                      <span>
-                        {summary.uniqueCards}{" "}
-                        {summary.uniqueCards === 1
-                          ? "unique card"
-                          : "unique cards"}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div>
+                <span>Unique Extra Cards</span>
+                <strong>
+                    {deckStatistics.uniqueExtraCards}
+                </strong>
             </div>
 
-            <div className="relationship-analysis">
-              <h3>Card Relationship Analysis</h3>
+            <div>
+                <span>Unique Side Cards</span>
+                <strong>
+                    {deckStatistics.uniqueSideCards}
+                </strong>
+            </div>
 
-              <div className="relationship-statistics">
-                <p>
-                  Unique Cards:{" "}
-                  <strong>
-                    {deckRelationshipAnalysis.totalUniqueCards}
-                  </strong>
-                </p>
+            <div>
+                <span>Monsters</span>
+                <strong>
+                    {deckStatistics.monsterCount}
+                    {" "}
+                    ({deckStatistics.monsterPercentage.toFixed(1)}%)
+                </strong>
+            </div>
 
-                <p>
-                  Recorded Relationships:{" "}
-                  <strong>
-                    {deckRelationshipAnalysis.totalRelationships}
-                  </strong>
-                </p>
+            <div>
+                <span>Spells</span>
+                <strong>
+                    {deckStatistics.spellCount}
+                    {" "}
+                    ({deckStatistics.spellPercentage.toFixed(1)}%)
+                </strong>
+            </div>
 
-                <p>
-                  Connected Cards:{" "}
-                  <strong>
-                    {deckRelationshipAnalysis.connectedCardCount}
-                  </strong>
-                </p>
+            <div>
+                <span>Traps</span>
+                <strong>
+                    {deckStatistics.trapCount}
+                    {" "}
+                    ({deckStatistics.trapPercentage.toFixed(1)}%)
+                </strong>
+            </div>
+        </div>
 
-                <p>
-                  No Recorded Connections:{" "}
-                  <strong>
-                    {deckRelationshipAnalysis.disconnectedCardCount}
-                  </strong>
-                </p>
+      </div>
+
+      <div className="archetype-analysis">
+        <h3>Archetype Analysis</h3>
+
+        {archetypeSummaries.length === 0 ? (
+          <p>No archetypes detected in the Main Deck.</p>
+        ) : (
+          <div className="archetype-list">
+            {archetypeSummaries.map((summary) => (
+              <div
+                className="archetype-summary"
+                key={summary.archetype}
+              >
+                <strong>{summary.archetype}</strong>
+
+                <span>
+                  {summary.cardCount}{" "}
+                  {summary.cardCount === 1 ? "card" : "cards"}
+                </span>
+
+                <span>
+                  {summary.uniqueCards}{" "}
+                  {summary.uniqueCards === 1
+                    ? "unique card"
+                    : "unique cards"}
+                </span>
               </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  );
 
-              <h4>Add Card Relationship</h4>
+  const relationshipsContent = (
+    <>
+      <div className="relationship-analysis">
+        <h3>Card Relationship Analysis</h3>
 
-              <div className="relationship-editor">
-                <select
-                  value={sourceCardId}
-                  onChange={(event) =>
-                    setSourceCardId(event.target.value)
-                  }
-                >
-                  <option value="">Select source card</option>
+        <div className="relationship-statistics">
+          <p>
+            Unique Cards:{" "}
+            <strong>
+              {deckRelationshipAnalysis.totalUniqueCards}
+            </strong>
+          </p>
 
-                  {uniqueDeckCards.map((card) => (
-                    <option key={card.id} value={card.id}>
-                      {card.name}
-                    </option>
-                  ))}
-                </select>
+          <p>
+            Recorded Relationships:{" "}
+            <strong>
+              {deckRelationshipAnalysis.totalRelationships}
+            </strong>
+          </p>
 
-                <select
-                  value={relationshipType}
-                  onChange={(event) =>
-                    setRelationshipType(
-                      event.target.value as CardRelationshipType
+          <p>
+            Connected Cards:{" "}
+            <strong>
+              {deckRelationshipAnalysis.connectedCardCount}
+            </strong>
+          </p>
+
+          <p>
+            No Recorded Connections:{" "}
+            <strong>
+              {deckRelationshipAnalysis.disconnectedCardCount}
+            </strong>
+          </p>
+        </div>
+
+        <h4>Add Card Relationship</h4>
+
+        <div className="relationship-editor">
+          <select
+            value={sourceCardId}
+            onChange={(event) =>
+              setSourceCardId(event.target.value)
+            }
+          >
+            <option value="">Select source card</option>
+
+            {uniqueDeckCards.map((card) => (
+              <option key={card.id} value={card.id}>
+                {card.name}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={relationshipType}
+            onChange={(event) =>
+              setRelationshipType(
+                event.target.value as CardRelationshipType
+              )
+            }
+          >
+            {relationshipTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={targetCardId}
+            onChange={(event) =>
+              setTargetCardId(event.target.value)
+            }
+          >
+            <option value="">Select target card</option>
+
+            {uniqueDeckCards.map((card) => (
+              <option key={card.id} value={card.id}>
+                {card.name}
+              </option>
+            ))}
+          </select>
+
+          <button
+            onClick={handleAddRelationship}
+            disabled={
+              !sourceCardId ||
+              !targetCardId ||
+              sourceCardId === targetCardId ||
+              !deckCardIds.has(Number(sourceCardId)) ||
+              !deckCardIds.has(Number(targetCardId))
+            }
+          >
+            Add Relationship
+          </button>
+        </div>
+
+        <section
+          className="relationship-path"
+          aria-label="Relationship path finder"
+        >
+          <h4>Shortest Relationship Path</h4>
+
+          <div className="relationship-editor">
+            <label>
+              From card
+              <select
+                aria-label="Path source card"
+                value={pathSourceId}
+                onChange={(e) => setPathSourceId(e.target.value)}
+              >
+                <option value="">Select source card</option>
+
+                {uniqueDeckCards.map((card) => (
+                  <option key={card.id} value={card.id}>
+                    {card.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              To card
+              <select
+                aria-label="Path destination card"
+                value={pathTargetId}
+                onChange={(e) => setPathTargetId(e.target.value)}
+              >
+                <option value="">Select destination card</option>
+
+                {uniqueDeckCards.map((card) => (
+                  <option key={card.id} value={card.id}>
+                    {card.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          {!pathSelectionValid ? (
+            <p>Select two cards from the deck to find a path.</p>
+          ) : shortestPath === null ? (
+            <p>
+              No directed relationship path exists between these cards.
+            </p>
+          ) : (
+            <div aria-live="polite">
+              <p>
+                Shortest path: {shortestPath.length - 1} relationship(s)
+              </p>
+
+              <ol className="relationship-path-steps">
+                <li>{deckCardMap.get(shortestPath[0])}</li>
+
+                {pathSteps.map((step, index) => (
+                  <li
+                    key={`${index}-${step.sourceCardId}-${step.targetCardId}`}
+                  >
+                    <span>
+                      {"— "}
+                      {step.types.join(" / ")}
+                      {" → "}
+                    </span>
+
+                    <strong>
+                      {deckCardMap.get(step.targetCardId)}
+                    </strong>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+        </section>
+          
+        <div className="graph-filters">
+          <label>
+            Relationship Type
+            <select
+              value={graphFilters.relationshipType}
+              onChange={(event) =>
+                setGraphFilters((previous) => ({
+                  ...previous,
+                  relationshipType: event.target.value as
+                    CardRelationshipType | "all",
+                }))
+              }
+            >
+              <option value="all">All Relationships</option>
+              <option value="searches">Searches</option>
+              <option value="summons">Summons</option>
+              <option value="supports">Supports</option>
+              <option value="requires">Requires</option>
+              <option value="enables">Enables</option>
+              <option value="extends">Extends</option>
+              <option value="negates">Negates</option>
+              <option value="destroys">Destroys</option>
+              <option value="banishes">Banishes</option>
+            </select>
+          </label>
+
+          <label>
+            Deck Section
+            <select
+              value={graphFilters.deckSection}
+              onChange={(event) =>
+                setGraphFilters((previous) => ({
+                  ...previous,
+                  deckSection: event.target.value as
+                    DeckSection | "all",
+                }))
+              }
+            >
+              <option value="all">All Sections</option>
+              <option value="main">Main Deck</option>
+              <option value="extra">Extra Deck</option>
+              <option value="side">Side Deck</option>
+            </select>
+          </label>
+
+          <label>
+            Card Role
+            <select
+              value={graphFilters.cardRole}
+              onChange={(event) =>
+                setGraphFilters((previous) => ({
+                  ...previous,
+                  cardRole: event.target.value as CardRole | "all",
+                }))
+              }
+            >
+              <option value="all">All Roles</option>
+              <option value="starter">Starter</option>
+              <option value="extender">Extender</option>
+              <option value="searcher">Searcher</option>
+              <option value="engine">Engine</option>
+              <option value="hand-trap">Hand Trap</option>
+              <option value="board-breaker">Board Breaker</option>
+              <option value="interaction">Interaction</option>
+              <option value="generic">Generic</option>
+            </select>
+          </label>
+
+          <button
+            type="button"
+            onClick={() =>
+              setGraphFilters({ ...DEFAULT_GRAPH_FILTERS })
+            }
+          >
+            Reset Filters
+          </button>
+        </div>
+
+        <h4>Card Relationship Graph</h4>
+    
+        <RelationshipGraph
+          cards={filteredGraph.cards}
+          relationships={filteredGraph.relationships}
+          highlightedPath={filteredShortestPath}
+        />
+
+        <section className="graph-analysis">
+          <h4>Relationship Graph Analysis</h4>
+
+          <div className="graph-analysis-summary">
+            <p>
+              <strong>Total Cards:</strong>{" "}
+              {graphAnalysis.cardCount}
+            </p>
+
+            <p>
+              <strong>Recorded Relationships:</strong>{" "}
+              {graphAnalysis.relationshipCount}
+            </p>
+
+            <p>
+              <strong>Connected Cards:</strong>{" "}
+              {graphAnalysis.connectedCardCount}
+            </p>
+
+            <p>
+              <strong>Isolated Cards:</strong>{" "}
+              {graphAnalysis.isolatedCardIds.length}
+            </p>
+          </div>
+
+          <h5>Top Interaction Hubs</h5>
+
+          {graphAnalysis.hubs.length === 0 ? (
+            <p>No connected cards found.</p>
+          ) : (
+            <table className="graph-analysis-table">
+              <thead>
+                <tr>
+                  <th>Card</th>
+                  <th>Incoming</th>
+                  <th>Outgoing</th>
+                  <th>Connections</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {graphAnalysis.hubs.slice(0, 10).map((metric) => (
+                  <tr key={metric.cardId}>
+                    <td>
+                      {deckCardMap.get(metric.cardId) ??
+                        `Card ${metric.cardId}`}
+                    </td>
+                    <td>{metric.incoming}</td>
+                    <td>{metric.outgoing}</td>
+                    <td>{metric.totalConnections}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+
+          <h5>Isolated Cards</h5>
+
+          {graphAnalysis.isolatedCardIds.length === 0 ? (
+            <p>No isolated cards found.</p>
+          ) : (
+            <ul>
+              {graphAnalysis.isolatedCardIds.map((cardId) => (
+                <li key={cardId}>
+                  {deckCardMap.get(cardId) ?? `Card ${cardId}`}
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <p>
+          Showing {filteredGraph.cards.length} cards and{" "}
+          {filteredGraph.relationships.length} relationships.
+        </p>
+
+        <h4>Recorded Relationships</h4>
+
+        {visibleRelationships.length === 0 ? (
+          <p>
+            No relationships recorded between cards in
+            this deck.
+          </p>
+        ) : (
+          <div className="relationship-list">
+            {visibleRelationships.map((relationship) => (
+              <div
+                className="relationship-item"
+                key={`${relationship.sourceCardId}-${relationship.targetCardId}-${relationship.type}`}
+              >
+                <span>
+                  {deckCardMap.get(relationship.sourceCardId)}
+                  {" → "}
+                  {relationship.type}
+                  {" → "}
+                  {deckCardMap.get(relationship.targetCardId)}
+                </span>
+
+                <button
+                  onClick={() =>
+                    handleRemoveRelationship(
+                      relationship.sourceCardId,
+                      relationship.targetCardId,
+                      relationship.type
                     )
                   }
                 >
-                  {relationshipTypes.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-
-                <select
-                  value={targetCardId}
-                  onChange={(event) =>
-                    setTargetCardId(event.target.value)
-                  }
-                >
-                  <option value="">Select target card</option>
-
-                  {uniqueDeckCards.map((card) => (
-                    <option key={card.id} value={card.id}>
-                      {card.name}
-                    </option>
-                  ))}
-                </select>
-
-                <button
-                  onClick={handleAddRelationship}
-                  disabled={
-                    !sourceCardId ||
-                    !targetCardId ||
-                    sourceCardId === targetCardId ||
-                    !deckCardIds.has(Number(sourceCardId)) ||
-                    !deckCardIds.has(Number(targetCardId))
-                  }
-                >
-                  Add Relationship
+                  Remove
                 </button>
               </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
+  );
 
-              <section
-                className="relationship-path"
-                aria-label="Relationship path finder"
-              >
-                <h4>Shortest Relationship Path</h4>
+  const combosContent = (
+    <>
+      <section className="combo-section">
+        <h2>Combo Foundations</h2>
 
-                <div className="relationship-editor">
-                  <label>
-                    From card
-                    <select
-                      aria-label="Path source card"
-                      value={pathSourceId}
-                      onChange={(e) => setPathSourceId(e.target.value)}
-                    >
-                      <option value="">Select source card</option>
+        <p>
+          Create and manage manually recorded combo sequences
+          using cards in your current deck.
+        </p>
 
-                      {uniqueDeckCards.map((card) => (
-                        <option key={card.id} value={card.id}>
-                          {card.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+        {!showComboEditor && (
+          <button
+            type="button"
+            onClick={() => {
+              setEditingCombo(null);
+              setShowComboEditor(true);
+            }}
+          >
+            Create New Combo
+          </button>
+        )}
 
-                  <label>
-                    To card
-                    <select
-                      aria-label="Path destination card"
-                      value={pathTargetId}
-                      onChange={(e) => setPathTargetId(e.target.value)}
-                    >
-                      <option value="">Select destination card</option>
+        {showComboEditor && (
+          <ComboEditor
+            key={editingCombo?.id ?? "new-combo"}
+            cards={uniqueDeckCards}
+            editingCombo={editingCombo}
+            onSave={handleSaveCombo}
+            onCancel={() => {
+              setEditingCombo(null);
+              setShowComboEditor(false);
+            }}
+          />
+        )}
 
-                      {uniqueDeckCards.map((card) => (
-                        <option key={card.id} value={card.id}>
-                          {card.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </div>
+        <h3>Saved Combos</h3>
 
-                {!pathSelectionValid ? (
-                  <p>Select two cards from the deck to find a path.</p>
-                ) : shortestPath === null ? (
+        {combos.length === 0 ? (
+          <p>No combos have been saved yet.</p>
+        ) : (
+          <div className="combo-list">
+            {combos.map((combo) => {
+              const validation = validateCombo(combo, deck);
+
+              const probability =
+                calculateComboOpeningProbability(combo, deck);
+
+              return (
+                <article key={combo.id} className="combo-card">
+                  <h4>{combo.name}</h4>
+                  <p>{combo.description}</p>
+
                   <p>
-                    No directed relationship path exists between these cards.
+                    <strong>Deck compatibility:</strong>{" "}
+                    {validation.valid
+                      ? "Requirements satisfied"
+                      : "Requirements not satisfied"}
                   </p>
-                ) : (
-                  <div aria-live="polite">
-                    <p>
-                      Shortest path: {shortestPath.length - 1} relationship(s)
-                    </p>
 
-                    <ol className="relationship-path-steps">
-                      <li>{deckCardMap.get(shortestPath[0])}</li>
+                  <p>
+                    <strong>Opening probability:</strong>{" "}
+                    {(probability * 100).toFixed(2)}%
+                  </p>
 
-                      {pathSteps.map((step, index) => (
-                        <li
-                          key={`${index}-${step.sourceCardId}-${step.targetCardId}`}
-                        >
-                          <span>
-                            {"— "}
-                            {step.types.join(" / ")}
-                            {" → "}
-                          </span>
+                  <p>
+                    <strong>Starting cards:</strong>{" "}
+                    {combo.starters
+                      .map(
+                        (item) =>
+                          `${deckCardMap.get(item.cardId) ??
+                            `Card ${item.cardId}`} ×${item.quantity}`
+                      )
+                      .join(", ")}
+                  </p>
 
+                  <h5>Combo Sequence</h5>
+
+                  <ol>
+                    {[...combo.steps]
+                      .sort((a, b) => a.order - b.order)
+                      .map((step) => (
+                        <li key={step.id}>
                           <strong>
-                            {deckCardMap.get(step.targetCardId)}
+                            {deckCardMap.get(step.cardId) ??
+                              `Card ${step.cardId}`}
                           </strong>
+                          {" — "}{step.action}: {step.description}
                         </li>
                       ))}
-                    </ol>
-                  </div>
-                )}
-              </section>
-                
-              <div className="graph-filters">
-                <label>
-                  Relationship Type
-                  <select
-                    value={graphFilters.relationshipType}
-                    onChange={(event) =>
-                      setGraphFilters((previous) => ({
-                        ...previous,
-                        relationshipType: event.target.value as
-                          CardRelationshipType | "all",
-                      }))
-                    }
-                  >
-                    <option value="all">All Relationships</option>
-                    <option value="searches">Searches</option>
-                    <option value="summons">Summons</option>
-                    <option value="supports">Supports</option>
-                    <option value="requires">Requires</option>
-                    <option value="enables">Enables</option>
-                    <option value="extends">Extends</option>
-                    <option value="negates">Negates</option>
-                    <option value="destroys">Destroys</option>
-                    <option value="banishes">Banishes</option>
-                  </select>
-                </label>
+                  </ol>
 
-                <label>
-                  Deck Section
-                  <select
-                    value={graphFilters.deckSection}
-                    onChange={(event) =>
-                      setGraphFilters((previous) => ({
-                        ...previous,
-                        deckSection: event.target.value as
-                          DeckSection | "all",
-                      }))
-                    }
-                  >
-                    <option value="all">All Sections</option>
-                    <option value="main">Main Deck</option>
-                    <option value="extra">Extra Deck</option>
-                    <option value="side">Side Deck</option>
-                  </select>
-                </label>
+                  <h5>End Board</h5>
 
-                <label>
-                  Card Role
-                  <select
-                    value={graphFilters.cardRole}
-                    onChange={(event) =>
-                      setGraphFilters((previous) => ({
-                        ...previous,
-                        cardRole: event.target.value as CardRole | "all",
-                      }))
-                    }
-                  >
-                    <option value="all">All Roles</option>
-                    <option value="starter">Starter</option>
-                    <option value="extender">Extender</option>
-                    <option value="searcher">Searcher</option>
-                    <option value="engine">Engine</option>
-                    <option value="hand-trap">Hand Trap</option>
-                    <option value="board-breaker">Board Breaker</option>
-                    <option value="interaction">Interaction</option>
-                    <option value="generic">Generic</option>
-                  </select>
-                </label>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setGraphFilters({ ...DEFAULT_GRAPH_FILTERS })
-                  }
-                >
-                  Reset Filters
-                </button>
-              </div>
-
-              <h4>Card Relationship Graph</h4>
-          
-              <RelationshipGraph
-                cards={filteredGraph.cards}
-                relationships={filteredGraph.relationships}
-                highlightedPath={filteredShortestPath}
-              />
-      
-              <section className="graph-analysis">
-                <h4>Relationship Graph Analysis</h4>
-
-                <div className="graph-analysis-summary">
-                  <p>
-                    <strong>Total Cards:</strong>{" "}
-                    {graphAnalysis.cardCount}
-                  </p>
-
-                  <p>
-                    <strong>Recorded Relationships:</strong>{" "}
-                    {graphAnalysis.relationshipCount}
-                  </p>
-
-                  <p>
-                    <strong>Connected Cards:</strong>{" "}
-                    {graphAnalysis.connectedCardCount}
-                  </p>
-
-                  <p>
-                    <strong>Isolated Cards:</strong>{" "}
-                    {graphAnalysis.isolatedCardIds.length}
-                  </p>
-                </div>
-
-                <h5>Top Interaction Hubs</h5>
-
-                {graphAnalysis.hubs.length === 0 ? (
-                  <p>No connected cards found.</p>
-                ) : (
-                  <table className="graph-analysis-table">
-                    <thead>
-                      <tr>
-                        <th>Card</th>
-                        <th>Incoming</th>
-                        <th>Outgoing</th>
-                        <th>Connections</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      {graphAnalysis.hubs.slice(0, 10).map((metric) => (
-                        <tr key={metric.cardId}>
-                          <td>
-                            {deckCardMap.get(metric.cardId) ??
-                              `Card ${metric.cardId}`}
-                          </td>
-                          <td>{metric.incoming}</td>
-                          <td>{metric.outgoing}</td>
-                          <td>{metric.totalConnections}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
-
-                <h5>Isolated Cards</h5>
-
-                {graphAnalysis.isolatedCardIds.length === 0 ? (
-                  <p>No isolated cards found.</p>
-                ) : (
                   <ul>
-                    {graphAnalysis.isolatedCardIds.map((cardId) => (
-                      <li key={cardId}>
-                        {deckCardMap.get(cardId) ?? `Card ${cardId}`}
+                    {combo.endBoardCardIds.map((id, index) => (
+                      <li key={`${id}-${index}`}>
+                        {deckCardMap.get(id) ?? `Card ${id}`}
                       </li>
                     ))}
                   </ul>
-                )}
-              </section>
 
-              <p>
-                Showing {filteredGraph.cards.length} cards and{" "}
-                {filteredGraph.relationships.length} relationships.
-              </p>
+                  {validation.errors.length > 0 && (
+                    <ul className="combo-errors">
+                      {validation.errors.map((error, index) => (
+                        <li key={index}>{error}</li>
+                      ))}
+                    </ul>
+                  )}
 
-              <h4>Recorded Relationships</h4>
+                  {validation.warnings.length > 0 && (
+                    <ul className="combo-warnings">
+                      {validation.warnings.map((warning, index) => (
+                        <li key={index}>{warning}</li>
+                      ))}
+                    </ul>
+                  )}
 
-              {visibleRelationships.length === 0 ? (
-                <p>
-                  No relationships recorded between cards in
-                  this deck.
-                </p>
-              ) : (
-                <div className="relationship-list">
-                  {visibleRelationships.map((relationship) => (
-                    <div
-                      className="relationship-item"
-                      key={`${relationship.sourceCardId}-${relationship.targetCardId}-${relationship.type}`}
+                  <div className="combo-editor-row">
+                    <button
+                      type="button"
+                      onClick={() => handleEditCombo(combo)}
                     >
-                      <span>
-                        {deckCardMap.get(relationship.sourceCardId)}
-                        {" → "}
-                        {relationship.type}
-                        {" → "}
-                        {deckCardMap.get(relationship.targetCardId)}
-                      </span>
+                      Edit
+                    </button>
 
-                      <button
-                        onClick={() =>
-                          handleRemoveRelationship(
-                            relationship.sourceCardId,
-                            relationship.targetCardId,
-                            relationship.type
-                          )
-                        }
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-     
-            <section className="combo-section">
-              <h2>Combo Foundations</h2>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteCombo(combo.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    </>
+  );
 
-              <p>
-                Create and manage manually recorded combo sequences
-                using cards in your current deck.
-              </p>
+  const advancedAnalysisContent = (
+    <DeckAnalysisWorkspace
+      deck={deck}
+      collection={collection}
+      relationships={relationships}
+      combos={combos}
+      format="advanced"
+      onSaveCombo={handleSaveCombo}
+    />
+  );
 
-              {!showComboEditor && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingCombo(null);
-                    setShowComboEditor(true);
-                  }}
-                >
-                  Create New Combo
-                </button>
-              )}
+  const analysisContent = (
+    <div className="analysis-page">
+      <header className="analysis-page-header">
+        <h1>Deck Analysis</h1>
+        <p>
+          Explore deck statistics, card relationships,
+          combo sequences, and advanced analysis.
+        </p>
+      </header>
 
-              {showComboEditor && (
-                <ComboEditor
-                  key={editingCombo?.id ?? "new-combo"}
-                  cards={uniqueDeckCards}
-                  editingCombo={editingCombo}
-                  onSave={handleSaveCombo}
-                  onCancel={() => {
-                    setEditingCombo(null);
-                    setShowComboEditor(false);
-                  }}
+      <AnalysisTabs
+        tabs={[
+          {
+            id: "overview",
+            label: "Overview",
+            content: (
+              <div className="analysis-overview">
+                <AnalysisOverview
+                  deck={deck}
+                  comboCount={combos.length}
+                  candidateCount={0}
                 />
-              )}
 
-              <h3>Saved Combos</h3>
-
-              {combos.length === 0 ? (
-                <p>No combos have been saved yet.</p>
-              ) : (
-                <div className="combo-list">
-                  {combos.map((combo) => {
-                    const validation = validateCombo(combo, deck);
-
-                    const probability =
-                      calculateComboOpeningProbability(combo, deck);
-
-                    return (
-                      <article key={combo.id} className="combo-card">
-                        <h4>{combo.name}</h4>
-                        <p>{combo.description}</p>
-
-                        <p>
-                          <strong>Deck compatibility:</strong>{" "}
-                          {validation.valid
-                            ? "Requirements satisfied"
-                            : "Requirements not satisfied"}
-                        </p>
-
-                        <p>
-                          <strong>Opening probability:</strong>{" "}
-                          {(probability * 100).toFixed(2)}%
-                        </p>
-
-                        <p>
-                          <strong>Starting cards:</strong>{" "}
-                          {combo.starters
-                            .map(
-                              (item) =>
-                                `${deckCardMap.get(item.cardId) ??
-                                  `Card ${item.cardId}`} ×${item.quantity}`
-                            )
-                            .join(", ")}
-                        </p>
-
-                        <h5>Combo Sequence</h5>
-
-                        <ol>
-                          {[...combo.steps]
-                            .sort((a, b) => a.order - b.order)
-                            .map((step) => (
-                              <li key={step.id}>
-                                <strong>
-                                  {deckCardMap.get(step.cardId) ??
-                                    `Card ${step.cardId}`}
-                                </strong>
-                                {" — "}{step.action}: {step.description}
-                              </li>
-                            ))}
-                        </ol>
-
-                        <h5>End Board</h5>
-
-                        <ul>
-                          {combo.endBoardCardIds.map((id, index) => (
-                            <li key={`${id}-${index}`}>
-                              {deckCardMap.get(id) ?? `Card ${id}`}
-                            </li>
-                          ))}
-                        </ul>
-
-                        {validation.errors.length > 0 && (
-                          <ul className="combo-errors">
-                            {validation.errors.map((error, index) => (
-                              <li key={index}>{error}</li>
-                            ))}
-                          </ul>
-                        )}
-
-                        {validation.warnings.length > 0 && (
-                          <ul className="combo-warnings">
-                            {validation.warnings.map((warning, index) => (
-                              <li key={index}>{warning}</li>
-                            ))}
-                          </ul>
-                        )}
-
-                        <div className="combo-editor-row">
-                          <button
-                            type="button"
-                            onClick={() => handleEditCombo(combo)}
-                          >
-                            Edit
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteCombo(combo.id)}
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              )}
-            </section>
-          
-            <DeckAnalysisWorkspace
-              deck={deck}
-              collection={collection}
-              relationships={relationships}
-              combos={combos}
-              format="advanced"
-              onSaveCombo={handleSaveCombo}
-            />
-
-    </section>
+                {overviewDetails}
+              </div>
+            ),
+          },
+          {
+            id: "relationships",
+            label: "Relationships",
+            content: relationshipsContent,
+          },
+          {
+            id: "combos",
+            label: "Combos",
+            content: combosContent,
+          },
+          {
+            id: "advanced",
+            label: "Advanced Analysis",
+            content: advancedAnalysisContent,
+          },
+        ]}
+      />
+    </div>
   );
 
   return (

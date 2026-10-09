@@ -1933,3 +1933,146 @@ header {
     height: 165px;
   }
 }
+
+
+/* ==========================================
+   Phase 3.13.5 — Analysis Workspace
+========================================== */
+
+.analysis-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.analysis-page-header h1 {
+  margin: 0 0 0.4rem;
+  font-size: 1.8rem;
+}
+
+.analysis-page-header p {
+  margin: 0;
+  opacity: 0.7;
+}
+
+.analysis-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.analysis-tab-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #394252;
+}
+
+.analysis-tab-navigation button {
+  padding: 0.75rem 1rem;
+  border: 1px solid #394252;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    border-color 150ms ease;
+}
+
+.analysis-tab-navigation button:hover {
+  background: rgba(99, 141, 234, 0.08);
+}
+
+.analysis-tab-navigation button.active {
+  background: rgba(99, 141, 234, 0.16);
+  border-color: #638dea;
+  font-weight: 600;
+}
+
+.analysis-tab-navigation button:focus-visible {
+  outline: 2px solid #638dea;
+  outline-offset: 3px;
+}
+
+.analysis-tab-panel {
+  min-width: 0;
+}
+
+.analysis-section-heading h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.2rem;
+}
+
+.analysis-section-heading p {
+  margin: 0;
+  opacity: 0.7;
+}
+
+.analysis-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.analysis-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.analysis-overview-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem;
+  border: 1px solid #394252;
+  border-radius: 12px;
+  background: rgba(120, 140, 180, 0.06);
+}
+
+.analysis-overview-card strong {
+  font-size: 1.8rem;
+}
+
+.analysis-overview-card span {
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+.analysis-overview-notice {
+  padding: 1rem;
+  border-left: 3px solid #e5a35c;
+  background: rgba(229, 163, 92, 0.08);
+  border-radius: 6px;
+}
+
+@media (max-width: 760px) {
+  .analysis-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .analysis-tab-navigation {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 1rem;
+  }
+
+  .analysis-tab-navigation button {
+    flex-shrink: 0;
+  }
+}
+
+@media (max-width: 420px) {
+  .analysis-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analysis-page-header h1 {
+    font-size: 1.5rem;
+  }
+}
