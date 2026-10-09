@@ -67,6 +67,7 @@ import {
 import { validateCombo } from "./services/comboValidationService";
 import { calculateComboOpeningProbability } from "./services/comboProbabilityService";
 import DeckAnalysisWorkspace from "./components/DeckAnalysisWorkspace";
+import CollectionPage from "./components/collection/CollectionPage";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -588,58 +589,11 @@ function App() {
   );
 
   const collectionContent = (
-    <>
-        <section>
-          <h2>My Collection</h2>
-
-          {collection.length === 0 ? (
-            <p>Your collection is empty.</p>
-          ) : (
-            <div className="collection-list">
-              {collection.map((item) => (
-                <div
-                  className="collection-card"
-                  key={item.card.id}
-                >
-                  <img
-                    src={item.card.imageUrlSmall}
-                    alt={item.card.name}
-                  />
-
-                  <div className="collection-info">
-                    <h3>{item.card.name}</h3>
-
-                    <p>
-                      Quantity: {item.quantity}
-                    </p>
-
-                    <div>
-                      <button
-                        onClick={() =>
-                          handleRemoveCard(item.card.id)
-                        }
-                      >
-                        −
-                      </button>
-
-                      <span>{item.quantity}</span>
-
-                      <button
-                        onClick={() =>
-                          handleAddCard(item.card)
-                        }
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
-    </>
+    <CollectionPage
+      collection={collection}
+      onAddCard={handleAddCard}
+      onRemoveCard={handleRemoveCard}
+    />
   );
 
   const deckContent = (
