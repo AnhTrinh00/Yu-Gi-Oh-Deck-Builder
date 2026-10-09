@@ -10,7 +10,6 @@ import {
   removeCardFromDeck,
   removeAllCardsFromDeck,
   getDeckCardCount,
-  validateDeck,
   saveDeck,
   loadDeck,
   clearSavedDeck,
@@ -68,6 +67,7 @@ import { validateCombo } from "./services/comboValidationService";
 import { calculateComboOpeningProbability } from "./services/comboProbabilityService";
 import DeckAnalysisWorkspace from "./components/DeckAnalysisWorkspace";
 import CollectionPage from "./components/collection/CollectionPage";
+import DeckManager from "./components/deck/DeckManager";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -134,16 +134,6 @@ function App() {
       addCardToDeck(currentDeck, card, selectedSection)
     );
   }
-  function handleRemoveFromDeck(cardId: number) {
-    setDeck((currentDeck) => 
-      removeCardFromDeck(currentDeck, cardId, selectedSection)
-    );
-  }
-  function handleRemoveAllFromDeck(cardId: number) {
-    setDeck((currentDeck) => 
-      removeAllCardsFromDeck(currentDeck, cardId, selectedSection)
-    );
-  }
   function handleRemoveCard(cardId: number) {
     removeFromCollection(cardId, 1);
     setCollection([...getCollection()]);
@@ -153,18 +143,6 @@ function App() {
       (item) => item.card.id === cardId
     );
     return collectionCard?.quantity ?? 0;
-  }
-  function handleClearDeck() {
-    const confirmed = window.confirm(
-      "Are you sure you want to clear this deck? This cannot be undone."
-    );
-
-    if (!confirmed) {
-      return;
-    }
-
-    clearSavedDeck();
-    setDeck(createEmptyDeck());
   }
   function isCardAddable(card: Card): boolean {
     if (!canAddCardToSection(card, selectedSection)) {
@@ -359,11 +337,41 @@ function App() {
       removeCardFromDeck(currentDeck, cardId, section)
     );
   }
+  function handleManagerAddCard(
+    card: Card,
+    section: DeckSection
+  ) {
+    setDeck((current) =>
+      addCardToDeck(current, card, section)
+    );
+  }
+  function handleManagerRemoveCard(
+    cardId: number,
+    section: DeckSection
+  ) {
+    setDeck((current) =>
+      removeCardFromDeck(current, cardId, section)
+    );
+  }
+  function handleManagerRemoveAll(
+    cardId: number,
+    section: DeckSection
+  ) {
+    setDeck((current) =>
+      removeAllCardsFromDeck(current, cardId, section)
+    );
+  }
+  function handleManagerRenameDeck(name: string) {
+    setDeck((current) => ({
+      ...current,
+      name,
+    }))
+  }
+  function handleManagerClearDeck() {
+    clearSavedDeck();
+    setDeck(createEmptyDeck());
+  }
 
-  const selectedDeckCards = deck[selectedSection];
-  const mainCount = getDeckCardCount(deck, "main");
-  const extraCount = getDeckCardCount(deck, "extra");
-  const sideCount = getDeckCardCount(deck, "side");
   const deckStatistics = getDeckStatistics(deck);
   const archetypeSummaries = getArchetypeSummaries(deck);
   const deckRelationshipAnalysis = analyzeDeckRelationships(deck, relationships);
@@ -441,8 +449,6 @@ function App() {
     "destroys",
     "banishes",
   ];
-  const selectedDifferentCardCount = selectedDeckCards.length;
-  const deckValidation = validateDeck(deck);
 
   const builderContent = (
   <div className="builder-page">
@@ -597,207 +603,17 @@ function App() {
   );
 
   const deckContent = (
-    <>
-        <section className="deck-section">
-          <div className="deck-header">
-            <div>
-              <label htmlFor="deck-name">
-                Deck Name
-              </label>
-
-              <input
-                id="deck-name"
-                type="text"
-                value={deck.name}
-                onChange={(event) => {
-                  setDeck((currentDeck) => ({
-                    ...currentDeck,
-                    name: event.target.value,
-                  }));
-                }}
-                onBlur={() => {
-                  setDeck((currentDeck) => ({
-                    ...currentDeck,
-                    name:
-                      currentDeck.name.trim() || "Untitled Deck",
-                  }));
-                }}
-                placeholder="Enter deck name"
-                maxLength={50}
-              />
-            </div>
-          </div>
-
-          <p className="deck-save-status">
-            Deck automatically saves to your browser.
-          </p>
-
-          <button onClick={handleClearDeck}>
-            Clear Deck
-          </button>
-
-          <div className="deck-tabs">
-            <button
-              onClick={() => setSelectedSection("main")}
-              className={
-                selectedSection === "main" ? "active" : ""
-              }
-            >
-              Main Deck ({mainCount})
-            </button>
-
-            <button
-              onClick={() => setSelectedSection("extra")}
-              className={
-                selectedSection === "extra" ? "active" : ""
-              }
-            >
-              Extra Deck ({extraCount})
-            </button>
-
-            <button
-              onClick={() => setSelectedSection("side")}
-              className={
-                selectedSection === "side" ? "active" : ""
-              }
-            >
-              Side Deck ({sideCount})
-            </button>
-          </div>
-
-          <div className="deck-status">
-
-            <div className="deck-stat">
-              <span>Main</span>
-              <strong
-                className={
-                  mainCount >= DECK_LIMITS.MAIN_MIN &&
-                  mainCount <= DECK_LIMITS.MAIN_MAX
-                    ? "count-valid"
-                    : "count-invalid"
-                }
-              >
-                {mainCount} / {DECK_LIMITS.MAIN_MIN}–
-                {DECK_LIMITS.MAIN_MAX}
-              </strong>
-            </div>
-
-            <div className="deck-stat">
-              <span>Extra</span>
-              <strong
-                className={
-                  extraCount <= DECK_LIMITS.EXTRA_MAX
-                    ? "count-valid"
-                    : "count-invalid"
-                }
-              >
-                {extraCount} / {DECK_LIMITS.EXTRA_MAX}
-              </strong>
-            </div>
-
-            <div className="deck-stat">
-              <span>Side</span>
-              <strong
-                className={
-                  sideCount <= DECK_LIMITS.SIDE_MAX
-                    ? "count-valid"
-                    : "count-invalid"
-                }
-              >
-                {sideCount} / {DECK_LIMITS.SIDE_MAX}
-              </strong>
-            </div>
-
-            <div className="deck-stat">
-              <span>Different Cards</span>
-              <strong>{selectedDifferentCardCount}</strong>
-            </div>
-
-          </div>
-          
-          <div
-            className={
-              deckValidation.isDeckValid
-                ? "deck-valid"
-                : "deck-invalid"
-            }
-          >
-            {deckValidation.isDeckValid
-              ? "Deck is valid"
-              : "Deck is not valid"}
-          </div>
-
-          {deckValidation.errors.length > 0 && (
-            <div className="deck-errors">
-              {deckValidation.errors.map((error, index) => (
-                <p key={index}>{error}</p>
-              ))}
-            </div>
-          )}
-
-          {selectedDeckCards.length === 0 ? (
-            <p className="empty-deck">
-              This deck section is empty.
-            </p>
-          ) : (
-            <div className="deck-list">
-              {selectedDeckCards.map((deckCard) => (
-                <div
-                  className="deck-card"
-                  key={deckCard.card.id}
-                >
-                  <img
-                    src={deckCard.card.imageUrlSmall}
-                    alt={deckCard.card.name}
-                  />
-
-                  <div className="deck-card-info">
-                    <h3>{deckCard.card.name}</h3>
-
-                    <p>{deckCard.card.type}</p>
-
-                  <div className="deck-card-controls">
-                    <button
-                      onClick={() =>
-                        handleRemoveFromDeck(
-                          deckCard.card.id
-                        )
-                      }
-                      aria-label={`Remove one ${deckCard.card.name}`}
-                    >
-                      −
-                    </button>
-
-                    <span>{deckCard.quantity}</span>
-
-                    <button
-                      onClick={() =>
-                        handleAddToDeck(deckCard.card)
-                      }
-                      disabled={!isCardAddable(deckCard.card)}
-                      aria-label={`Add one ${deckCard.card.name}`}
-                    >
-                      +
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        handleRemoveAllFromDeck(
-                          deckCard.card.id
-                        )
-                      }
-                    >
-                      Remove
-                    </button>
-                  </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
-    </>
+    <DeckManager
+      deck={deck}
+      collection={collection}
+      selectedSection={selectedSection}
+      onSelectSection={setSelectedSection}
+      onRenameDeck={handleManagerRenameDeck}
+      onAddCard={handleManagerAddCard}
+      onRemoveCard={handleManagerRemoveCard}
+      onRemoveAll={handleManagerRemoveAll}
+      onClearDeck={handleManagerClearDeck}
+    />
   );
 
   const analysisContent = (

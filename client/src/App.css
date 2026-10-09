@@ -1673,3 +1673,263 @@ header {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* ==========================================
+   Phase 3.13.4 — Deck Manager
+========================================== */
+
+.deck-manager {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.deck-manager-header,
+.deck-manager-info,
+.deck-manager-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.deck-manager-header h1 {
+  margin: 0 0 0.35rem;
+}
+
+.deck-manager-header p,
+.deck-manager-toolbar p {
+  margin: 0;
+  opacity: 0.7;
+}
+
+.deck-manager-builder-link {
+  padding: 0.7rem 1rem;
+  background: #3459a5;
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+}
+
+.deck-manager-info,
+.deck-manager-validation,
+.deck-manager-contents {
+  padding: 1rem;
+  border: 1px solid #394252;
+  border-radius: 12px;
+}
+
+.deck-manager-name {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 180px;
+}
+
+.deck-manager-name input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #394252;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.deck-manager-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.deck-manager-sections {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.deck-manager-section {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.6rem;
+  padding: 1rem;
+  border: 1px solid #394252;
+  border-radius: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.deck-manager-section.selected {
+  border-color: #638dea;
+  background: rgba(99, 141, 234, 0.12);
+}
+
+.deck-manager-section strong {
+  font-size: 1.4rem;
+}
+
+.deck-manager-section progress {
+  width: 100%;
+  height: 8px;
+  accent-color: #638dea;
+}
+
+.deck-manager-section small {
+  opacity: 0.7;
+}
+
+.deck-manager-validation h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+.deck-manager-validation .valid {
+  color: #5bc98b;
+}
+
+.deck-manager-validation .invalid {
+  color: #e5a35c;
+}
+
+.deck-manager-toolbar {
+  margin-bottom: 1rem;
+}
+
+.deck-manager-toolbar h2 {
+  margin: 0 0 0.3rem;
+}
+
+.deck-manager-view-toggle {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.deck-manager-view-toggle button.selected {
+  background: #3459a5;
+  color: white;
+}
+
+.deck-manager-grid--grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(165px, 1fr)
+  );
+  gap: 1rem;
+}
+
+.deck-manager-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #394252;
+  border-radius: 10px;
+  background: rgba(120, 140, 180, 0.06);
+}
+
+.deck-manager-card-art {
+  position: relative;
+  padding: 0.75rem;
+}
+
+.deck-manager-card-art img {
+  display: block;
+  width: 100%;
+  height: 205px;
+  object-fit: contain;
+}
+
+.deck-manager-card-quantity {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  background: #3459a5;
+  color: white;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.deck-manager-card-details {
+  padding: 0.75rem;
+}
+
+.deck-manager-card-details h3 {
+  margin: 0 0 0.4rem;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.deck-manager-card-details p {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.deck-manager-card-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.deck-manager-card-controls button {
+  min-width: 36px;
+  min-height: 36px;
+  cursor: pointer;
+}
+
+.deck-manager-remove-all {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+.deck-manager-grid--list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.deck-manager-card--list {
+  display: flex;
+  align-items: center;
+}
+
+.deck-manager-card--list .deck-manager-card-art {
+  width: 105px;
+  flex-shrink: 0;
+}
+
+.deck-manager-card--list .deck-manager-card-art img {
+  height: 115px;
+}
+
+.deck-manager-card--list .deck-manager-card-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.deck-manager-empty {
+  padding: 2.5rem 1rem;
+  text-align: center;
+  border: 1px dashed #394252;
+  border-radius: 10px;
+}
+
+@media (max-width: 640px) {
+  .deck-manager-sections {
+    grid-template-columns: 1fr;
+  }
+
+  .deck-manager-grid--grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .deck-manager-card-art img {
+    height: 165px;
+  }
+}
