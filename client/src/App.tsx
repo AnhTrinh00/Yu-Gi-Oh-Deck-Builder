@@ -553,6 +553,7 @@ function App() {
   const collectionContent = (
     <CollectionPage
       collection={collection}
+      deck={deck}
       onAddCard={handleAddCard}
       onRemoveCard={handleRemoveCard}
     />

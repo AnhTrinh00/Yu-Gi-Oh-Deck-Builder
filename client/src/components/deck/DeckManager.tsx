@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Card } from "../../models/Card";
 import type { CollectionCard } from "../../models/CollectionCard";
@@ -11,6 +11,8 @@ import {
 } from "../../services/deckService";
 import DeckCardTile from "./DeckCardTile";
 import { checkDeckAddition } from "../../services/deckAdditionPolicyService";
+import { validateDeckOwnership } from "../../services/deckOwnershipService";
+import DeckOwnershipWarnings from "./DeckOwnershipWarnings";
 
 interface DeckManagerProps {
   deck: Deck;
@@ -50,6 +52,11 @@ export default function DeckManager({
 
   const validation = validateDeck(deck);
   const selectedCards = deck[selectedSection];
+
+  const ownershipReport = useMemo(
+    () => validateDeckOwnership(deck, collection),
+    [deck, collection]
+  );
 
   function canAddAnother(card: Card): boolean {
     return checkDeckAddition(
@@ -146,6 +153,8 @@ export default function DeckManager({
           );
         })}
       </div>
+
+      <DeckOwnershipWarnings report={ownershipReport} />
 
       <section className="deck-manager-validation">
         <h2>Deck Validation</h2>

@@ -2076,3 +2076,63 @@ header {
     font-size: 1.5rem;
   }
 }
+
+
+/* ==========================================
+   Phase 3.14.2 — Ownership Synchronization
+========================================== */
+
+.deck-ownership-status {
+  padding: 1.25rem;
+  border: 1px solid #394252;
+  border-radius: 12px;
+}
+
+.deck-ownership-status h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+}
+
+.deck-ownership-status--valid {
+  border-left: 4px solid #5bc98b;
+}
+
+.deck-ownership-status--warning {
+  border-left: 4px solid #e5a35c;
+}
+
+.deck-ownership-issues {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin: 1rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.deck-ownership-issues li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.75rem;
+  border: 1px solid #394252;
+  border-radius: 8px;
+}
+
+.deck-ownership-issues li span {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.collection-card-usage {
+  margin: 0.4rem 0;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.collection-card-shortage {
+  margin: 0.4rem 0;
+  color: #e5a35c;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
