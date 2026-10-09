@@ -951,3 +951,465 @@ header {
 .analysis-health-issue.info {
   border-left: 4px solid #3b82f6;
 }
+
+
+/* Phase 3.13 - Application Layout */
+
+.app-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #303746;
+}
+
+.app-brand h1 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.app-brand p {
+  margin: 0.35rem 0 0;
+  opacity: 0.65;
+  font-size: 0.9rem;
+}
+
+.app-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.navigation-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.15rem;
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.navigation-link:hover {
+  background: rgba(128, 128, 128, 0.15);
+}
+
+.navigation-link.active {
+  background: #3459a5;
+  color: #fff;
+}
+
+.navigation-link:focus-visible {
+  outline: 2px solid #78a9ff;
+  outline-offset: 3px;
+}
+
+.app-main {
+  width: 100%;
+  min-width: 0;
+  padding: 1.5rem 2rem;
+}
+
+@media (max-width: 640px) {
+  .app-header,
+  .app-main {
+    padding: 1rem;
+  }
+
+  .app-navigation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .navigation-link {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+
+/* ========================================
+   Phase 3.13.1 - Multi-page Navigation
+======================================== */
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.app-brand h1 {
+  margin: 0;
+}
+
+.app-brand p {
+  margin: 0.3rem 0 0;
+  opacity: 0.7;
+}
+
+.app-navigation {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.navigation-link {
+  padding: 0.7rem 1rem;
+  border-radius: 0.6rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.2s ease;
+}
+
+.navigation-link:hover {
+  background: rgba(130, 130, 130, 0.18);
+}
+
+.navigation-link.active {
+  background: #3459a5;
+  color: white;
+}
+
+.navigation-link:focus-visible {
+  outline: 2px solid #78a9ff;
+  outline-offset: 2px;
+}
+
+/* Builder overview */
+
+.builder-overview {
+  margin-top: 1.5rem;
+}
+
+.builder-overview .deck-status {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1rem;
+}
+
+.builder-overview progress {
+  display: block;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+/* Responsive navigation */
+
+@media (max-width: 640px) {
+  .app-navigation {
+    width: 100%;
+    display: grid;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .navigation-link {
+    text-align: center;
+  }
+}
+
+
+/* ==========================================
+   Phase 3.13.2 — Builder Page
+========================================== */
+
+.builder-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.builder-page-heading h1 {
+  margin: 0 0 0.35rem;
+  font-size: 1.8rem;
+}
+
+.builder-page-heading p {
+  margin: 0;
+  opacity: 0.7;
+}
+
+.builder-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.builder-section-heading h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.builder-section-heading span {
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+
+/* Deck capacity summary */
+
+.builder-deck-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.builder-summary-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem;
+  border: 1px solid #394252;
+  border-radius: 12px;
+  background: rgba(120, 140, 180, 0.06);
+}
+
+.builder-summary-card > span {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.builder-summary-card strong {
+  font-size: 1.6rem;
+}
+
+.builder-summary-card strong small {
+  font-size: 0.85rem;
+  font-weight: normal;
+  opacity: 0.7;
+}
+
+.builder-summary-card progress {
+  width: 100%;
+  height: 8px;
+  accent-color: #638dea;
+}
+
+.builder-summary-card > small {
+  opacity: 0.7;
+}
+
+/* Main builder layout */
+
+.builder-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  align-items: start;
+  gap: 1.25rem;
+}
+
+.builder-search-panel {
+  min-width: 0;
+}
+
+.builder-search-panel .search-bar {
+  margin-bottom: 1rem;
+}
+
+.builder-target-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.builder-target-section select {
+  padding: 0.55rem;
+  border-radius: 6px;
+}
+
+.builder-card-grid {
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(155px, 1fr)
+  );
+  gap: 1rem;
+}
+
+.builder-card-grid .card-result {
+  min-width: 0;
+}
+
+.builder-card-grid .card-result img {
+  max-width: 100%;
+}
+
+.builder-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.builder-card-actions button {
+  width: 100%;
+}
+
+.builder-owned-count {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.builder-empty-state {
+  padding: 2rem;
+  text-align: center;
+  opacity: 0.65;
+}
+
+/* Deck preview sidebar */
+
+.deck-preview {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid #394252;
+  border-radius: 12px;
+  background: rgba(120, 140, 180, 0.05);
+}
+
+.deck-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.deck-preview-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.deck-preview-header p {
+  margin: 0.3rem 0 0;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  overflow-wrap: anywhere;
+}
+
+.deck-preview-section {
+  margin-bottom: 1.25rem;
+}
+
+.deck-preview-section-button {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.65rem;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.deck-preview-section-button.selected {
+  border-color: #638dea;
+  background: rgba(99, 141, 234, 0.12);
+}
+
+.deck-preview-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.deck-preview-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem;
+  border-radius: 6px;
+  background: rgba(128, 128, 128, 0.08);
+}
+
+.deck-preview-card img {
+  width: 35px;
+  height: 50px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.deck-preview-card-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.deck-preview-card-info span {
+  font-size: 0.8rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deck-preview-card-info small {
+  opacity: 0.65;
+}
+
+.deck-preview-remove {
+  flex-shrink: 0;
+  min-width: 32px;
+  min-height: 32px;
+  cursor: pointer;
+}
+
+.deck-preview-empty {
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+.deck-preview-manage {
+  display: block;
+  text-align: center;
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: #3459a5;
+  color: white;
+  text-decoration: none;
+}
+
+.deck-preview-collapsed {
+  padding: 0.5rem;
+}
+
+.deck-preview-collapsed button {
+  width: 100%;
+}
+
+/* Responsive layout */
+
+@media (max-width: 900px) {
+  .builder-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .deck-preview {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .builder-deck-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .builder-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .builder-page-heading h1 {
+    font-size: 1.5rem;
+  }
+}

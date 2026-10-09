@@ -98,7 +98,7 @@ export function executeGameAction(
     };
   }
 
-  let next: GameState | null = null;
+  let next: GameState | null;
 
   switch (action.type) {
     case "normal-summon": {

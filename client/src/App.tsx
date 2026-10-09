@@ -1,4 +1,8 @@
 import { useEffect, useState, useMemo } from "react";
+import { Routes, Route, Navigate } from "react-router-dom";
+import AppLayout from "./components/layouts/AppLayout";
+import DeckPreview from "./components/deck/DeckPreview";
+import DeckSummary from "./components/deck/DeckSummary";
 import type { Deck, DeckSection } from "./models/Deck";
 import {
   createEmptyDeck,
@@ -346,6 +350,14 @@ function App() {
     setEditingCombo(combo);
     setShowComboEditor(true);
   }
+  function handleRemovePreviewCard(
+    cardId: number,
+    section: DeckSection
+  ) {
+    setDeck((currentDeck) =>
+      removeCardFromDeck(currentDeck, cardId, section)
+    );
+  }
 
   const selectedDeckCards = deck[selectedSection];
   const mainCount = getDeckCardCount(deck, "main");
@@ -431,103 +443,152 @@ function App() {
   const selectedDifferentCardCount = selectedDeckCards.length;
   const deckValidation = validateDeck(deck);
 
-  return (
-    <div className="app">
-      <header>
-        <h1>Yu-Gi-Oh! Deck Builder</h1>
-      </header>
+  const builderContent = (
+  <div className="builder-page">
+    <div className="builder-page-heading">
+      <div>
+        <h1>Card Builder</h1>
+        <p>
+          Search cards, grow your collection, and build your deck.
+        </p>
+      </div>
+    </div>
 
-      <main>
-        <section>
+    <DeckSummary deck={deck} />
+
+    <div className="builder-layout">
+      <section className="builder-search-panel">
+        <div className="builder-section-heading">
           <h2>Search Cards</h2>
+          <span>{cards.length} results</span>
+        </div>
 
-          <div className="search-bar">
-            <input
-              type="text"
-              value={searchTerm}
-              placeholder="Search for a card..."
-              onChange={(event) =>
-                setSearchTerm(event.target.value)
+        <div className="search-bar">
+          <input
+            type="search"
+            value={searchTerm}
+            placeholder="Search for a Yu-Gi-Oh! card..."
+            aria-label="Search cards"
+            onChange={(event) =>
+              setSearchTerm(event.target.value)
+            }
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                void handleSearch();
               }
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  handleSearch();
-                }
-              }}
-            />
+            }}
+          />
 
-            <button onClick={handleSearch}>
-              Search
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => void handleSearch()}
+            disabled={loading}
+          >
+            {loading ? "Searching..." : "Search"}
+          </button>
+        </div>
 
-          {loading && <p>Searching...</p>}
+        <div className="builder-target-section">
+          <label htmlFor="builder-deck-section">
+            Add cards to:
+          </label>
 
-          {error && <p>{error}</p>}
+          <select
+            id="builder-deck-section"
+            value={selectedSection}
+            onChange={(event) =>
+              setSelectedSection(
+                event.target.value as DeckSection
+              )
+            }
+          >
+            <option value="main">Main Deck</option>
+            <option value="extra">Extra Deck</option>
+            <option value="side">Side Deck</option>
+          </select>
+        </div>
 
-          {!loading && !error && cards.length === 0 && (
-            <p>No cards found.</p>
+        {loading && (
+          <p role="status">Searching cards...</p>
+        )}
+
+        {error && (
+          <p role="alert" className="card-add-warning">
+            {error}
+          </p>
+        )}
+
+        {!loading &&
+          !error &&
+          cards.length === 0 && (
+            <p className="builder-empty-state">
+              Search for a card to get started.
+            </p>
           )}
 
-          <p>
-            Adding cards to:{" "}
-            <strong>
-              {selectedSection === "main" && "Main Deck"}
-              {selectedSection === "extra" && "Extra Deck"}
-              {selectedSection === "side" && "Side Deck"}
-            </strong>
-          </p>
+        <div className="card-grid builder-card-grid">
+          {cards.map((card) => {
+            const disabledReason =
+              getAddCardDisabledReason(card);
 
-          <div className="card-grid">
-            {cards.map((card) => (
-              <div className="card-result" key={card.id}>
+            return (
+              <article className="card-result" key={card.id}>
                 <img
                   src={card.imageUrl}
                   alt={card.name}
+                  loading="lazy"
                 />
 
                 <h3>{card.name}</h3>
-
                 <p>{card.type}</p>
 
-                <button onClick={() => handleAddCard(card)}>
-                  Add to Collection
-                </button>
+                <div className="builder-card-actions">
+                  <button
+                    type="button"
+                    onClick={() => handleAddCard(card)}
+                  >
+                    Add to Collection
+                  </button>
 
-                {(() => {
-                  const disabledReason =
-                    getAddCardDisabledReason(card);
+                  <button
+                    type="button"
+                    onClick={() => handleAddToDeck(card)}
+                    disabled={!isCardAddable(card)}
+                    title={disabledReason ?? undefined}
+                  >
+                    Add to Deck
+                  </button>
+                </div>
 
-                  return (
-                    <>
-                      <button
-                        onClick={() => handleAddToDeck(card)}
-                        disabled={!isCardAddable(card)}
-                      >
-                        {disabledReason
-                          ? "Cannot Add"
-                          : "Add to Deck"}
-                      </button>
-
-                      {disabledReason && (
-                        <p className="card-add-warning">
-                          {disabledReason}
-                        </p>
-                      )}
-                    </>
-                  );
-                })()}
+                {disabledReason && (
+                  <p className="card-add-warning">
+                    {disabledReason}
+                  </p>
+                )}
 
                 {getCardQuantity(card.id) > 0 && (
-                  <p>
+                  <p className="builder-owned-count">
                     Owned: {getCardQuantity(card.id)}
                   </p>
                 )}
-              </div>
-            ))}
-          </div>
-        </section>
+              </article>
+            );
+          })}
+        </div>
+      </section>
 
+      <DeckPreview
+        deck={deck}
+        selectedSection={selectedSection}
+        onSelectSection={setSelectedSection}
+        onRemoveCard={handleRemovePreviewCard}
+      />
+    </div>
+  </div>
+  );
+
+  const collectionContent = (
+    <>
         <section>
           <h2>My Collection</h2>
 
@@ -578,6 +639,11 @@ function App() {
           )}
         </section>
 
+    </>
+  );
+
+  const deckContent = (
+    <>
         <section className="deck-section">
           <div className="deck-header">
             <div>
@@ -693,6 +759,96 @@ function App() {
               <strong>{selectedDifferentCardCount}</strong>
             </div>
 
+          </div>
+          
+          <div
+            className={
+              deckValidation.isDeckValid
+                ? "deck-valid"
+                : "deck-invalid"
+            }
+          >
+            {deckValidation.isDeckValid
+              ? "Deck is valid"
+              : "Deck is not valid"}
+          </div>
+
+          {deckValidation.errors.length > 0 && (
+            <div className="deck-errors">
+              {deckValidation.errors.map((error, index) => (
+                <p key={index}>{error}</p>
+              ))}
+            </div>
+          )}
+
+          {selectedDeckCards.length === 0 ? (
+            <p className="empty-deck">
+              This deck section is empty.
+            </p>
+          ) : (
+            <div className="deck-list">
+              {selectedDeckCards.map((deckCard) => (
+                <div
+                  className="deck-card"
+                  key={deckCard.card.id}
+                >
+                  <img
+                    src={deckCard.card.imageUrlSmall}
+                    alt={deckCard.card.name}
+                  />
+
+                  <div className="deck-card-info">
+                    <h3>{deckCard.card.name}</h3>
+
+                    <p>{deckCard.card.type}</p>
+
+                  <div className="deck-card-controls">
+                    <button
+                      onClick={() =>
+                        handleRemoveFromDeck(
+                          deckCard.card.id
+                        )
+                      }
+                      aria-label={`Remove one ${deckCard.card.name}`}
+                    >
+                      −
+                    </button>
+
+                    <span>{deckCard.quantity}</span>
+
+                    <button
+                      onClick={() =>
+                        handleAddToDeck(deckCard.card)
+                      }
+                      disabled={!isCardAddable(deckCard.card)}
+                      aria-label={`Add one ${deckCard.card.name}`}
+                    >
+                      +
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        handleRemoveAllFromDeck(
+                          deckCard.card.id
+                        )
+                      }
+                    >
+                      Remove
+                    </button>
+                  </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+    </>
+  );
+
+  const analysisContent = (
+    <section className="analysis-page">
+      <h2>Deck Analysis</h2>
             <div className="deck-statistics">
               <h3>Deck Statistics</h3>
 
@@ -1298,92 +1454,19 @@ function App() {
               onSaveCombo={handleSaveCombo}
             />
 
-          </div>
-          
-          <div
-            className={
-              deckValidation.isDeckValid
-                ? "deck-valid"
-                : "deck-invalid"
-            }
-          >
-            {deckValidation.isDeckValid
-              ? "Deck is valid"
-              : "Deck is not valid"}
-          </div>
+    </section>
+  );
 
-          {deckValidation.errors.length > 0 && (
-            <div className="deck-errors">
-              {deckValidation.errors.map((error, index) => (
-                <p key={index}>{error}</p>
-              ))}
-            </div>
-          )}
-
-          {selectedDeckCards.length === 0 ? (
-            <p className="empty-deck">
-              This deck section is empty.
-            </p>
-          ) : (
-            <div className="deck-list">
-              {selectedDeckCards.map((deckCard) => (
-                <div
-                  className="deck-card"
-                  key={deckCard.card.id}
-                >
-                  <img
-                    src={deckCard.card.imageUrlSmall}
-                    alt={deckCard.card.name}
-                  />
-
-                  <div className="deck-card-info">
-                    <h3>{deckCard.card.name}</h3>
-
-                    <p>{deckCard.card.type}</p>
-
-                  <div className="deck-card-controls">
-                    <button
-                      onClick={() =>
-                        handleRemoveFromDeck(
-                          deckCard.card.id
-                        )
-                      }
-                      aria-label={`Remove one ${deckCard.card.name}`}
-                    >
-                      −
-                    </button>
-
-                    <span>{deckCard.quantity}</span>
-
-                    <button
-                      onClick={() =>
-                        handleAddToDeck(deckCard.card)
-                      }
-                      disabled={!isCardAddable(deckCard.card)}
-                      aria-label={`Add one ${deckCard.card.name}`}
-                    >
-                      +
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        handleRemoveAllFromDeck(
-                          deckCard.card.id
-                        )
-                      }
-                    >
-                      Remove
-                    </button>
-                  </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
-      </main>
-    </div>
+  return (
+    <AppLayout>
+      <Routes>
+        <Route path="/" element={builderContent} />
+        <Route path="/collection" element={collectionContent} />
+        <Route path="/deck" element={deckContent} />
+        <Route path="/analysis" element={analysisContent} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </AppLayout>
   );
 }
 
