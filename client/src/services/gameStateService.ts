@@ -1,5 +1,6 @@
 
 import type { Deck } from "../models/Deck";
+
 import type {
   GameAction,
   GameActionResult,
@@ -40,6 +41,12 @@ export function createGameState(deck: Deck): GameState {
   };
 }
 
+/**
+ * Deep-clones the mutable state structures used
+ * by both Phase 3 and Phase 4.
+ *
+ * Optional Phase 4 properties remain optional.
+ */
 export function cloneGameState(
   state: GameState
 ): GameState {
@@ -50,9 +57,60 @@ export function cloneGameState(
         [...state.zones[zone]],
       ])
     ) as GameState["zones"],
+
     normalSummonUsed: state.normalSummonUsed,
+
     usedEffects: [...state.usedEffects],
-    actionHistory: [...state.actionHistory],
+
+    actionHistory: state.actionHistory.map(
+      (action) => ({ ...action })
+    ),
+
+    ...(state.fieldState !== undefined && {
+      fieldState: {
+        monsterZones:
+          state.fieldState.monsterZones.map(
+            (slot) => (slot ? { ...slot } : null)
+          ),
+
+        spellTrapZones:
+          state.fieldState.spellTrapZones.map(
+            (slot) => (slot ? { ...slot } : null)
+          ),
+
+        fieldSpellZone:
+          state.fieldState.fieldSpellZone
+            ? { ...state.fieldState.fieldSpellZone }
+            : null,
+      },
+    }),
+
+    ...(state.turnState !== undefined && {
+      turnState: { ...state.turnState },
+    }),
+
+    ...(state.effectUsage !== undefined && {
+      effectUsage: state.effectUsage.map(
+        (usage) => ({ ...usage })
+      ),
+    }),
+
+    ...(state.restrictions !== undefined && {
+      restrictions: state.restrictions.map(
+        (restriction) => ({ ...restriction })
+      ),
+    }),
+
+    ...(state.cardInstances !== undefined && {
+      cardInstances: {
+        nextInstanceNumber:
+          state.cardInstances.nextInstanceNumber,
+
+        instances: state.cardInstances.instances.map(
+          (instance) => ({ ...instance })
+        ),
+      },
+    }),
   };
 }
 
@@ -66,6 +124,14 @@ export function countCardInZone(
   ).length;
 }
 
+/**
+ * Legacy card-ID-based movement.
+ *
+ * Tracked states must use instance-aware movement.
+ *
+ * Extended states without instance tracking may
+ * still perform non-field movements.
+ */
 export function moveCard(
   state: GameState,
   cardId: number,
@@ -73,6 +139,20 @@ export function moveCard(
   to: GameZone
 ): GameState | null {
   if (from === to) return null;
+
+  // Legacy card IDs cannot identify which physical
+  // instance should move.
+  if (state.cardInstances !== undefined) {
+    return null;
+  }
+
+  // Field movement would desynchronize fieldState.
+  if (
+    state.fieldState !== undefined &&
+    (from === "field" || to === "field")
+  ) {
+    return null;
+  }
 
   const index = state.zones[from].indexOf(cardId);
 
@@ -96,6 +176,36 @@ export function executeGameAction(
       state,
       error,
     };
+  }
+
+  // The legacy action format cannot uniquely
+  // identify a tracked physical card instance.
+  //
+  // Until a unified dispatcher is implemented,
+  // reject these actions instead of risking
+  // inconsistent instance state.
+  if (state.cardInstances !== undefined) {
+    return failure(
+      "Tracked states require instance-aware actions."
+    );
+  }
+
+  // Actions touching the field must not bypass
+  // the extended field-slot representation.
+  if (state.fieldState !== undefined) {
+    const touchesField =
+      action.type === "normal-summon" ||
+      action.type === "special-summon" ||
+      action.type === "activate-effect" ||
+      (action.type === "move" &&
+        (action.from === "field" ||
+          action.to === "field"));
+
+    if (touchesField) {
+      return failure(
+        "Extended field states require field-aware actions."
+      );
+    }
   }
 
   let next: GameState | null;
