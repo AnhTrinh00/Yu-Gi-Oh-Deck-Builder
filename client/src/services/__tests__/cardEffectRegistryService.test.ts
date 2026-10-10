@@ -218,4 +218,55 @@ describe("CardEffectRegistry", () => {
     expect(registry.getEffectCount()).toBe(0);
     expect(registry.getRegisteredCardCount()).toBe(0);
   });
+  
+  it("preserves the original effect when replacement is invalid", () => {
+    const registry = new CardEffectRegistry();
+
+    registry.registerEffect(createEffect("effect-1", 100));
+
+    expect(() =>
+      registry.replaceEffect({
+        ...createEffect("effect-1", 200),
+        sourceCardId: -1,
+      })
+    ).toThrow();
+
+    expect(registry.getEffect("effect-1")?.sourceCardId)
+      .toBe(100);
+
+    expect(registry.getEffectsForCard(100))
+      .toHaveLength(1);
+  });
+
+  it("updates card indexes after replacing an effect", () => {
+    const registry = new CardEffectRegistry();
+
+    registry.registerEffect(createEffect("effect-1", 100));
+
+    registry.replaceEffect(createEffect("effect-1", 200));
+
+    expect(registry.getEffectsForCard(100)).toEqual([]);
+    expect(registry.getEffectsForCard(200)).toHaveLength(1);
+    expect(registry.getRegisteredCardCount()).toBe(1);
+  });
+
+  it("does not expose mutable internal effect objects", () => {
+    const registry = new CardEffectRegistry();
+
+    registry.registerEffect(createEffect("effect-1"));
+
+    const retrieved = registry.getEffect("effect-1");
+
+    if (!retrieved) {
+      throw new Error("Expected registered effect.");
+    }
+
+    retrieved.label = "Changed outside registry";
+    retrieved.steps.push({ type: "draw", count: 3 });
+
+    const original = registry.getEffect("effect-1");
+
+    expect(original?.label).toBe("Test effect effect-1");
+    expect(original?.steps).toHaveLength(1);
+  });
 });

@@ -1,21 +1,43 @@
+
 import "dotenv/config";
-import express from "express";
-import cors from "cors";
 
-const app = express();
+import { createApp } from "./app.js";
 
-const PORT = process.env.PORT || 3000;
+import {
+  GeminiComboProvider,
+} from "./services/llmService.js";
 
-app.use(cors());
-app.use(express.json());
+const PORT = Number(process.env.PORT ?? 3000);
 
-app.get("/api/health", (_req, res) => {
-    res.json({
-        status: "ok",
-        message: "Yu-Gi-Oh Deck Builder backend is running"
-    });
+const apiKey = process.env.GEMINI_API_KEY;
+const model =
+  process.env.GEMINI_MODEL ?? "gemini-3.5-flash-lite";
+
+if (!apiKey) {
+  throw new Error(
+    "GEMINI_API_KEY is missing from server/.env"
+  );
+}
+
+if (
+  !Number.isSafeInteger(PORT) ||
+  PORT < 1 ||
+  PORT > 65535
+) {
+  throw new Error("Invalid PORT.");
+}
+
+const provider = new GeminiComboProvider(
+  apiKey,
+  model
+);
+
+const app = createApp(provider);
+
+app.listen(PORT, "127.0.0.1", () => {
+  console.log(
+    `Server running at http://localhost:${PORT}`
+  );
+
+  console.log(`AI model: ${model}`);
 });
-
-app.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`)
-})

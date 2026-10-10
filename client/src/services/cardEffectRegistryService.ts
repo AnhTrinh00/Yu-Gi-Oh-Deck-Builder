@@ -10,6 +10,8 @@ import {
   type EffectValidationResult,
 } from "./cardEffectValidationService";
 
+import { cardEffectSchema } from "./cardEffectSchemaService";
+
 export interface RegisteredEffectValidation {
   found: boolean;
   result: EffectValidationResult | null;
@@ -35,6 +37,7 @@ export class CardEffectRegistry {
   private validateDefinition(
     effect: CardEffectDefinition
   ): void {
+    cardEffectSchema.parse(effect);
     if (!effect.id.trim()) {
       throw new Error("Effect ID cannot be empty.");
     }
@@ -152,21 +155,29 @@ export class CardEffectRegistry {
     return this.effects.has(effectId);
   }
 
-  replaceEffect(
-    effect: CardEffectDefinition
-  ): void {
+  replaceEffect(effect: CardEffectDefinition): void {
     this.validateDefinition(effect);
 
-    if (!this.effects.has(effect.id)) {
+    const existing = this.effects.get(effect.id);
+
+    if (!existing) {
       throw new Error(
         `Effect "${effect.id}" does not exist.`
       );
     }
 
-    this.removeEffect(effect.id);
-    this.registerEffect(effect);
-  }
+    const replacement = this.cloneEffect(effect);
 
+    this.removeEffect(effect.id);
+
+    try {
+      this.registerEffect(replacement);
+    } catch (error) {
+      this.registerEffect(existing);
+      throw error;
+    }
+  }
+  
   removeEffect(effectId: string): boolean {
     const existing = this.effects.get(effectId);
 

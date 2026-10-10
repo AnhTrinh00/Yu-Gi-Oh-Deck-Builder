@@ -63,6 +63,7 @@ import DeckManager from "./components/deck/DeckManager";
 import AnalysisTabs from "./components/analysis/AnalysisTabs";
 import AnalysisOverview from "./components/analysis/AnalysisOverview";
 import { checkDeckAddition } from "./services/deckAdditionPolicyService";
+import ComboExplorer from "./components/combo/ComboExplorer";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -1042,6 +1043,8 @@ function App() {
 
   const combosContent = (
     <>
+      <ComboExplorer deck={deck} />
+      
       <section className="combo-section">
         <h2>Combo Foundations</h2>
 
