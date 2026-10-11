@@ -24,6 +24,8 @@ export interface Card {
         ocg?: BanlistStatus;
         goat?: BanlistStatus;
     };
+
+    linkval?: number;
 }
 
 export type BanlistStatus =

@@ -31,6 +31,8 @@ export interface YuGiOhCard {
         ban_ocg?: "Forbidden" | "Limited" | "Semi-Limited";
         ban_goat?: "Forbidden" | "Limited" | "Semi-Limited";
     };
+
+    linkval?: number;
 }
 
 interface CardApiResponse {
@@ -64,6 +66,8 @@ function mapApiCardToCard(apiCard: YuGiOhCard): Card {
         ocg: apiCard.banlist_info?.ban_ocg,
         goat: apiCard.banlist_info?.ban_goat,
     },
+
+    linkval: apiCard.linkval,
   };
 }
 

@@ -1,4 +1,3 @@
-
 export type GameZone =
   | "hand"
   | "deck"
@@ -6,6 +5,8 @@ export type GameZone =
   | "field"
   | "graveyard"
   | "banished";
+
+export type CardInstanceZone = GameZone | "overlay";
 
 export type GameActionType =
   | "normal-summon"
@@ -93,7 +94,7 @@ export interface GameRestriction {
 export interface CardInstance {
   instanceId: string;
   cardId: number;
-  zone: GameZone;
+  zone: CardInstanceZone;
 }
 
 /**
@@ -123,6 +124,8 @@ export interface GameState {
   restrictions?: GameRestriction[];
 
   cardInstances?: CardInstanceState;
+
+  xyzMaterials?: XyzMaterialAttachment[];
 }
 
 export interface GameActionResult {
@@ -139,4 +142,9 @@ export interface ComboSimulationResult {
   totalSteps: number;
   errors: string[];
   warnings: string[];
+}
+
+export interface XyzMaterialAttachment {
+  xyzInstanceId: string;
+  materialInstanceIds: string[];
 }

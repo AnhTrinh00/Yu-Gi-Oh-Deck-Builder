@@ -78,12 +78,50 @@ export const cardEffectSchema = z.object({
   conditions: z.array(conditionSchema).max(30),
   costs: z.array(costSchema).max(30),
   steps: z.array(stepSchema).min(1).max(30),
+  targetStepIndexes: z.array(
+    z.number().int().nonnegative()
+  ).max(30).optional(),
   oncePerTurnKey: z.string().trim().min(1).optional(),
   verification: z.enum([
     "manually-verified",
     "experimental",
   ]),
-}).strict();
+}).strict().superRefine((effect, ctx) => {
+  const indexes = effect.targetStepIndexes ?? [];
+  const seen = new Set<number>();
+
+  for (const index of indexes) {
+    if (seen.has(index)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["targetStepIndexes"],
+        message: `Duplicate target step index ${index}.`,
+      });
+    }
+
+    seen.add(index);
+
+    const step = effect.steps[index];
+
+    if (!step) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["targetStepIndexes"],
+        message: `Target step ${index} does not exist.`,
+      });
+
+      continue;
+    }
+
+    if (step.type === "draw") {
+      ctx.addIssue({
+        code: "custom",
+        path: ["TargetStepIndexes"],
+        message: "Draw steps cannot target cards.",
+      });
+    }
+  }
+});
 
 export const cardEffectListSchema =
   z.array(cardEffectSchema).max(500);

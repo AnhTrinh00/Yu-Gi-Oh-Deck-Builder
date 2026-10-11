@@ -1,4 +1,3 @@
-
 import type { Deck } from "../models/Deck";
 
 import type {
@@ -49,6 +48,7 @@ export function createExtendedGameState(
     turnState: createInitialTurnState(),
     effectUsage: [],
     restrictions: [],
+    xyzMaterials: [],
   };
 }
 
@@ -73,9 +73,11 @@ export function normalizeGameState(
   state: GameState
 ): GameState {
   const cloned = cloneGameState(state);
+  const next = cloneGameState(state);
 
   return {
     ...cloned,
+    ...next,
 
     fieldState: state.fieldState
       ? {
@@ -112,6 +114,13 @@ export function normalizeGameState(
     cardInstances: state.cardInstances
       ? cloneCardInstanceState(state.cardInstances)
       : undefined,
+
+    xyzMaterials: state.xyzMaterials?.map(attachment => ({
+      xyzInstanceId: attachment.xyzInstanceId,
+      materialInstanceIds: [
+        ...attachment.materialInstanceIds,
+      ],
+    })) ?? [],
   };
 }
 

@@ -133,7 +133,17 @@ export function placeCardInstanceOnField(
   }
 
   if (instance.zone === "field") {
-    return failure(state, "Instance is already on the field.");
+    return failure(
+      state,
+      "Instance is already on the field."
+    );
+  }
+
+  if (instance.zone === "overlay") {
+    return failure(
+      state,
+      "Attached Xyz Materials cannot be placed directly on the field."
+    );
   }
 
   const result = placeCardOnField(state, {

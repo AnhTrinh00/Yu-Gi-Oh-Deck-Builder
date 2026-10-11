@@ -2316,3 +2316,132 @@ header {
   overflow-wrap: anywhere;
   padding: 0.75rem;
 }
+
+/* Phase 4.11 — Effect Template Library */
+
+.combo-template-manager {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color, #666);
+  border-radius: 8px;
+}
+
+.combo-template-manager h5 {
+  margin-top: 0;
+}
+
+.combo-template-manager select,
+.combo-template-manager input,
+.combo-template-manager textarea {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.combo-template-manager textarea {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0;
+  font-family: monospace;
+}
+
+.combo-template-list {
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.combo-template-manager .combo-effect-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/* Phase 4.12 — Chain Simulator */
+
+.combo-chain-simulator {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.combo-chain-hand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-height: 240px;
+  overflow-y: auto;
+}
+
+.combo-chain-selected {
+  border: 2px solid #3b82f6;
+}
+
+.combo-chain-zones {
+  display: grid;
+  grid-template-columns:
+    repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.combo-chain-zones > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #666);
+  border-radius: 6px;
+  min-width: 0;
+}
+
+.combo-chain-zones small {
+  overflow-wrap: anywhere;
+}
+
+.combo-chain-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-left: 1.5rem;
+}
+
+.combo-chain-links li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #666);
+  border-radius: 6px;
+}
+
+/* Phase 4.12 — Chain Selection Editor */
+
+.combo-chain-selection-editor {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid var(--border-color, #666);
+  border-radius: 8px;
+}
+
+.combo-chain-selection-row {
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  border: 1px solid var(--border-color, #666);
+  border-radius: 6px;
+}
+
+.combo-chain-selection-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.combo-chain-selection-row select {
+  max-width: 100%;
+}
+
+.combo-chain-selection-row small {
+  display: block;
+  margin-top: 0.5rem;
+  opacity: 0.8;
+}

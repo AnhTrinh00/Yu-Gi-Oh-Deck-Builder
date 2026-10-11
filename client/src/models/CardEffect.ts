@@ -36,6 +36,7 @@ export interface CardEffectDefinition {
     costs: EffectCost[];
     steps: EffectStep[];
 
+    targetStepIndexes?: number[];
     oncePerTurnKey?: string;
 
     verification: "manually-verified" | "experimental";

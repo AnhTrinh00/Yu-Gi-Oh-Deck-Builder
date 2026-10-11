@@ -15,6 +15,7 @@ import { parseCardEffects } from "../../services/cardEffectSchemaService";
 
 import { ComboAIAnalysis } from "./ComboAIAnalysis";
 import { CardEffectBuilder } from "./CardEffectBuilder";
+import { ChainSimulator } from "./ChainSimulator";
 
 interface Props {
   deck: Deck;
@@ -795,6 +796,10 @@ export default function ComboExplorer({ deck }: Props) {
             />
           </section>
         )}
+
+      <section className="combo-explorer-panel">
+        <ChainSimulator deck={deck} />
+      </section>
     </section>
   );
 }

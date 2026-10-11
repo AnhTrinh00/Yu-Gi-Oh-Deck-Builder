@@ -1,4 +1,3 @@
-
 import type {
   CardInstance,
   CardInstanceState,
@@ -199,7 +198,10 @@ export function validateCardInstanceSync(
       errors.push("Invalid instance card ID.");
     }
 
-    if (!ZONES.includes(instance.zone)) {
+    if (
+      instance.zone !== "overlay" &&
+      !ZONES.includes(instance.zone)
+    ) {
       errors.push("Invalid instance zone.");
     }
   }
@@ -242,6 +244,59 @@ export function validateCardInstanceSync(
     if (!match || match.cardId !== slot.cardId) {
       errors.push(
         `Field slot mismatch: ${slot.instanceId}`
+      );
+    }
+  }
+
+  const attachments = state.xyzMaterials ?? [];
+  const attachedIds = new Set<string>();
+
+  for (const attachment of attachments) {
+    const xyz = registry.instances.find(
+      instance =>
+        instance.instanceId === attachment.xyzInstanceId
+    );
+
+    if (!xyz || xyz.zone !== "field") {
+      errors.push(
+        `Xyz host ${attachment.xyzInstanceId} is not on the field.`
+      );
+    }
+
+    for (const materialId of attachment.materialInstanceIds) {
+      if (attachedIds.has(materialId)) {
+        errors.push(
+          `Material ${materialId} is attached more than once.`
+        );
+      }
+
+      attachedIds.add(materialId);
+
+      const material = registry.instances.find(
+        instance => instance.instanceId === materialId
+      );
+
+      if (!material || material.zone !== "overlay") {
+        errors.push(
+          `Attached material ${materialId} is not in overlay.`
+        );
+      }
+
+      if (materialId === attachment.xyzInstanceId) {
+        errors.push(
+          "An Xyz Monster cannot attach itself."
+        );
+      }
+    }
+  }
+
+  for (const instance of registry.instances) {
+    if (
+      instance.zone === "overlay" &&
+      !attachedIds.has(instance.instanceId)
+    ) {
+      errors.push(
+        `Overlay instance ${instance.instanceId} has no Xyz host.`
       );
     }
   }
@@ -310,6 +365,13 @@ export function moveCardInstance(
     (item) => item.instanceId === instanceId
   );
 
+  if (instance?.zone === "overlay") {
+    return failure(
+      state,
+      "Attached Xyz Materials must be moved through xyzMaterialService."
+    );
+  }
+
   if (!instance) {
     return failure(
       state,
@@ -338,6 +400,12 @@ export function moveCardInstance(
   )!;
 
   const from = tracked.zone;
+  if (from === "overlay") {
+    return failure(
+      state,
+      "Cannot move an attached Xyz Material directly."
+    );
+  }
   const source = next.zones[from];
 
   const index = source.indexOf(tracked.cardId);
@@ -346,6 +414,13 @@ export function moveCardInstance(
     return failure(
       state,
       "Instance card is missing from its source zone."
+    );
+  }
+
+  if (tracked.zone === "overlay") {
+    return failure(
+      state,
+      "Attached Xyz Materials must be moved through xyzMaterialService."
     );
   }
 

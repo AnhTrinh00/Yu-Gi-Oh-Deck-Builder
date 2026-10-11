@@ -54,7 +54,7 @@ export function cloneGameState(
     zones: Object.fromEntries(
       zones.map((zone) => [
         zone,
-        [...state.zones[zone]],
+        [...(state.zones[zone] ?? [])],
       ])
     ) as GameState["zones"],
 
@@ -110,6 +110,15 @@ export function cloneGameState(
           (instance) => ({ ...instance })
         ),
       },
+    }),
+
+    ...(state.xyzMaterials !== undefined && {
+      xyzMaterials: state.xyzMaterials.map(attachment => ({
+        xyzInstanceId: attachment.xyzInstanceId,
+        materialInstanceIds: [
+          ...attachment.materialInstanceIds,
+        ],
+      })),
     }),
   };
 }

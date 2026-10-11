@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import type {
   CardEffectDefinition,
   EffectCondition,
@@ -7,7 +6,6 @@ import type {
   EffectStep,
 } from "../../models/CardEffect";
 import type { GameZone } from "../../models/GameState";
-
 import {
   CONDITION_TYPES,
   GAME_ZONES,
@@ -18,6 +16,7 @@ import {
   newStep,
   validateBuiltEffect,
 } from "../../services/cardEffectBuilderService";
+import { EffectTemplateManager } from "./EffectTemplateManager";
 
 interface CardChoice {
   id: number;
@@ -56,6 +55,26 @@ export function CardEffectBuilder({
       ...previous,
       ...patch,
     }));
+    setError(null);
+  }
+
+  function applyTemplate(
+    templateEffect: CardEffectDefinition
+  ): void {
+    setEffect(previous => ({
+      ...structuredClone(templateEffect),
+
+      // Preserve the identity of an existing effect when editing it.
+      if: initialEffect
+        ? previous.id
+        : templateEffect.id,
+      
+      sourceCardId: previous.sourceCardId,
+
+      // A template never automatically verifies an effect.
+      verification: "experimental",
+    }));
+
     setError(null);
   }
 
@@ -155,6 +174,12 @@ export function CardEffectBuilder({
         Definitions are simplified simulation rules,
         not automatically verified Yu-Gi-Oh! card rulings.
       </p>
+
+      <EffectTemplateManager
+        sourceCardId={effect.sourceCardId}
+        currentEffect={effect}
+        onApply={applyTemplate}
+      />
 
       <div className="combo-builder-fields">
         <label>
