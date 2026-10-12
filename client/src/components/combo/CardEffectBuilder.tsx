@@ -389,25 +389,82 @@ export function CardEffectBuilder({
 
       {effect.costs.map((cost, index) => (
         <div className="combo-builder-row" key={index}>
-          <span>Move card</span>
+          <label>
+            Cost type
+            <select
+              aria-label={`Cost ${index + 1} type`}
+              value={cost.type}
+              onChange={event => {
+                if (
+                  event.target.value ===
+                  "detach-xyz-material"
+                ) {
+                  setCost(index, {
+                    type: "detach-xyz-material",
+                    xyzInstanceId: "",
+                    count: 1,
+                  });
+                } else {
+                  setCost(index, newCost());
+                }
+              }}
+            >
+              <option value="move-card">
+                Move card
+              </option>
+              <option value="detach-xyz-material">
+                Detach Xyz Material
+              </option>
+            </select>
+          </label>
 
-          {cardIdInput(cost.cardId, cardId =>
-            setCost(index, { ...cost, cardId })
+          {cost.type === "move-card" ? (
+            <>
+              {cardIdInput(cost.cardId, cardId =>
+                setCost(index, {
+                  ...cost,
+                  cardId,
+                })
+              )}
+
+              <label>
+                From
+                {zones(cost.from, from =>
+                  setCost(index, {
+                    ...cost,
+                    from,
+                  })
+                )}
+              </label>
+
+              <label>
+                To
+                {zones(cost.to, to =>
+                  setCost(index, {
+                    ...cost,
+                    to,
+                  })
+                )}
+              </label>
+            </>
+          ) : (
+            <>
+              <p>
+                The activating Xyz Monster will be selected
+                when the effect is activated.
+              </p>
+
+              <label>
+                Materials to detach
+                <input
+                  type="number"
+                  value={cost.count}
+                  disabled
+                  readOnly
+                />
+              </label>
+            </>
           )}
-
-          <label>
-            From
-            {zones(cost.from, from =>
-              setCost(index, { ...cost, from })
-            )}
-          </label>
-
-          <label>
-            To
-            {zones(cost.to, to =>
-              setCost(index, { ...cost, to })
-            )}
-          </label>
 
           <button
             type="button"

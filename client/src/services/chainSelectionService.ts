@@ -21,7 +21,7 @@ import type {
 export interface ChainSelectionOption {
   instanceId: string;
   cardId: number;
-  zone: GameZone;
+  zone: GameZone | "overlay";
 }
 
 export interface ChainSelectionRequirement {
@@ -29,7 +29,7 @@ export interface ChainSelectionRequirement {
   stepIndex: number;
   label: string;
   cardId: number;
-  zone: GameZone;
+  zone: GameZone | "overlay";
   kind: CardSelectionKind;
   options: ChainSelectionOption[];
 }
@@ -110,6 +110,49 @@ export function getChainSelectionRequirements(
   // ------------------------------------------
 
   effect.costs.forEach((cost, stepIndex) => {
+    if (cost.type === "detach-xyz-material") {
+      const host = instances.find(
+        instance => instance.instanceId === cost.xyzInstanceId
+      );
+
+      const attachment =
+        host?.zone === "field"
+          ? state.xyzMaterials?.find(
+              entry => entry.xyzInstanceId === cost.xyzInstanceId
+            )
+          : undefined;
+
+      const options: ChainSelectionOption[] =
+        (attachment?.materialInstanceIds ?? [])
+          .map(id =>
+            instances.find(
+              instance => instance.instanceId === id
+            )
+          )
+          .filter(
+            (instance): instance is CardInstance =>
+              instance !== undefined &&
+              instance.zone === "overlay"
+          )
+          .map(instance => ({
+            instanceId: instance.instanceId,
+            cardId: instance.cardId,
+            zone: "overlay" as const,
+          }));
+
+      requirements.push({
+        category: "cost",
+        stepIndex,
+        label: `Cost ${stepIndex + 1}: detach 1 Xyz Material`,
+        cardId: options[0]?.cardId ?? 0,
+        zone: "overlay",
+        kind: "cost",
+        options,
+      });
+
+      return;
+    }
+
     requirements.push({
       category: "cost",
       stepIndex,
@@ -174,6 +217,7 @@ export function createChainSelections(
 ): EffectExecutionSelections {
   const costSelections: CardInstanceSelection[] = [];
   const resolutionSelections: CardInstanceSelection[] = [];
+  const selectedCostInstances = new Set<string>();
 
   for (const requirement of requirements) {
     const key =
@@ -203,6 +247,13 @@ export function createChainSelections(
     };
 
     if (requirement.category === "cost") {
+      if (selectedCostInstances.has(instanceId)) {
+        throw new Error(
+          `Card instance ${instanceId} was selected for multiple costs.`
+        );
+      }
+
+      selectedCostInstances.add(instanceId);
       costSelections.push(selection);
     } else {
       resolutionSelections.push(selection);

@@ -47,6 +47,18 @@ import type {
   GameZone,
 } from "../models/GameState";
 
+import {
+  getAttachedXyzMaterials,
+} from "./xyzMaterialService";
+
+import {
+  payXyzDetachCost,
+} from "./xyzDetachCostService";
+
+import {
+  bindCardEffectSource,
+} from "./cardEffectSourceBindingService";
+
 function copyState(state: GameState): GameState {
   return normalizeGameState(state);
 }
@@ -398,28 +410,85 @@ export function activateChainEffect(
     return fail(chain, selectionErrors.join(" "));
   }
 
-  const costs = effect.costs.map(costAsStep);
-
-  if (costs.some(step => step === null)) {
-    return fail(
-      chain,
-      "Unsupported effect activation cost."
-    );
-  }
-
   let current = copyState(chain.gameState);
 
-  for (let index = 0; index < costs.length; index++) {
-    const step = costs[index];
-
-    if (!step) {
-      return fail(chain, "Unsupported cost.");
-    }
+  for (
+    let index = 0;
+    index < effect.costs.length;
+    index++
+  ) {
+    const cost = effect.costs[index];
 
     const selected = getSelectionForStep(
       { selections: selections.costSelections },
       index
     );
+
+    if (cost.type === "detach-xyz-material") {
+      if (cost.count !== 1) {
+        return fail(
+          chain,
+          "Only one material per detachment cost is supported."
+        );
+      }
+
+      const attached = getAttachedXyzMaterials(
+        current,
+        cost.xyzInstanceId
+      );
+
+      // Explicit selections take priority. Without
+      // a selection, use the first attached material.
+      const materialInstanceId =
+        selected?.instanceId ?? attached[0];
+
+      if (!materialInstanceId) {
+        return fail(
+          chain,
+          "No Xyz Material is available to detach."
+        );
+      }
+
+      if (
+        selected &&
+        (
+          selected.kind !== "cost" ||
+          (
+            selected.expectedZone !== undefined &&
+            selected.expectedZone !== "overlay"
+          )
+        )
+      ) {
+        return fail(
+          chain,
+          "Invalid Xyz Material cost selection."
+        );
+      }
+
+      const result = payXyzDetachCost(current, {
+        xyzInstanceId: cost.xyzInstanceId,
+        materialInstanceId,
+      });
+
+      if (!result.success) {
+        return fail(
+          chain,
+          result.error ?? "Xyz detachment cost failed."
+        );
+      }
+
+      current = result.state;
+      continue;
+    }
+
+    const step = costAsStep(cost);
+
+    if (!step) {
+      return fail(
+        chain,
+        "Unsupported effect activation cost."
+      );
+    }
 
     const movementSelection = selected
       ? { ...selected, kind: "choose" as const }
@@ -485,6 +554,43 @@ export function activateChainEffect(
     errors: [],
     warnings: validation.warnings,
   };
+}
+
+/**
+ * Activate a card effect using a specific
+ * physical source instance.
+ *
+ * Xyz detachment costs are bound to this
+ * instance before activation validation
+ * and cost payment.
+ */
+export function activateChainEffectForInstance(
+  chain: EffectChainState,
+  effect: CardEffectDefinition,
+  sourceInstanceId: string,
+  selections: EffectExecutionSelections = {
+    costSelections: [],
+    resolutionSelections: [],
+  }
+): EffectChainResult {
+  const binding = bindCardEffectSource(
+    chain.gameState,
+    effect,
+    sourceInstanceId
+  );
+
+  if (!binding.success || !binding.effect) {
+    return fail(
+      chain,
+      binding.error ?? "Source binding failed."
+    );
+  }
+
+  return activateChainEffect(
+    chain,
+    binding.effect,
+    selections
+  );
 }
 
 /**

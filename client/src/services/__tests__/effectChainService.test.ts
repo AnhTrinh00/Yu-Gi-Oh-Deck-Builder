@@ -26,7 +26,17 @@ import {
   activateChainEffect,
   negateChainLink,
   resolveEffectChain,
+  activateChainEffectForInstance
 } from "../effectChainService";
+
+import {
+  placeCardInstanceOnField,
+} from "../fieldInstanceService";
+
+import {
+  attachXyzMaterials,
+  getAttachedXyzMaterials,
+} from "../xyzMaterialService";
 
 function createState(): GameState {
   const legacy: GameState = {
@@ -67,6 +77,104 @@ function makeEffect(
     steps: [{ type: "draw", count: 1 }],
     verification: "experimental",
     ...overrides,
+  };
+}
+
+function createXyzChainFixture() {
+  const initial: GameState = {
+    zones: {
+      hand: [100, 200],
+      deck: [300, 400, 500],
+      extra: [900],
+      field: [],
+      graveyard: [],
+      banished: [],
+    },
+    normalSummonUsed: false,
+    usedEffects: [],
+    actionHistory: [],
+  };
+
+  const initialized = initializeCardInstances(
+    normalizeGameState(initial)
+  );
+
+  if (!initialized.success) {
+    throw new Error(
+      initialized.error ?? "Initialization failed."
+    );
+  }
+
+  let state = initialized.state;
+
+  function findId(cardId: number): string {
+    const instance = state.cardInstances?.instances.find(
+      item => item.cardId === cardId
+    );
+
+    if (!instance) {
+      throw new Error(`Missing card ${cardId}.`);
+    }
+
+    return instance.instanceId;
+  }
+
+  const hostId = findId(900);
+  const materialIds = [findId(100), findId(200)];
+
+  for (const [index, id] of [
+    hostId,
+    ...materialIds,
+  ].entries()) {
+    const placed = placeCardInstanceOnField(state, {
+      instanceId: id,
+      zoneType: "monster",
+      zoneIndex: index,
+      position: "face-up-attack",
+    });
+
+    if (!placed.success) {
+      throw new Error(
+        placed.error ?? "Monster placement failed."
+      );
+    }
+
+    state = placed.state;
+  }
+
+  const attached = attachXyzMaterials(
+    state,
+    hostId,
+    materialIds
+  );
+
+  if (!attached.success) {
+    throw new Error(
+      attached.error ?? "Xyz attachment failed."
+    );
+  }
+
+  state = attached.state;
+
+  const effect = makeEffect({
+    id: "xyz-detach-effect",
+    sourceCardId: 900,
+    activationZone: "field",
+    costs: [
+      {
+        type: "detach-xyz-material",
+        xyzInstanceId: hostId,
+        count: 1,
+      },
+    ],
+    steps: [{ type: "draw", count: 1 }],
+  });
+
+  return {
+    state,
+    hostId,
+    materialIds,
+    effect,
   };
 }
 
@@ -372,5 +480,288 @@ describe("effectChainService", () => {
     expect(
       resolved.chain.gameState.zones.deck
     ).toEqual([400, 500]);
+  });
+
+  it("pays an Xyz detachment cost during activation", () => {
+    const {
+      state,
+      hostId,
+      materialIds,
+      effect,
+    } = createXyzChainFixture();
+
+    const chain = createEffectChain(state);
+
+    const activated = activateChainEffect(
+      chain,
+      effect,
+      {
+        costSelections: [
+          {
+            stepIndex: 0,
+            instanceId: materialIds[1],
+            kind: "cost",
+            expectedZone: "overlay",
+          },
+        ],
+        resolutionSelections: [],
+      }
+    );
+
+    expect(
+      activated.success,
+      activated.errors.join(" ")
+    ).toBe(true);
+
+    expect(activated.chain.links).toHaveLength(1);
+
+    expect(
+      getAttachedXyzMaterials(
+        activated.chain.gameState,
+        hostId
+      )
+    ).toEqual([materialIds[0]]);
+
+    expect(
+      activated.chain.gameState.cardInstances?.instances.find(
+        instance =>
+          instance.instanceId === materialIds[1]
+      )?.zone
+    ).toBe("graveyard");
+
+    expect(
+      activated.chain.gameState.zones.deck
+    ).toEqual([300, 400, 500]);
+
+    expect(
+      validateCardInstanceSync(
+        activated.chain.gameState
+      )
+    ).toEqual([]);
+  });
+
+  it("does not refund Xyz Materials after negation", () => {
+    const {
+      state,
+      hostId,
+      materialIds,
+      effect,
+    } = createXyzChainFixture();
+
+    const activated = activateChainEffect(
+      createEffectChain(state),
+      effect
+    );
+
+    expect(
+      activated.success,
+      activated.errors.join(" ")
+    ).toBe(true);
+
+    const negated = negateChainLink(
+      activated.chain,
+      "chain-link-1"
+    );
+
+    expect(negated.success).toBe(true);
+
+    const resolved = resolveEffectChain(
+      negated.chain
+    );
+
+    expect(resolved.success).toBe(true);
+    expect(resolved.entries[0].status).toBe("negated");
+
+    expect(
+      getAttachedXyzMaterials(
+        resolved.chain.gameState,
+        hostId
+      )
+    ).toEqual([materialIds[1]]);
+
+    expect(
+      resolved.chain.gameState.cardInstances?.instances.find(
+        instance =>
+          instance.instanceId === materialIds[0]
+      )?.zone
+    ).toBe("graveyard");
+
+    // Negation prevents the draw effect.
+    expect(
+      resolved.chain.gameState.zones.deck
+    ).toEqual([300, 400, 500]);
+
+    expect(
+      validateCardInstanceSync(
+        resolved.chain.gameState
+      )
+    ).toEqual([]);
+  });
+
+  it("rejects invalid Xyz cost selections atomically", () => {
+    const {
+      state,
+      hostId,
+      effect,
+    } = createXyzChainFixture();
+
+    const chain = createEffectChain(state);
+    const original = structuredClone(chain);
+
+    const activated = activateChainEffect(
+      chain,
+      effect,
+      {
+        costSelections: [
+          {
+            stepIndex: 0,
+            instanceId: "invalid-material",
+            kind: "cost",
+            expectedZone: "overlay",
+          },
+        ],
+        resolutionSelections: [],
+      }
+    );
+
+    expect(activated.success).toBe(false);
+    expect(activated.chain).toBe(chain);
+    expect(chain).toEqual(original);
+    expect(chain.links).toHaveLength(0);
+
+    expect(
+      getAttachedXyzMaterials(
+        chain.gameState,
+        hostId
+      )
+    ).toHaveLength(2);
+  });
+
+  it("cannot detach the same material twice", () => {
+    const {
+      state,
+      hostId,
+      materialIds,
+      effect,
+    } = createXyzChainFixture();
+
+    const first = activateChainEffect(
+      createEffectChain(state),
+      effect,
+      {
+        costSelections: [
+          {
+            stepIndex: 0,
+            instanceId: materialIds[0],
+            kind: "cost",
+            expectedZone: "overlay",
+          },
+        ],
+        resolutionSelections: [],
+      }
+    );
+
+    expect(
+      first.success,
+      first.errors.join(" ")
+    ).toBe(true);
+
+    const second = activateChainEffect(
+      first.chain,
+      effect,
+      {
+        costSelections: [
+          {
+            stepIndex: 0,
+            instanceId: materialIds[0],
+            kind: "cost",
+            expectedZone: "overlay",
+          },
+        ],
+        resolutionSelections: [],
+      }
+    );
+
+    expect(second.success).toBe(false);
+    expect(second.chain).toBe(first.chain);
+
+    expect(
+      getAttachedXyzMaterials(
+        second.chain.gameState,
+        hostId
+      )
+    ).toEqual([materialIds[1]]);
+  });
+
+  it("binds a reusable Xyz effect to its activating instance", () => {
+    const {
+      state,
+      hostId,
+      materialIds,
+      effect,
+    } = createXyzChainFixture();
+
+    // A reusable effect should not store a physical host ID.
+    const reusableEffect: CardEffectDefinition = {
+      ...effect,
+      costs: [{
+        type: "detach-xyz-material",
+        xyzInstanceId: "",
+        count: 1,
+      }],
+    };
+
+    const originalEffect = structuredClone(reusableEffect);
+
+    const activated = activateChainEffectForInstance(
+      createEffectChain(state),
+      reusableEffect,
+      hostId,
+      {
+        costSelections: [{
+          stepIndex: 0,
+          instanceId: materialIds[1],
+          kind: "cost",
+          expectedZone: "overlay",
+        }],
+        resolutionSelections: [],
+      }
+    );
+
+    expect(
+      activated.success,
+      activated.errors.join(" ")
+    ).toBe(true);
+
+    // Only the selected material was detached.
+    expect(
+      getAttachedXyzMaterials(
+        activated.chain.gameState,
+        hostId
+      )
+    ).toEqual([materialIds[0]]);
+
+    expect(
+      activated.chain.gameState.cardInstances?.instances.find(
+        instance => instance.instanceId === materialIds[1]
+      )?.zone
+    ).toBe("graveyard");
+
+    // The registered definition remains reusable.
+    expect(reusableEffect).toEqual(originalEffect);
+
+    // The pending link stores the activation-specific binding.
+    expect(
+      activated.chain.links[0].effect.costs[0]
+    ).toMatchObject({
+      type: "detach-xyz-material",
+      xyzInstanceId: hostId,
+    });
+
+    expect(
+      validateCardInstanceSync(
+        activated.chain.gameState
+      )
+    ).toEqual([]);
   });
 });

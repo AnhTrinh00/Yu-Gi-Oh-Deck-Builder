@@ -11,6 +11,8 @@ import type {
 
 import { countCardInZone } from "./gameStateService";
 
+import { getAttachedXyzMaterials } from "./xyzMaterialService";
+
 export interface EffectValidationResult {
   valid: boolean;
   errors: string[];
@@ -130,13 +132,72 @@ export function validateCardEffect(
     zones.map((zone) => [zone, [...state.zones[zone]]])
   ) as Record<GameZone, number[]>;
 
+  const reservedMaterials = new Set<string>();
+
   for (const cost of effect.costs) {
-    if (cost.from === cost.to) {
-      errors.push("Cost source and destination must differ.");
+    if (cost.type === "detach-xyz-material") {
+      if (cost.count !== 1) {
+        errors.push(
+          "Only single-material Xyz detachment is supported."
+        );
+        continue;
+      }
+
+      const host = state.cardInstances?.instances.find(
+        instance =>
+          instance.instanceId === cost.xyzInstanceId
+      );
+
+      if (!host || host.zone !== "field") {
+        errors.push(
+          "Xyz cost host is not on the field."
+        );
+        continue;
+      }
+
+      if (
+        cost.xyzInstanceId.trim() === "" ||
+        host.cardId !== effect.sourceCardId
+      ) {
+        errors.push(
+          "Xyz cost host does not match the effect source."
+        );
+        continue;
+      }
+
+      const attached = getAttachedXyzMaterials(
+        state,
+        cost.xyzInstanceId
+      );
+
+      const availableMaterials = attached.filter(
+        id => !reservedMaterials.has(id)
+      );
+
+      if (availableMaterials.length < cost.count) {
+        errors.push(
+          "Not enough attached Xyz Materials to pay the cost."
+        );
+        continue;
+      }
+
+      // Reserve a material so multiple declared
+      // detachment costs cannot spend the same one.
+      reservedMaterials.add(availableMaterials[0]);
+
       continue;
     }
 
-    const index = available[cost.from].indexOf(cost.cardId);
+    if (cost.from === cost.to) {
+      errors.push(
+        "Cost source and destination must differ."
+      );
+      continue;
+    }
+
+    const index = available[cost.from].indexOf(
+      cost.cardId
+    );
 
     if (index < 0) {
       errors.push(

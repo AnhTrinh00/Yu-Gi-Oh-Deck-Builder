@@ -39,6 +39,8 @@ import type {
   EffectExecutionStage,
 } from "./cardEffectExecutionService";
 
+import { payXyzDetachCost } from "./xyzDetachCostService";
+
 function fail(
   original: GameState,
   effect: CardEffectDefinition,
@@ -197,28 +199,6 @@ export function executeCardEffectWithSelections(
     );
   }
 
-  // Reject unsupported costs before changing
-  // the working state.
-  const costSteps: EffectStep[] = [];
-
-  for (const cost of effect.costs) {
-    const step = convertCost(cost);
-
-    if (!step) {
-      return fail(
-        state,
-        effect,
-        "cost",
-        0,
-        0,
-        ["Unsupported effect cost movement."],
-        warnings
-      );
-    }
-
-    costSteps.push(step);
-  }
-
   let current = state;
   let completedCosts = 0;
   let completedSteps = 0;
@@ -230,11 +210,77 @@ export function executeCardEffectWithSelections(
   // above; the executor receives "choose"
   // because it is performing the movement,
   // not determining activation semantics.
-  for (let index = 0; index < costSteps.length; index++) {
+  for (let index = 0; index < effect.costs.length; index++) {
+    const cost = effect.costs[index];
+
     const selection = getSelectionForStep(
       { selections: selections.costSelections },
       index
     );
+
+    if (cost.type === "detach-xyz-material") {
+      if (!selection) {
+        return fail(
+          state,
+          effect,
+          "cost",
+          completedCosts,
+          0,
+          ["An Xyz Material selection is required."],
+          warnings
+        );
+      }
+
+      if (
+        selection.expectedZone !== undefined &&
+        selection.expectedZone !== "overlay"
+      ) {
+        return fail(
+          state,
+          effect,
+          "cost",
+          completedCosts,
+          0,
+          ["Xyz Material selection must use overlay."],
+          warnings
+        );
+      }
+
+      const result = payXyzDetachCost(current, {
+        xyzInstanceId: cost.xyzInstanceId,
+        materialInstanceId: selection.instanceId,
+      });
+
+      if (!result.success) {
+        return fail(
+          state,
+          effect,
+          "cost",
+          completedCosts,
+          0,
+          [result.error ?? "Xyz cost payment failed."],
+          warnings
+        );
+      }
+
+      current = result.state;
+      completedCosts++;
+      continue;
+    }
+
+    const step = convertCost(cost);
+
+    if (!step) {
+      return fail(
+        state,
+        effect,
+        "cost",
+        completedCosts,
+        0,
+        ["Unsupported effect cost movement."],
+        warnings
+      );
+    }
 
     const movementSelection = selection
       ? { ...selection, kind: "choose" as const }
@@ -242,7 +288,7 @@ export function executeCardEffectWithSelections(
 
     const result = executeSelectedEffectStep(
       current,
-      costSteps[index],
+      step,
       movementSelection
     );
 

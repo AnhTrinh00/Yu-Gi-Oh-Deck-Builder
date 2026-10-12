@@ -13,7 +13,7 @@ import {
 } from "../../services/cardEffectRegistryService";
 
 import {
-  activateChainEffect,
+  activateChainEffectForInstance,
   createEffectChain,
   negateChainLink,
   resolveEffectChain,
@@ -21,6 +21,38 @@ import {
 
 import type { EffectExecutionSelections } from "../../models/EffectExecutionSelection";
 import { ChainSelectionEditor } from "./ChainSelectionEditor";
+
+import type {
+  CardEffectDefinition,
+} from "../../models/CardEffect";
+
+import {
+  bindCardEffectSource,
+} from "../../services/cardEffectSourceBindingService";
+
+import {
+  placeCardOnField,
+} from "../../services/fieldZoneService";
+
+import {
+  normalizeGameState,
+} from "../../services/extendedGameStateService";
+
+import {
+  validateCardInstanceSync,
+} from "../../services/cardInstanceService";
+
+import {
+  isFieldSynchronized,
+} from "../../services/fieldZoneService";
+
+import {
+  executeChainXyzSummon,
+} from "../../services/chainXyzSummonService";
+
+import {
+  getAttachedXyzMaterials,
+} from "../../services/xyzMaterialService";
 
 interface Props {
   deck: Deck;
@@ -41,10 +73,31 @@ export function ChainSimulator({ deck }: Props) {
     null
   );
 
-  const [configuringEffectId, setConfiguringEffectId] =
-    useState<string | null>(null);
+  const [configuringEffect, setConfiguringEffect] =
+    useState<CardEffectDefinition | null>(null);
+
+  const [selectedSourceInstanceId, setSelectedSourceInstanceId] =
+    useState("");
+
+  const [selectedXyzInstanceId, setSelectedXyzInstanceId] =
+    useState("");
+
+  const [selectedMaterialIds, setSelectedMaterialIds] =
+    useState<string[]>([]);
 
   const effects = cardEffectRegistry.getAllEffects();
+
+  const selectedEffect = effects.find(
+    effect => effect.id === selectedEffectId
+  );
+
+  const availableSourceInstances =
+    chain?.gameState.cardInstances?.instances.filter(
+      instance =>
+        selectedEffect !== undefined &&
+        instance.cardId === selectedEffect.sourceCardId &&
+        instance.zone === selectedEffect.activationZone
+    ) ?? [];
 
   const cards = deck.main.flatMap(entry =>
     Array.from(
@@ -52,6 +105,36 @@ export function ChainSimulator({ deck }: Props) {
       () => entry.card
     )
   );
+
+  const allCards = [
+    ...deck.main,
+    ...deck.extra,
+    ...deck.side,
+  ].map(entry => entry.card);
+
+  const xyzInstances =
+    chain?.gameState.cardInstances?.instances.filter(
+      instance => {
+        const card = allCards.find(
+          item => item.id === instance.cardId
+        );
+
+        return (
+          instance.zone === "extra" &&
+          card?.frameType.toLowerCase() === "xyz"
+        );
+      }
+    ) ?? [];
+
+  const fieldMonsterInstances =
+    chain?.gameState.cardInstances?.instances.filter(
+      instance =>
+        instance.zone === "field" &&
+        chain.gameState.fieldState?.monsterZones.some(
+          slot =>
+            slot?.instanceId === instance.instanceId
+        )
+    ) ?? [];
 
   function toggleHandCard(
     cardId: number,
@@ -100,49 +183,197 @@ export function ChainSimulator({ deck }: Props) {
     }
   }
 
+  function placeMonsterFromHand(instanceId: string) {
+    if (!chain) return;
+
+    if (chain.links.length > 0) {
+      setError(
+        "Resolve the pending chain before changing the field."
+      );
+      return;
+    }
+
+    const state = chain.gameState;
+
+    const instance = state.cardInstances?.instances.find(
+      item => item.instanceId === instanceId
+    );
+
+    if (!instance || instance.zone !== "hand") {
+      setError("Selected card is not in the hand.");
+      return;
+    }
+
+    const zoneIndex =
+      state.fieldState?.monsterZones.findIndex(
+        slot => slot === null
+      ) ?? -1;
+
+    if (zoneIndex < 0) {
+      setError("No empty Monster Zone is available.");
+      return;
+    }
+
+    const result = placeCardOnField(state, {
+      cardId: instance.cardId,
+      instanceId,
+      from: "hand",
+      zoneType: "monster",
+      zoneIndex,
+      position: "face-up-attack",
+    });
+
+    if (!result.success) {
+      setError(
+        result.error ?? "Could not place monster."
+      );
+      return;
+    }
+
+    // Keep physical instance tracking synchronized.
+    const updated = normalizeGameState(result.state);
+
+    const tracked = updated.cardInstances?.instances.find(
+      item => item.instanceId === instanceId
+    );
+
+    if (!tracked) {
+      setError("Placed card instance was not found.");
+      return;
+    }
+
+    tracked.zone = "field";
+
+    const errors = validateCardInstanceSync(updated);
+
+    if (
+      errors.length > 0 ||
+      !isFieldSynchronized(updated)
+    ) {
+      setError(
+        errors.join(" ") ||
+        "Field synchronization failed."
+      );
+      return;
+    }
+
+    setChain({
+      ...chain,
+      gameState: updated,
+    });
+
+    setConfiguringEffect(null);
+    setEntries([]);
+    setError(null);
+  }
+
+  function toggleXyzMaterial(instanceId: string) {
+    setSelectedMaterialIds(previous =>
+      previous.includes(instanceId)
+        ? previous.filter(id => id !== instanceId)
+        : [...previous, instanceId]
+    );
+  }
+
+  function summonSelectedXyz() {
+    if (!chain) return;
+
+    if (chain.links.length > 0) {
+      setError(
+        "Resolve the pending chain before summoning."
+      );
+      return;
+    }
+
+    if (!selectedXyzInstanceId) {
+      setError("Select an Xyz Monster.");
+      return;
+    }
+
+    const result = executeChainXyzSummon(
+      chain.gameState,
+      allCards,
+      {
+        monsterInstanceId: selectedXyzInstanceId,
+        materialInstanceIds: selectedMaterialIds,
+      }
+    );
+
+    if (!result.success) {
+      setError(result.error ?? "Xyz Summon failed.");
+      return;
+    }
+
+    setChain({
+      ...chain,
+      gameState: result.state,
+    });
+
+    setSelectedXyzInstanceId("");
+    setSelectedMaterialIds([]);
+    setConfiguringEffect(null);
+    setSelectedSourceInstanceId("");
+    setEntries([]);
+    setError(null);
+  }
+
   function activateEffect() {
     if (!chain) return;
 
-    const effect = effects.find(
-      item => item.id === selectedEffectId
-    );
-
-    if (!effect) {
+    if (!selectedEffect) {
       setError("Select a registered effect.");
       return;
     }
 
-    setConfiguringEffectId(effect.id);
+    if (!selectedSourceInstanceId) {
+      setError("Select the physical card activating this effect.");
+      return;
+    }
+
+    const binding = bindCardEffectSource(
+      chain.gameState,
+      selectedEffect,
+      selectedSourceInstanceId
+    );
+
+    if (!binding.success || !binding.effect) {
+      setError(
+        binding.error ?? "Could not bind effect source."
+      );
+      return;
+    }
+
+    setConfiguringEffect(binding.effect);
     setError(null);
   }
 
   function confirmActivation(
     selections: EffectExecutionSelections
   ) {
-    if (!chain || !configuringEffectId) return;
-
-    const effect = effects.find(
-        item => item.id === configuringEffectId
-    );
-
-    if (!effect) {
-        setError("Selected effect no longer exist.");
-        setConfiguringEffectId(null);
-        return;
+    if (
+      !chain ||
+      !configuringEffect ||
+      !selectedSourceInstanceId
+    ) {
+      return;
     }
 
-    const result = activateChainEffect(
-        chain, effect, selections
+    const result = activateChainEffectForInstance(
+      chain,
+      configuringEffect,
+      selectedSourceInstanceId,
+      selections
     );
 
     if (!result.success) {
-        setError(result.errors.join(" "));
-        return;
+      setError(result.errors.join(" "));
+      return;
     }
 
     setChain(result.chain);
     setEntries([]);
-    setConfiguringEffectId(null);
+    setConfiguringEffect(null);
+    setSelectedSourceInstanceId("");
     setError(null);
   }
 
@@ -181,7 +412,10 @@ export function ChainSimulator({ deck }: Props) {
   }
 
   function reset() {
-    setConfiguringEffectId(null);
+    setConfiguringEffect(null);
+    setSelectedSourceInstanceId("");
+    setSelectedXyzInstanceId("");
+    setSelectedMaterialIds([]);
     setChain(null);
     setHand([]);
     setEntries([]);
@@ -273,57 +507,250 @@ export function ChainSimulator({ deck }: Props) {
             ))}
           </div>
 
-          <h4>Activate an Effect</h4>
+          <h4>Field Setup</h4>
 
-          <div className="combo-builder-row">
-            <select
-              aria-label="Effect to activate"
-              value={selectedEffectId}
-              onChange={event =>
-                setSelectedEffectId(
-                  event.target.value
+          <p>
+            Place monsters from your hand into empty Monster Zones
+            to prepare for Extra Deck Summons.
+          </p>
+
+          <div className="combo-chain-field-setup">
+            <h5>Monsters in Hand</h5>
+
+            {chain.gameState.cardInstances?.instances
+              .filter(instance => instance.zone === "hand")
+              .map(instance => {
+                const card = cards.find(
+                  item => item.id === instance.cardId
+                );
+
+                const isMonster = card?.type.includes("Monster") ?? false;
+
+                if (!isMonster) return null;
+
+                return (
+                  <button
+                    key={instance.instanceId}
+                    type="button"
+                    disabled={chain.links.length > 0}
+                    onClick={() =>
+                      placeMonsterFromHand(instance.instanceId)
+                    }
+                  >
+                    Place {card?.name ?? `Card ${instance.cardId}`}
+                    {" "}
+                    ({instance.instanceId})
+                  </button>
+                );
+              })}
+
+            <h5>Monster Zones</h5>
+
+            <div className="combo-chain-monster-zones">
+              {chain.gameState.fieldState?.monsterZones.map(
+                (slot, index) => (
+                  <div key={index}>
+                    <strong>Zone {index + 1}</strong>
+                    <span>
+                      {slot
+                        ? `Card ${slot.cardId} (${slot.instanceId})`
+                        : "Empty"}
+                    </span>
+                  </div>
                 )
-              }
-            >
-              <option value="">
-                Select effect
-              </option>
+              )}
+            </div>
+          </div>
 
-              {effects.map(effect => (
-                <option
-                  key={effect.id}
-                  value={effect.id}
-                >
-                  {effect.label} ({effect.id})
-                </option>
-              ))}
-            </select>
+          <h4>Xyz Summon</h4>
+
+          <p>
+            Select an Xyz Monster from the Extra Deck and
+            choose its materials from your field.
+          </p>
+
+          <div className="combo-chain-xyz-summon">
+            <label>
+              Xyz Monster
+              <select
+                aria-label="Xyz Monster"
+                value={selectedXyzInstanceId}
+                onChange={event => {
+                  setSelectedXyzInstanceId(event.target.value);
+                  setSelectedMaterialIds([]);
+                  setError(null);
+                }}
+                disabled={chain.links.length > 0}
+              >
+                <option value="">Select Xyz Monster</option>
+
+                {xyzInstances.map(instance => {
+                  const card = allCards.find(
+                    item => item.id === instance.cardId
+                  );
+
+                  return (
+                    <option
+                      key={instance.instanceId}
+                      value={instance.instanceId}
+                    >
+                      {card?.name ?? `Card ${instance.cardId}`}
+                      {" "}
+                      (Rank {card?.level ?? "?"})
+                    </option>
+                  );
+                })}
+              </select>
+            </label>
+
+            <h5>Available Materials</h5>
+
+            <div className="combo-chain-xyz-materials">
+              {fieldMonsterInstances.map(instance => {
+                const card = allCards.find(
+                  item => item.id === instance.cardId
+                );
+
+                const selected =
+                  selectedMaterialIds.includes(instance.instanceId);
+
+                return (
+                  <label key={instance.instanceId}>
+                    <input
+                      type="checkbox"
+                      checked={selected}
+                      disabled={chain.links.length > 0}
+                      onChange={() =>
+                        toggleXyzMaterial(instance.instanceId)
+                      }
+                    />
+
+                    {card?.name ?? `Card ${instance.cardId}`}
+                    {" "}
+                    (Level {card?.level ?? "?"})
+                  </label>
+                );
+              })}
+            </div>
 
             <button
               type="button"
-              disabled={!selectedEffectId}
+              disabled={
+                chain.links.length > 0 ||
+                !selectedXyzInstanceId ||
+                selectedMaterialIds.length < 2
+              }
+              onClick={summonSelectedXyz}
+            >
+              Xyz Summon
+            </button>
+          </div>
+
+          <h4>Attached Xyz Materials</h4>
+
+          <div className="combo-chain-xyz-attachments">
+            {chain.gameState.xyzMaterials?.length ? (
+              chain.gameState.xyzMaterials.map(attachment => (
+                <div key={attachment.xyzInstanceId}>
+                  <strong>
+                    Xyz Monster: {attachment.xyzInstanceId}
+                  </strong>
+
+                  <p>
+                    Materials:{" "}
+                    {getAttachedXyzMaterials(
+                      chain.gameState,
+                      attachment.xyzInstanceId
+                    ).join(", ") || "None"}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p>No Xyz Materials are currently attached.</p>
+            )}
+          </div>
+
+          <h4>Activate an Effect</h4>
+
+          <div className="combo-builder-row">
+            <label>
+              Effect
+              <select
+                aria-label="Effect to activate"
+                value={selectedEffectId}
+                onChange={event => {
+                  setSelectedEffectId(event.target.value);
+                  setSelectedSourceInstanceId("");
+                  setConfiguringEffect(null);
+                  setError(null);
+                }}
+              >
+                <option value="">Select effect</option>
+
+                {effects.map(effect => (
+                  <option key={effect.id} value={effect.id}>
+                    {effect.label} ({effect.id})
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label>
+              Activating card instance
+              <select
+                aria-label="Activating card instance"
+                value={selectedSourceInstanceId}
+                onChange={event => {
+                  setSelectedSourceInstanceId(event.target.value);
+                  setConfiguringEffect(null);
+                  setError(null);
+                }}
+                disabled={!selectedEffect}
+              >
+                <option value="">Select source instance</option>
+
+                {availableSourceInstances.map(instance => (
+                  <option
+                    key={instance.instanceId}
+                    value={instance.instanceId}
+                  >
+                    {instance.instanceId} — Card {instance.cardId}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <button
+              type="button"
+              disabled={
+                !selectedEffectId ||
+                !selectedSourceInstanceId
+              }
               onClick={activateEffect}
             >
               Activate
             </button>
-
-            {configuringEffectId && (
-                <ChainSelectionEditor
-                    key={configuringEffectId}
-                    gameState={chain.gameState}
-                    effect={
-                        effects.find(
-                            item => item.id === configuringEffectId
-                        )!
-                    }
-                    onActivate={confirmActivation}
-                    onCancel={() => {
-                        setConfiguringEffectId(null);
-                        setError(null);
-                    }}
-                />
-            )}
           </div>
+
+          {selectedEffect && availableSourceInstances.length === 0 && (
+            <p>
+              No eligible physical copy of this card is currently
+              in its activation zone.
+            </p>
+          )}
+
+          {configuringEffect && (
+            <ChainSelectionEditor
+              key={`${configuringEffect.id}-${selectedSourceInstanceId}`}
+              gameState={chain.gameState}
+              effect={configuringEffect}
+              onActivate={confirmActivation}
+              onCancel={() => {
+                setConfiguringEffect(null);
+                setError(null);
+              }}
+            />
+          )}
 
           <h4>
             Pending Chain ({chain.links.length})

@@ -28,7 +28,7 @@ export interface CardInstanceSelection {
   /**
    * Optional expected source zone.
    */
-  expectedZone?: GameZone;
+  expectedZone?: GameZone | "overlay";
 }
 
 export interface CardSelectionContext {

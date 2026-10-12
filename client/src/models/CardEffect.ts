@@ -13,12 +13,18 @@ export type EffectCondition =
     | { type: "normal-summon-available" }
     | { type: "effect-unused"; usageKey: string };
 
-export type EffectCost = {
+export type EffectCost = 
+  | {
     type: "move-card";
     cardId: number;
     from: GameZone;
     to: GameZone;
-};
+    }
+  | {
+    type: "detach-xyz-material";
+    xyzInstanceId: string;
+    count: 1;
+  };
 
 export type EffectStep =
   | { type: "draw"; count: number }

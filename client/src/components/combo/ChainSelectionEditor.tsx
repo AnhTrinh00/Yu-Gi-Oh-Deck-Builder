@@ -111,7 +111,9 @@ export function ChainSelectionEditor({
               <strong>{requirement.label}</strong>
 
               <span>
-                Card ID: {requirement.cardId}
+                {requirement.zone === "overlay"
+                  ? "Choose an attached Xyz Material"
+                  : `Card ID: ${requirement.cardId}`}
                 {" · "}
                 Zone: {requirement.zone}
               </span>

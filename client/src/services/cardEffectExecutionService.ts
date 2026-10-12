@@ -25,6 +25,14 @@ import {
   executeEffectStep,
 } from "./cardEffectStepService";
 
+import {
+  getAttachedXyzMaterials,
+} from "./xyzMaterialService";
+
+import {
+  payXyzDetachCost,
+} from "./xyzDetachCostService";
+
 export type EffectExecutionStage =
   | "precondition"
   | "cost"
@@ -172,11 +180,54 @@ export function executeCardEffect(
     );
   }
 
-  // Refuse unsupported costs before making
-  // any simulated changes.
-  const costSteps: EffectStep[] = [];
+  // 2. Pay costs against a working state.
+  let current = state;
+  let completedCosts = 0;
+  let completedSteps = 0;
 
   for (const cost of effect.costs) {
+    if (cost.type === "detach-xyz-material") {
+      const attached = getAttachedXyzMaterials(
+        current,
+        cost.xyzInstanceId
+      );
+
+      if (attached.length === 0) {
+        return failedResult(
+          state,
+          effect,
+          "cost",
+          completedCosts,
+          0,
+          ["No attached Xyz Material is available."],
+          warnings
+        );
+      }
+
+      // Deterministically choose the first attached
+      // material when no explicit selection is given.
+      const result = payXyzDetachCost(current, {
+        xyzInstanceId: cost.xyzInstanceId,
+        materialInstanceId: attached[0],
+      });
+
+      if (!result.success) {
+        return failedResult(
+          state,
+          effect,
+          "cost",
+          completedCosts,
+          0,
+          [result.error ?? "Xyz cost payment failed."],
+          warnings
+        );
+      }
+
+      current = result.state;
+      completedCosts++;
+      continue;
+    }
+
     const step = costToStep(cost);
 
     if (!step) {
@@ -184,22 +235,13 @@ export function executeCardEffect(
         state,
         effect,
         "cost",
-        0,
+        completedCosts,
         0,
         ["Unsupported effect cost movement."],
         warnings
       );
     }
 
-    costSteps.push(step);
-  }
-
-  // 2. Pay costs against a working state.
-  let current = state;
-  let completedCosts = 0;
-  let completedSteps = 0;
-
-  for (const step of costSteps) {
     const result = executeEffectStep(
       current,
       step

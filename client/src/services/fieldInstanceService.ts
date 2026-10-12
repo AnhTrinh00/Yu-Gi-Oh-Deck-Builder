@@ -22,6 +22,8 @@ import {
   validateCardInstanceSync,
 } from "./cardInstanceService";
 
+import { releaseXyzMaterialsOnHostExit } from "./xyzHostCleanupService";
+
 export interface FieldInstanceResult {
   success: boolean;
   state: GameState;
@@ -186,6 +188,10 @@ export function placeCardInstanceOnField(
 /**
  * Removes one tracked field instance and
  * transfers it to another game zone.
+ *
+ * When an Xyz host leaves the field, its
+ * remaining materials are sent to the
+ * Graveyard as part of the same transaction.
  */
 export function removeCardInstanceFromField(
   state: GameState,
@@ -196,7 +202,7 @@ export function removeCardInstanceFromField(
   if (error) return failure(state, error);
 
   const instance = state.cardInstances!.instances.find(
-    (item) => item.instanceId === options.instanceId
+    item => item.instanceId === options.instanceId
   );
 
   if (!instance) {
@@ -219,10 +225,29 @@ export function removeCardInstanceFromField(
     );
   }
 
-  const result = removeCardFromField(state, {
-    ...location,
-    to: options.to,
-  });
+  // Release attached materials first, without
+  // changing the caller's original state.
+  const cleanup = releaseXyzMaterialsOnHostExit(
+    state,
+    options.instanceId
+  );
+
+  if (!cleanup.success) {
+    return failure(
+      state,
+      cleanup.error ?? "Xyz Material cleanup failed."
+    );
+  }
+
+  // Remove the host from the field using the
+  // working state containing the released materials.
+  const result = removeCardFromField(
+    cleanup.state,
+    {
+      ...location,
+      to: options.to,
+    }
+  );
 
   if (!result.success) {
     return failure(
@@ -234,12 +259,25 @@ export function removeCardInstanceFromField(
   const next = normalizeGameState(result.state);
 
   const tracked = next.cardInstances!.instances.find(
-    (item) => item.instanceId === options.instanceId
-  )!;
+    item => item.instanceId === options.instanceId
+  );
+
+  if (!tracked) {
+    return failure(
+      state,
+      "Removed card instance is missing."
+    );
+  }
 
   tracked.zone = options.to;
 
   const syncErrors = validateCardInstanceSync(next);
+
+  if (!isFieldSynchronized(next)) {
+    syncErrors.push(
+      "Field state is not synchronized."
+    );
+  }
 
   if (syncErrors.length > 0) {
     return failure(state, syncErrors.join(" "));
