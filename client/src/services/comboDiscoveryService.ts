@@ -1,46 +1,40 @@
+import type {
+  CardRelationship,
+  CardRelationshipType,
+} from "../models/CardRelationship";
 
-import type { CardRelationship } from "../models/CardRelationship";
 import type {
   ComboCandidate,
   ComboCandidateStep,
   ComboDiscoveryOptions,
+  ComboDiscoveryResult,
 } from "../models/ComboCandidate";
 
-import { DEFAULT_DISCOVERY_OPTIONS } from "../models/ComboCandidate";
+import {
+  DEFAULT_DISCOVERY_OPTIONS,
+} from "../models/ComboCandidate";
 
-export function discoverComboCandidates(
-  cardIds: number[],
-  relationships: CardRelationship[],
-  options: Partial<ComboDiscoveryOptions> = {}
-): ComboCandidate[] {
-  const settings = {
-    ...DEFAULT_DISCOVERY_OPTIONS,
-    ...options,
-  };
+type Adjacency = Map<
+  number,
+  Map<number, CardRelationshipType[]>
+>;
 
-  const { maxDepth, maxCandidates, minDepth } = settings;
-
-  if (
-    !Number.isSafeInteger(maxDepth) ||
-    !Number.isSafeInteger(minDepth) ||
-    !Number.isSafeInteger(maxCandidates) ||
-    maxDepth < 1 ||
-    minDepth < 1 ||
-    minDepth > maxDepth ||
-    maxCandidates < 1
-  ) {
-    return [];
-  }
-
-  const allowedIds = new Set(cardIds);
-  const adjacency = new Map<number, Map<number, CardRelationship[]>>();
+function buildAdjacency(
+  allowedIds: Set<number>,
+  relationships: CardRelationship[]
+): Adjacency {
+  const temporary = new Map<
+    number,
+    Map<number, Set<CardRelationshipType>>
+  >();
 
   for (const id of allowedIds) {
-    adjacency.set(id, new Map());
+    temporary.set(id, new Map());
   }
 
   for (const relationship of relationships) {
-    const { sourceCardId, targetCardId } = relationship;
+    const { sourceCardId, targetCardId, type } =
+      relationship;
 
     if (
       !allowedIds.has(sourceCardId) ||
@@ -49,53 +43,145 @@ export function discoverComboCandidates(
       continue;
     }
 
-    const neighbors = adjacency.get(sourceCardId)!;
-    const existing = neighbors.get(targetCardId) ?? [];
+    const neighbors = temporary.get(sourceCardId)!;
 
-    existing.push(relationship);
-    neighbors.set(targetCardId, existing);
+    let types = neighbors.get(targetCardId);
+
+    if (!types) {
+      types = new Set<CardRelationshipType>();
+      neighbors.set(targetCardId, types);
+    }
+
+    types.add(type);
   }
 
+  const adjacency: Adjacency = new Map();
+
+  for (const [sourceId, neighbors] of temporary) {
+    const indexedNeighbors = new Map<
+      number,
+      CardRelationshipType[]
+    >();
+
+    for (const [targetId, types] of neighbors) {
+      indexedNeighbors.set(targetId, [...types]);
+    }
+
+    adjacency.set(sourceId, indexedNeighbors);
+  }
+
+  return adjacency;
+}
+
+function compareCandidates(
+  a: ComboCandidate,
+  b: ComboCandidate
+): number {
+  return (
+    b.score - a.score ||
+    a.cardIds.length - b.cardIds.length ||
+    a.id.localeCompare(b.id)
+  );
+}
+
+/**
+ * Detailed combo discovery with search diagnostics.
+ *
+ * A bounded search can return incomplete results.
+ * Candidates are relationship paths, not verified
+ * gameplay sequences.
+ */
+export function discoverComboCandidatesDetailed(
+  cardIds: number[],
+  relationships: CardRelationship[],
+  options: Partial<ComboDiscoveryOptions> = {}
+): ComboDiscoveryResult {
+  const settings = {
+    ...DEFAULT_DISCOVERY_OPTIONS,
+    ...options,
+  };
+
+  const {
+    maxDepth,
+    maxCandidates,
+    minDepth,
+    maxExploredStates,
+  } = settings;
+
+  const diagnostics = {
+    exploredStates: 0,
+    generatedCandidates: 0,
+    returnedCandidates: 0,
+    prunedBranches: 0,
+    budgetExhausted: false,
+    complete: true,
+    invalidOptions: false,
+  };
+
+  if (
+    !Number.isSafeInteger(maxDepth) ||
+    !Number.isSafeInteger(minDepth) ||
+    !Number.isSafeInteger(maxCandidates) ||
+    !Number.isSafeInteger(maxExploredStates) ||
+    maxDepth < 1 ||
+    minDepth < 1 ||
+    minDepth > maxDepth ||
+    maxCandidates < 1 ||
+    maxExploredStates < 1
+  ) {
+    diagnostics.invalidOptions = true;
+    diagnostics.complete = false;
+    
+    return {
+      candidates: [],
+      diagnostics,
+    };
+  }
+
+  const allowedIds = new Set(cardIds);
+
+  const adjacency = buildAdjacency(
+    allowedIds,
+    relationships
+  );
+
   const candidates: ComboCandidate[] = [];
-  const seen = new Set<string>();
 
   function addCandidate(path: number[]): void {
-    const id = path.join("->");
-
-    if (seen.has(id)) return;
-    seen.add(id);
-
     const steps: ComboCandidateStep[] = [];
 
-    for (let index = 0; index < path.length - 1; index++) {
+    const distinctTypes = new Set<CardRelationshipType>();
+
+    for (
+      let index = 0;
+      index < path.length - 1;
+      index++
+    ) {
       const sourceCardId = path[index];
       const targetCardId = path[index + 1];
 
-      const edges =
-        adjacency.get(sourceCardId)?.get(targetCardId) ?? [];
+      const relationshipTypes =
+        adjacency
+          .get(sourceCardId)
+          ?.get(targetCardId) ?? [];
 
-      const relationshipTypes = [
-        ...new Set(edges.map((edge) => edge.type)),
-      ];
+      for (const type of relationshipTypes) {
+        distinctTypes.add(type);
+      }
 
       steps.push({
         sourceCardId,
         targetCardId,
-        relationshipTypes,
+        relationshipTypes: [...relationshipTypes],
       });
     }
 
-    const distinctTypes = new Set(
-      steps.flatMap((step) => step.relationshipTypes)
-    );
-
-    // Heuristic only: this is not a gameplay-strength score.
     const score =
       steps.length * 10 +
       distinctTypes.size * 3;
 
-    candidates.push({
-      id,
+    const candidate: ComboCandidate = {
+      id: path.join("->"),
       starterCardId: path[0],
       targetCardId: path[path.length - 1],
       cardIds: [...path],
@@ -105,7 +191,24 @@ export function discoverComboCandidates(
         `${steps.length} recorded interaction(s)`,
         `${distinctTypes.size} relationship type(s)`,
       ],
-    });
+    };
+
+    diagnostics.generatedCandidates++;
+
+    // Keep only the highest-ranked maxCandidates entries.
+    if (candidates.length < maxCandidates) {
+      candidates.push(candidate);
+      candidates.sort(compareCandidates);
+      return;
+    }
+
+    const worst = candidates[candidates.length - 1];
+
+    if (compareCandidates(candidate, worst) < 0) {
+      candidates.pop();
+      candidates.push(candidate);
+      candidates.sort(compareCandidates);
+    }
   }
 
   function explore(
@@ -113,20 +216,47 @@ export function discoverComboCandidates(
     path: number[],
     visited: Set<number>
   ): void {
+    diagnostics.exploredStates++;
+
     const depth = path.length - 1;
 
     if (depth >= minDepth) {
       addCandidate(path);
     }
 
-    if (depth >= maxDepth) return;
+    if (depth >= maxDepth) {
+      return;
+    }
+
+    const remainingUnvisitedCards =
+      allowedIds.size - visited.size;
+
+    if (
+      depth + remainingUnvisitedCards < minDepth
+    ) {
+      diagnostics.prunedBranches++;
+      return;
+    }
 
     const neighbors = adjacency.get(currentId);
 
-    if (!neighbors) return;
+    if (!neighbors) {
+      return;
+    }
 
     for (const nextId of neighbors.keys()) {
-      if (visited.has(nextId)) continue;
+      if (visited.has(nextId)) {
+        continue;
+      }
+
+      // There is another eligible branch, but no budget
+      // remaining to explore it.
+      if (
+        diagnostics.exploredStates >= maxExploredStates
+      ) {
+        diagnostics.budgetExhausted = true;
+        return;
+      }
 
       visited.add(nextId);
       path.push(nextId);
@@ -135,19 +265,52 @@ export function discoverComboCandidates(
 
       path.pop();
       visited.delete(nextId);
+
+      if (diagnostics.budgetExhausted) {
+        return;
+      }
     }
   }
 
   for (const starterId of allowedIds) {
-    explore(starterId, [starterId], new Set([starterId]));
+    if (
+      diagnostics.exploredStates >= maxExploredStates
+    ) {
+      diagnostics.budgetExhausted = true;
+      break;
+    }
+
+    explore(
+      starterId,
+      [starterId],
+      new Set([starterId])
+    );
+
+    if (diagnostics.budgetExhausted) {
+      break;
+    }
   }
 
-  return candidates
-    .sort(
-      (a, b) =>
-        b.score - a.score ||
-        a.cardIds.length - b.cardIds.length ||
-        a.id.localeCompare(b.id)
-    )
-    .slice(0, maxCandidates);
+  diagnostics.complete = !diagnostics.budgetExhausted;
+  diagnostics.returnedCandidates = candidates.length;
+
+  return {
+    candidates,
+    diagnostics,
+  };
+}
+
+/**
+ * Backward-compatible API used by existing components.
+ */
+export function discoverComboCandidates(
+  cardIds: number[],
+  relationships: CardRelationship[],
+  options: Partial<ComboDiscoveryOptions> = {}
+): ComboCandidate[] {
+  return discoverComboCandidatesDetailed(
+    cardIds,
+    relationships,
+    options
+  ).candidates;
 }
