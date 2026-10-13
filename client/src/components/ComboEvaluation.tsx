@@ -6,7 +6,7 @@ import type { Deck } from "../models/Deck";
 import type { Card } from "../models/Card";
 import type { GameZone } from "../models/GameState";
 
-import { simulateCombo } from "../services/comboSimulationService";
+import { simulateTrackedCombo } from "../services/trackedComboSimulationService";
 
 interface Props {
   deck: Deck;
@@ -43,7 +43,7 @@ export default function ComboEvaluation({
   const result = useMemo(
     () =>
       selectedCombo
-        ? simulateCombo(selectedCombo, deck)
+        ? simulateTrackedCombo(selectedCombo, deck)
         : null,
     [selectedCombo, deck]
   );

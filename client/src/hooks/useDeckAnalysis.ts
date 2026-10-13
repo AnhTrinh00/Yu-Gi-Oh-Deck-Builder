@@ -11,7 +11,7 @@ import type { DeckFormat } from "../services/banlistService";
 import { discoverComboCandidates } from "../services/comboDiscoveryService";
 import { analyzeComboCandidates } from "../services/comboCandidateAnalysisService";
 import { generateDeckRecommendations } from "../services/deckRecommendationService";
-import { simulateCombo } from "../services/comboSimulationService";
+import { simulateTrackedCombo } from "../services/trackedComboSimulationService";
 
 import { analyzeDataHealth } from "../services/analysisHealthService";
 
@@ -106,7 +106,7 @@ export function useDeckAnalysis({
     () =>
       combos.map((combo) => ({
         combo,
-        result: simulateCombo(combo, deck),
+        result: simulateTrackedCombo(combo, deck),
       })),
     [combos, deck]
   );

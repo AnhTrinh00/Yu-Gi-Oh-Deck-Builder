@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import type { Deck } from "../models/Deck";
 import type { CollectionCard } from "../models/CollectionCard";
@@ -13,6 +12,20 @@ import { candidateToComboDraft } from "../services/comboCandidateConversionServi
 
 import ComboEditor from "./ComboEditor";
 import ComboEvaluation from "./ComboEvaluation";
+
+import EndBoardAnalysisPanel from "./analysis/EndBoardAnalysisPanel";
+
+import {
+  evaluateEndBoard,
+} from "../services/endBoardEvaluationService";
+
+import type {
+  EndBoardScoreWeights,
+} from "../models/EndBoardScore";
+
+import {
+  DEFAULT_SCORE_WEIGHTS,
+} from "../services/endBoardScoringService";
 
 type AnalysisTab =
   | "overview"
@@ -28,6 +41,41 @@ interface Props {
   format: DeckFormat;
   onSaveCombo: (combo: Combo) => boolean;
 }
+
+
+type ScorePreset =
+  | "balanced"
+  | "control"
+  | "resources"
+  | "presence";
+
+const weightPresets: Record<
+  ScorePreset,
+  EndBoardScoreWeights
+> = {
+  balanced: DEFAULT_SCORE_WEIGHTS,
+
+  control: {
+    disruptions: 55,
+    boardPresence: 20,
+    resources: 15,
+    flexibility: 10,
+  },
+
+  resources: {
+    disruptions: 30,
+    boardPresence: 20,
+    resources: 40,
+    flexibility: 10,
+  },
+
+  presence: {
+    disruptions: 30,
+    boardPresence: 40,
+    resources: 20,
+    flexibility: 10,
+  },
+};
 
 export default function DeckAnalysisWorkspace({
   deck,
@@ -49,6 +97,9 @@ export default function DeckAnalysisWorkspace({
     null
   );
 
+  const [scorePreset, setScorePreset] =
+    useState<ScorePreset>("balanced");
+
   const analysis = useDeckAnalysis({
     deck,
     collection,
@@ -57,6 +108,22 @@ export default function DeckAnalysisWorkspace({
     format,
     maxDepth,
   });
+
+  const endBoardEvaluations = useMemo(
+    () =>
+      analysis.simulations.map(({ combo, result }) => ({
+        combo,
+        result,
+
+        evaluation: result.success
+          ? evaluateEndBoard(
+              result.finalState,
+              weightPresets[scorePreset]
+            )
+          : null,
+      })),
+    [analysis.simulations, scorePreset]
+  );
 
   const {
     cards,
@@ -391,6 +458,76 @@ export default function DeckAnalysisWorkspace({
             combos={combos}
             cards={cards}
           />
+
+          <section
+            className="end-board-evaluations"
+            aria-label="Saved combo end-board evaluations"
+          >
+            <h3>Saved Combo End-Board Analysis</h3>
+
+            <label>
+              Scoring Emphasis
+
+              <select
+                aria-label="Scoring emphasis"
+                value={scorePreset}
+                onChange={(event) =>
+                  setScorePreset(
+                    event.target.value as ScorePreset
+                  )
+                }
+              >
+                <option value="balanced">Balanced</option>
+                <option value="control">Control</option>
+                <option value="resources">Resources</option>
+                <option value="presence">
+                  Board Presence
+                </option>
+              </select>
+            </label>
+
+            {endBoardEvaluations.length === 0 ? (
+              <p>
+                Save a combo to begin evaluating its
+                resulting board.
+              </p>
+            ) : (
+              endBoardEvaluations.map(
+                ({ combo, result, evaluation }) => (
+                  <article
+                    key={combo.id}
+                    className="analysis-result-card"
+                  >
+                    <h4>{combo.name}</h4>
+
+                    {!result.success ? (
+                      <>
+                        <p>
+                          The simplified simulation did
+                          not complete successfully.
+                        </p>
+
+                        <ul>
+                          {result.errors.map(
+                            (error, index) => (
+                              <li key={index}>{error}</li>
+                            )
+                          )}
+                        </ul>
+                      </>
+                    ) : evaluation ? (
+                      <EndBoardAnalysisPanel
+                        board={evaluation.board}
+                        resources={evaluation.resources}
+                        disruptions={evaluation.disruptions}
+                        score={evaluation.score}
+                      />
+                    ) : null}
+                  </article>
+                )
+              )
+            )}
+          </section>
         </div>
       )}
 
