@@ -50,7 +50,7 @@ describe("API error handling", () => {
     const response = await request(app)
       .post("/api/ai/analyze-combos")
       .send({
-        question: "x".repeat(40_000),
+        question: "x".repeat(150_000),
         combos: [],
       });
 

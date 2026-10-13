@@ -10,6 +10,10 @@ import {
   notFoundHandler,
 } from "./middleware/errorHandler.js";
 
+import {
+  createDeckAnalysisRouter,
+} from "./routes/deckAnalysisRoutes.js";
+
 export function createApp(provider: LLMProvider) {
   const app = express();
 
@@ -23,7 +27,7 @@ export function createApp(provider: LLMProvider) {
     })
   );
 
-  app.use(express.json({ limit: "32kb" }));
+  app.use(express.json({ limit: "128kb" }));
 
   app.get("/api/health", (_req, res) => {
     res.json({
@@ -36,6 +40,11 @@ export function createApp(provider: LLMProvider) {
   app.use(
     "/api/ai",
     createAIRouter(provider)
+  );
+
+  app.use(
+    "/api/ai/analyze-deck",
+    createDeckAnalysisRouter()
   );
 
   // Must come after all registered routes.
