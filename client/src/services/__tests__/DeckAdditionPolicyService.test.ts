@@ -5,8 +5,8 @@ import type { CollectionCard } from "../../models/CollectionCard";
 import {
   addCardToDeck,
   createEmptyDeck,
-} from "../deckService";
-import { checkDeckAddition } from "../deckAdditionPolicyService";
+} from "../deck/deckService";
+import { checkDeckAddition } from "../deck/deckAdditionPolicyService";
 
 const card: Card = {
   id: 89631139,

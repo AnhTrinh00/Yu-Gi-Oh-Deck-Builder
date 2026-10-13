@@ -6,11 +6,11 @@ import type {
   CardRelationship,
 } from "../../models/CardRelationship";
 
-import { createEmptyDeck } from "../deckService";
+import { createEmptyDeck } from "../deck/deckService";
 
 import {
   analyzeDeckRelationships,
-} from "../deckRelationshipAnalysisService";
+} from "../deck/deckRelationshipAnalysisService";
 
 function mockCard(id: number): Card {
   return {

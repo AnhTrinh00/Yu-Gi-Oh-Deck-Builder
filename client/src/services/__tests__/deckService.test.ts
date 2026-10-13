@@ -12,7 +12,7 @@ import {
   removeCardFromDeck,
   validateCardPlacement,
   validateDeck,
-} from "../deckService";
+} from "../deck/deckService";
 
 const testCard: Card = {
   id: 1,

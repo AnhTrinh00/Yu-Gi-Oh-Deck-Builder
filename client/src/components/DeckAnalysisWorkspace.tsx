@@ -5,10 +5,10 @@ import type { CollectionCard } from "../models/CollectionCard";
 import type { CardRelationship } from "../models/CardRelationship";
 import type { Combo } from "../models/Combo";
 import type { RecommendationPriority } from "../models/DeckRecommendation";
-import type { DeckFormat } from "../services/banlistService";
+import type { DeckFormat } from "../services/deck/banlistService";
 
 import { useDeckAnalysis } from "../hooks/useDeckAnalysis";
-import { candidateToComboDraft } from "../services/comboCandidateConversionService";
+import { candidateToComboDraft } from "../services/combo/comboCandidateConversionService";
 
 import ComboEditor from "./ComboEditor";
 import ComboEvaluation from "./ComboEvaluation";
@@ -17,7 +17,7 @@ import EndBoardAnalysisPanel from "./analysis/EndBoardAnalysisPanel";
 
 import {
   evaluateEndBoard,
-} from "../services/endBoardEvaluationService";
+} from "../services/analysis/endBoard/endBoardEvaluationService";
 
 import type {
   EndBoardScoreWeights,
@@ -25,7 +25,7 @@ import type {
 
 import {
   DEFAULT_SCORE_WEIGHTS,
-} from "../services/endBoardScoringService";
+} from "../services/analysis/endBoard/endBoardScoringService";
 
 type AnalysisTab =
   | "overview"

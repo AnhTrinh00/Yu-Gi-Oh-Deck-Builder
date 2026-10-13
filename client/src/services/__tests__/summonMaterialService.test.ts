@@ -14,15 +14,15 @@ import type {
 
 import {
   initializeCardInstances,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   validateSummonMaterials,
-} from "../summonMaterialService";
+} from "../simulation/summon/summonMaterialService";
 
 function createState(): GameState {
   const state: GameState = {

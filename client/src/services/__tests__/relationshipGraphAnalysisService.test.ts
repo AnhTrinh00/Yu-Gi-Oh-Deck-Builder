@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import type { CardRelationship } from "../../models/CardRelationship";
 
-import { analyzeRelationshipGraph } from "../relationshipGraphAnalysisService";
+import { analyzeRelationshipGraph } from "../relationship/relationshipGraphAnalysisService";
 
 const relationships: CardRelationship[] = [
   { sourceCardId: 1, targetCardId: 2, type: "searches" },

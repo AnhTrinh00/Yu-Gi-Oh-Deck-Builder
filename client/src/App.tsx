@@ -12,57 +12,57 @@ import {
   saveDeck,
   loadDeck,
   clearSavedDeck
-} from "./services/deckService";
+} from "./services/deck/deckService";
 import "./App.css";
-import { searchCards } from "./services/cardApi";
+import { searchCards } from "./services/card/cardApi";
 import {
   addToCollection,
   getCollection,
   removeFromCollection,
-} from "./services/collectionService";
+} from "./services/collection/collectionService";
 import type { Card } from "./models/Card";
 import type { CollectionCard } from "./models/CollectionCard";
-import { getDeckStatistics } from "./services/deckStatisticsService";
-import { getArchetypeSummaries } from "./services/archetypeService";
+import { getDeckStatistics } from "./services/deck/deckStatisticsService";
+import { getArchetypeSummaries } from "./services/card/archetypeService";
 import type { CardRelationship, CardRelationshipType } from "./models/CardRelationship";
 import {
   loadRelationships,
   addRelationship,
   removeRelationship
-} from "./services/cardRelationshipRegistry";
+} from "./services/relationship/cardRelationshipRegistry";
 import {
   analyzeDeckRelationships,
-} from "./services/deckRelationshipAnalysisService";
+} from "./services/deck/deckRelationshipAnalysisService";
 import {
   createRelationship,
-} from "./services/cardRelationshipService";
-import { findShortestPath } from "./services/cardRelationshipGraphService";
-import { getPathSteps } from "./services/relationshipPathService";
+} from "./services/relationship/cardRelationshipService";
+import { findShortestPath } from "./services/relationship/cardRelationshipGraphService";
+import { getPathSteps } from "./services/relationship/relationshipPathService";
 import RelationshipGraph from "./components/RelationshipGraph";
 import {
   DEFAULT_GRAPH_FILTERS,
   filterRelationshipGraph,
-} from "./services/relationshipGraphFilterService";
+} from "./services/relationship/relationshipGraphFilterService";
 import type {
   RelationshipGraphFilters,
-} from "./services/relationshipGraphFilterService";
-import type { CardRole } from "./services/cardRoleService";
-import { analyzeRelationshipGraph } from "./services/relationshipGraphAnalysisService";
+} from "./services/relationship/relationshipGraphFilterService";
+import type { CardRole } from "./services/card/cardRoleService";
+import { analyzeRelationshipGraph } from "./services/relationship/relationshipGraphAnalysisService";
 import ComboEditor from "./components/ComboEditor";
 import type { Combo } from "./models/Combo";
 import {
   loadCombos,
   upsertCombo,
   deleteCombo,
-} from "./services/comboRegistryService";
-import { validateCombo } from "./services/comboValidationService";
-import { calculateComboOpeningProbability } from "./services/comboProbabilityService";
+} from "./services/combo/comboRegistryService";
+import { validateCombo } from "./services/combo/comboValidationService";
+import { calculateComboOpeningProbability } from "./services/combo/evaluation/comboProbabilityService";
 import DeckAnalysisWorkspace from "./components/DeckAnalysisWorkspace";
 import CollectionPage from "./components/collection/CollectionPage";
 import DeckManager from "./components/deck/DeckManager";
 import AnalysisTabs from "./components/analysis/AnalysisTabs";
 import AnalysisOverview from "./components/analysis/AnalysisOverview";
-import { checkDeckAddition } from "./services/deckAdditionPolicyService";
+import { checkDeckAddition } from "./services/deck/deckAdditionPolicyService";
 import ComboExplorer from "./components/combo/ComboExplorer";
 
 function App() {

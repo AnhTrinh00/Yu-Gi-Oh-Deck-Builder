@@ -19,21 +19,21 @@ import type {
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   getInstancesInZone,
   initializeCardInstances,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import type {
   EffectRegistryReader,
-} from "../registeredEffectExecutionService";
+} from "../effect/registeredEffectExecutionService";
 
 import {
   simulateStructuredCombo,
-} from "../structuredComboSimulationService";
+} from "../simulation/structuredComboSimulationService";
 
 function createState(): GameState {
   const legacy: GameState = {

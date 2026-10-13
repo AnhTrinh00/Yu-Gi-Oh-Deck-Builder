@@ -4,7 +4,7 @@ import type { Card } from "../../models/Card";
 
 import {
   validateSummonRules,
-} from "../summonRulesService";
+} from "../simulation/summon/summonRulesService";
 
 function card(
   id: number,

@@ -13,7 +13,7 @@ import {
   loadCombos,
   upsertCombo,
   deleteCombo,
-} from "../comboRegistryService";
+} from "../combo/comboRegistryService";
 
 const combo: Combo = {
   id: "combo-1",

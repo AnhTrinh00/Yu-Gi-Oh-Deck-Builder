@@ -18,11 +18,11 @@ import type {
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   validateEffectActivation,
-} from "../effectActivationValidationService";
+} from "../effect/effectActivationValidationService";
 
 function createState(): GameState {
   return normalizeGameState({

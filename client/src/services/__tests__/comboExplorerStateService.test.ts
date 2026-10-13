@@ -10,7 +10,7 @@ import type { Card } from "../../models/Card";
 
 import {
   createComboExplorerState,
-} from "../comboExplorerStateService";
+} from "../combo/discovery/comboExplorerStateService";
 
 const testCard: Card = {
   id: 100,

@@ -9,14 +9,14 @@ import {
 
 import type { CardEffectDefinition } from "../../models/CardEffect";
 
-import { CardEffectRegistry } from "../cardEffectRegistryService";
+import { CardEffectRegistry } from "../effect/cardEffectRegistryService";
 
 import {
   loadPersistedEffects,
   savePersistedEffects,
   createPersistentEffectRegistry,
   persistRegistry,
-} from "../cardEffectPersistenceService";
+} from "../effect/cardEffectPersistenceService";
 
 function createEffect(
   id: string

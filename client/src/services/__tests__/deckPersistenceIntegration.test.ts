@@ -10,7 +10,7 @@ import {
   createEmptyDeck,
   loadDeck,
   saveDeck,
-} from "../deckService";
+} from "../deck/deckService";
 
 const testCard: Card = {
   id: 89631139,

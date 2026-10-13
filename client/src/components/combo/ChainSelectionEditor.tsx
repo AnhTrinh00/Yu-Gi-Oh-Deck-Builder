@@ -15,7 +15,7 @@ import type {
 import {
   createChainSelections,
   getChainSelectionRequirements,
-} from "../../services/chainSelectionService";
+} from "../../services/combo/chainSelectionService";
 
 interface Props {
   gameState: GameState;

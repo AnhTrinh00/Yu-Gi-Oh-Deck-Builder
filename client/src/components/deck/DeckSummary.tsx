@@ -3,7 +3,7 @@ import type { Deck, DeckSection } from "../../models/Deck";
 import {
   DECK_LIMITS,
   getDeckCardCount,
-} from "../../services/deckService";
+} from "../../services/deck/deckService";
 
 interface DeckSummaryProps {
   deck: Deck;

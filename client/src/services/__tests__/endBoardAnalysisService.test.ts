@@ -10,7 +10,7 @@ import type {
 
 import {
   analyzeEndBoard,
-} from "../endBoardAnalysisService";
+} from "../analysis/endBoard/endBoardAnalysisService";
 
 function createTestState(): GameState {
   return {

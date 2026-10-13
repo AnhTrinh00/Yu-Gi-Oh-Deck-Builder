@@ -9,11 +9,11 @@ import {
   createEmptyDeck,
   getDeckCardCount,
   removeCardFromDeck,
-} from "../deckService";
+} from "../deck/deckService";
 
-import { checkDeckAddition } from "../deckAdditionPolicyService";
-import { validateDeckOwnership } from "../deckOwnershipService";
-import { getDeckStatistics } from "../deckStatisticsService";
+import { checkDeckAddition } from "../deck/deckAdditionPolicyService";
+import { validateDeckOwnership } from "../deck/deckOwnershipService";
+import { getDeckStatistics } from "../deck/deckStatisticsService";
 
 const blueEyes: Card = {
   id: 89631139,

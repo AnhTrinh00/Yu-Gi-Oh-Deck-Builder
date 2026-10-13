@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { MemoryRouter } from "react-router-dom";
 import DeckManager from "../DeckManager";
-import { createEmptyDeck } from "../../../services/deckService";
+import { createEmptyDeck } from "../../../services/deck/deckService";
 
 describe("DeckManager", () => {
   const callbacks = {

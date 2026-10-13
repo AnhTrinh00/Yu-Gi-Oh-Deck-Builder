@@ -7,7 +7,7 @@ import type {
 
 import type { GameState } from "../../models/GameState";
 
-import { validateCardEffect } from "../cardEffectValidationService";
+import { validateCardEffect } from "../effect/cardEffectValidationService";
 
 const state = (): GameState => ({
   zones: {

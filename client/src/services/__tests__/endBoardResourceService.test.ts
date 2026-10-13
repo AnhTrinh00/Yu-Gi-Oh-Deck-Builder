@@ -11,7 +11,7 @@ import type {
 import {
   evaluateEndBoardResources,
   compareEndBoardResources,
-} from "../endBoardResourceService";
+} from "../analysis/endBoard/endBoardResourceService";
 
 function createState(): GameState {
   return {

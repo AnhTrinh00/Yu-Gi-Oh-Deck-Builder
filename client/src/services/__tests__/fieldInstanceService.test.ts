@@ -3,19 +3,19 @@ import { describe, expect, it } from "vitest";
 
 import type { GameState } from "../../models/GameState";
 
-import { normalizeGameState } from "../extendedGameStateService";
+import { normalizeGameState } from "../simulation/extendedGameStateService";
 
 import {
   getCardInstance,
   getInstancesInZone,
   initializeCardInstances,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   placeCardInstanceOnField,
   removeCardInstanceFromField,
-} from "../fieldInstanceService";
+} from "../simulation/field/fieldInstanceService";
 
 function createState(): GameState {
   return normalizeGameState({

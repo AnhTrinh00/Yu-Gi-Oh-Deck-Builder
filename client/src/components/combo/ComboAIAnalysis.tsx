@@ -9,12 +9,12 @@ import type {
 
 import {
   buildComboAIContext,
-} from "../../services/comboAIContextService";
+} from "../../services/ai/comboAIContextService";
 
 import {
   requestComboAIAnalysis,
   type AIComboAnalysis,
-} from "../../services/comboAIAnalysisService";
+} from "../../services/ai/comboAIAnalysisService";
 
 interface Props {
   combos: EvaluatedCombo[];

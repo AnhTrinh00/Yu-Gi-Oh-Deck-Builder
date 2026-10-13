@@ -14,20 +14,20 @@ import type {
 import {
   initializeCardInstances,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   isFieldSynchronized,
   placeCardOnField,
-} from "../fieldZoneService";
+} from "../simulation/field/fieldZoneService";
 
 import {
   executeExtraDeckSummon,
-} from "../extraDeckSummonService";
+} from "../simulation/summon/extraDeckSummonService";
 
 // --------------------------------------------------
 // Test Helpers

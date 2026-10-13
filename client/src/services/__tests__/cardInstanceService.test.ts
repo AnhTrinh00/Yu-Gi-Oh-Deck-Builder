@@ -10,7 +10,7 @@ import type {
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   getCardInstance,
@@ -19,7 +19,7 @@ import {
   initializeCardInstances,
   moveCardInstance,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 function createState(): GameState {
   return normalizeGameState({

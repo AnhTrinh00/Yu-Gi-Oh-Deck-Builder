@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Card } from "../../models/Card";
 import type { CollectionCard } from "../../models/CollectionCard";
 import type { Deck } from "../../models/Deck";
-import { validateDeckOwnership } from "../deckOwnershipService";
+import { validateDeckOwnership } from "../deck/deckOwnershipService";
 
 const cardA: Card = {
   id: 1,

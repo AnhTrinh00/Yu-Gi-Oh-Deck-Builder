@@ -7,7 +7,7 @@ import type {
 
 import {
   discoverComboCandidatesDetailed,
-} from "../comboDiscoveryService";
+} from "../combo/comboDiscoveryService";
 
 type BenchmarkScenario = {
   name: string;

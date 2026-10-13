@@ -9,7 +9,7 @@ import {
   countCardInZone,
   executeGameAction,
   moveCard,
-} from "../gameStateService";
+} from "../simulation/gameStateService";
 
 function card(id: number): Card {
   return {

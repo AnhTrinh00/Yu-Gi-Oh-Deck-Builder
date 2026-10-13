@@ -1,8 +1,8 @@
 
 import { describe, expect, it } from "vitest";
 
-import { findShortestPath } from "../cardRelationshipGraphService";
-import { getPathSteps } from "../relationshipPathService";
+import { findShortestPath } from "../relationship/cardRelationshipGraphService";
+import { getPathSteps } from "../relationship/relationshipPathService";
 
 import type { CardRelationship } from "../../models/CardRelationship";
 

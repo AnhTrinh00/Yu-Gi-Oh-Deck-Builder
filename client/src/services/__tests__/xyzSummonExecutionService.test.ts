@@ -11,25 +11,25 @@ import type {
 import {
   initializeCardInstances,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   isFieldSynchronized,
   placeCardOnField,
-} from "../fieldZoneService";
+} from "../simulation/field/fieldZoneService";
 
 import {
   executeXyzSummonTransaction,
-} from "../xyzSummonExecutionService";
+} from "../simulation/summon/xyzSummonExecutionService";
 
 import {
   getAttachedXyzMaterials,
   detachXyzMaterial,
-} from "../xyzMaterialService";
+} from "../simulation/summon/xyzMaterialService";
 
 function createState(
   materialCardIds: number[] = [100, 200]

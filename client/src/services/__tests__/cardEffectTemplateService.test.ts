@@ -14,11 +14,11 @@ import {
   loadCustomTemplates,
   parseEffectTemplates,
   saveCustomTemplates,
-} from "../cardEffectTemplateService";
+} from "../effect/cardEffectTemplateService";
 
 import type {
   CardEffectTemplate,
-} from "../cardEffectTemplateService";
+} from "../effect/cardEffectTemplateService";
 
 const memory = new Map<string, string>();
 

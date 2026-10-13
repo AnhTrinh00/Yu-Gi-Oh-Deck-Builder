@@ -10,7 +10,7 @@ import {
 
 import type {
   EndBoardEvaluation,
-} from "../../../services/endBoardEvaluationService";
+} from "../../../services/analysis/endBoard/endBoardEvaluationService";
 
 import EndBoardAnalysisPanel from "../EndBoardAnalysisPanel";
 

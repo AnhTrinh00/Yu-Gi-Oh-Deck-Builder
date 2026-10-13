@@ -10,7 +10,7 @@ import {
   loadCustomTemplates,
   saveCustomTemplates,
   type CardEffectTemplate,
-} from "../../services/cardEffectTemplateService";
+} from "../../services/effect/cardEffectTemplateService";
 
 interface Props {
   sourceCardId: number;

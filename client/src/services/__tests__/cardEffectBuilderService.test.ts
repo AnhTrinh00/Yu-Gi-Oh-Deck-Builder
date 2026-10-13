@@ -6,7 +6,7 @@ import {
   newEffect,
   newStep,
   validateBuiltEffect,
-} from "../cardEffectBuilderService";
+} from "../effect/definition/cardEffectBuilderService";
 
 describe("cardEffectBuilderService", () => {
   it("creates a valid experimental effect", () => {

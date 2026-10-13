@@ -17,7 +17,7 @@ import {
   addRelationship,
   removeRelationship,
   clearRelationships,
-} from "../cardRelationshipRegistry";
+} from "../relationship/cardRelationshipRegistry";
 
 // Mock localStorage so tests work in Node.
 const storage = new Map<string, string>();

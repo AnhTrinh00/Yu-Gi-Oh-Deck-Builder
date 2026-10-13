@@ -3,7 +3,7 @@ import type { Card } from "../../models/Card";
 import type { Deck } from "../../models/Deck";
 import {
     getArchetypeSummaries,
-} from "../archetypeService";
+} from "../card/archetypeService";
 
 const createCard = (
     id: number,

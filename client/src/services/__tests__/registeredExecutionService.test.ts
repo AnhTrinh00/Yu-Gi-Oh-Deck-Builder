@@ -5,7 +5,7 @@ import {
   it,
 } from "vitest";
 
-import { advanceTurn } from "../turnRestrictionService";
+import { advanceTurn } from "../simulation/turnRestrictionService";
 
 import type {
   CardEffectDefinition,
@@ -17,17 +17,17 @@ import type {
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   initializeCardInstances,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   executeRegisteredEffect,
   type EffectRegistryReader,
-} from "../registeredEffectExecutionService";
+} from "../effect/registeredEffectExecutionService";
 
 function createState(): GameState {
   const legacy: GameState = {

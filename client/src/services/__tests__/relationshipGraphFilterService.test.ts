@@ -8,7 +8,7 @@ import type { CardRelationship } from "../../models/CardRelationship";
 import {
   DEFAULT_GRAPH_FILTERS,
   filterRelationshipGraph,
-} from "../relationshipGraphFilterService";
+} from "../relationship/relationshipGraphFilterService";
 
 const makeCard = (
   id: number,

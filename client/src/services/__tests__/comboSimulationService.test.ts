@@ -5,7 +5,7 @@ import type { Card } from "../../models/Card";
 import type { Deck } from "../../models/Deck";
 import type { Combo } from "../../models/Combo";
 
-import { simulateCombo } from "../comboSimulationService";
+import { simulateCombo } from "../simulation/comboSimulationService";
 
 function card(id: number): Card {
   return {

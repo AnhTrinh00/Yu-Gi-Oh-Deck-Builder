@@ -7,15 +7,15 @@ import {
   cloneGameState,
   executeGameAction,
   moveCard,
-} from "../gameStateService";
+} from "../simulation/gameStateService";
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   initializeCardInstances,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 function legacyState(): GameState {
   return {

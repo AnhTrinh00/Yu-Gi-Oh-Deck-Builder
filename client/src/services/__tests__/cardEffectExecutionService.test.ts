@@ -15,16 +15,16 @@ import type {
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   initializeCardInstances,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   executeCardEffect,
-} from "../cardEffectExecutionService";
+} from "../effect/cardEffectExecutionService";
 
 function createState(): GameState {
   const legacy: GameState = {

@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import DeckSummary from "../DeckSummary";
-import { createEmptyDeck } from "../../../services/deckService";
+import { createEmptyDeck } from "../../../services/deck/deckService";
 
 describe("DeckSummary", () => {
   it("renders empty deck capacities", () => {

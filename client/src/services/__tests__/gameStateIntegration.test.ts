@@ -5,7 +5,7 @@ import type { GameState } from "../../models/GameState";
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   getCardInstance,
@@ -13,16 +13,16 @@ import {
   initializeCardInstances,
   moveCardInstance,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   placeCardInstanceOnField,
   removeCardInstanceFromField,
-} from "../fieldInstanceService";
+} from "../simulation/field/fieldInstanceService";
 
 import {
   cloneGameState,
-} from "../gameStateService";
+} from "../simulation/gameStateService";
 
 function createState(): GameState {
   return normalizeGameState({

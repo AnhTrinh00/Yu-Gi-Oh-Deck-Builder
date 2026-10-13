@@ -15,7 +15,7 @@ import type {
 import {
   scoreEndBoard,
   compareEndBoardScores,
-} from "../endBoardScoringService";
+} from "../analysis/endBoard/endBoardScoringService";
 
 function createState(): GameState {
   return {

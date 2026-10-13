@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import type { GameState } from "../../models/GameState";
 
-import { CardEffectRegistry } from "../cardEffectRegistryService";
+import { CardEffectRegistry } from "../effect/cardEffectRegistryService";
 
 import {
   CARD_IDS,
@@ -11,7 +11,7 @@ import {
   createFoolishBurialEffect,
   initializeCardEffectLibrary,
   registerFoolishBurialCandidate,
-} from "../cardEffectLibraryService";
+} from "../effect/definition/cardEffectLibraryService";
 
 function createState(): GameState {
   return {

@@ -6,14 +6,14 @@ import type { CollectionCard } from "../models/CollectionCard";
 import type { CardRelationship } from "../models/CardRelationship";
 import type { Combo } from "../models/Combo";
 
-import type { DeckFormat } from "../services/banlistService";
+import type { DeckFormat } from "../services/deck/banlistService";
 
-import { discoverComboCandidates } from "../services/comboDiscoveryService";
-import { analyzeComboCandidates } from "../services/comboCandidateAnalysisService";
-import { generateDeckRecommendations } from "../services/deckRecommendationService";
-import { simulateTrackedCombo } from "../services/trackedComboSimulationService";
+import { discoverComboCandidates } from "../services/combo/comboDiscoveryService";
+import { analyzeComboCandidates } from "../services/combo/discovery/comboCandidateAnalysisService";
+import { generateDeckRecommendations } from "../services/deck/deckRecommendationService";
+import { simulateTrackedCombo } from "../services/simulation/trackedComboSimulationService";
 
-import { analyzeDataHealth } from "../services/analysisHealthService";
+import { analyzeDataHealth } from "../services/analysis/analysisHealthService";
 
 export interface DeckAnalysisInput {
   deck: Deck;

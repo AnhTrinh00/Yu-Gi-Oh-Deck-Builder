@@ -15,7 +15,7 @@ import {
   newEffect,
   newStep,
   validateBuiltEffect,
-} from "../../services/cardEffectBuilderService";
+} from "../../services/effect/definition/cardEffectBuilderService";
 import { EffectTemplateManager } from "./EffectTemplateManager";
 
 interface CardChoice {

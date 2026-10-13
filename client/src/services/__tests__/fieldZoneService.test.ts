@@ -11,14 +11,14 @@ import type {
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   findAvailableFieldZone,
   isFieldSynchronized,
   placeCardOnField,
   removeCardFromField,
-} from "../fieldZoneService";
+} from "../simulation/field/fieldZoneService";
 
 function createState(): GameState {
   return normalizeGameState({

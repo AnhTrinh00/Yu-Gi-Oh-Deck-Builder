@@ -14,12 +14,12 @@ import type {
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   initializeCardInstances,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   createEffectChain,
@@ -27,16 +27,16 @@ import {
   negateChainLink,
   resolveEffectChain,
   activateChainEffectForInstance
-} from "../effectChainService";
+} from "../effect/effectChainService";
 
 import {
   placeCardInstanceOnField,
-} from "../fieldInstanceService";
+} from "../simulation/field/fieldInstanceService";
 
 import {
   attachXyzMaterials,
   getAttachedXyzMaterials,
-} from "../xyzMaterialService";
+} from "../simulation/summon/xyzMaterialService";
 
 function createState(): GameState {
   const legacy: GameState = {

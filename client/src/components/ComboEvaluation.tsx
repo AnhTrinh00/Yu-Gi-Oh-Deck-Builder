@@ -6,7 +6,7 @@ import type { Deck } from "../models/Deck";
 import type { Card } from "../models/Card";
 import type { GameZone } from "../models/GameState";
 
-import { simulateTrackedCombo } from "../services/trackedComboSimulationService";
+import { simulateTrackedCombo } from "../services/simulation/trackedComboSimulationService";
 
 interface Props {
   deck: Deck;

@@ -8,7 +8,7 @@ import {
   getCollectionArchetypes,
   getCollectionCategory,
   getCollectionStatistics,
-} from "../collectionFilterService";
+} from "../collection/collectionFilterService";
 
 function makeCard(
   id: number,

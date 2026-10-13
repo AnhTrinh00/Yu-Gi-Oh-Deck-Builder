@@ -3,7 +3,7 @@ import type { Card } from "../../models/Card";
 import type { Deck } from "../../models/Deck";
 import {
     getDeckStatistics,
-} from "../deckStatisticsService";
+} from "../deck/deckStatisticsService";
 
 const createCard = (
     id: number,

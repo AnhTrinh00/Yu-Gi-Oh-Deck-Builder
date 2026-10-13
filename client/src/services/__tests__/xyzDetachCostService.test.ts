@@ -5,24 +5,24 @@ import type { GameState } from "../../models/GameState";
 import {
   initializeCardInstances,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   placeCardInstanceOnField,
-} from "../fieldInstanceService";
+} from "../simulation/field/fieldInstanceService";
 
 import {
   attachXyzMaterials,
   getAttachedXyzMaterials,
-} from "../xyzMaterialService";
+} from "../simulation/summon/xyzMaterialService";
 
 import {
   payXyzDetachCost,
-} from "../xyzDetachCostService";
+} from "../simulation/summon/xyzDetachCostService";
 
 function createState(): GameState {
   const initial: GameState = {

@@ -7,19 +7,19 @@ import type { Combo } from "../../models/Combo";
 
 import {
   simulateTrackedCombo,
-} from "../trackedComboSimulationService";
+} from "../simulation/trackedComboSimulationService";
 
 import {
   analyzeEndBoard,
-} from "../endBoardAnalysisService";
+} from "../analysis/endBoard/endBoardAnalysisService";
 
 import {
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   isFieldSynchronized,
-} from "../fieldZoneService";
+} from "../simulation/field/fieldZoneService";
 
 const card = (id: number): Card => ({
   id,

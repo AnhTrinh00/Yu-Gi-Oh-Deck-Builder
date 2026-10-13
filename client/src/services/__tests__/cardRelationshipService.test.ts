@@ -1,7 +1,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { Card } from "../../models/Card";
-import { createEmptyDeck } from "../deckService";
+import { createEmptyDeck } from "../deck/deckService";
 import {
   createRelationship,
   getOutgoingRelationships,
@@ -10,7 +10,7 @@ import {
   getRelationshipsByType,
   getDeckRelationships,
   getConnectedCardIds,
-} from "../cardRelationshipService";
+} from "../relationship/cardRelationshipService";
 
 function mockCard(id: number, name: string): Card {
   return {

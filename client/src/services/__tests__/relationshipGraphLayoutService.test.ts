@@ -1,6 +1,6 @@
 
 import { describe, expect, it } from "vitest";
-import { createRelationshipGraphLayout } from "../relationshipGraphLayoutService";
+import { createRelationshipGraphLayout } from "../relationship/relationshipGraphLayoutService";
 
 describe("relationshipGraphLayoutService", () => {
   it("creates one node per unique card", () => {

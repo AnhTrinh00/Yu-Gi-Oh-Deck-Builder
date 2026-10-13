@@ -2,16 +2,16 @@ import { useState } from "react";
 
 import type { Deck } from "../../models/Deck";
 import type { CardEffectDefinition } from "../../models/CardEffect";
-import type { ComboDiscoveryEvaluationResult } from "../../services/comboDiscoveryEvaluationService";
+import type { ComboDiscoveryEvaluationResult } from "../../services/combo/discovery/comboDiscoveryEvaluationService";
 
-import { cardEffectRegistry } from "../../services/cardEffectRegistryService";
-import { createComboExplorerState } from "../../services/comboExplorerStateService";
-import { discoverAndRankCombos } from "../../services/comboDiscoveryEvaluationService";
+import { cardEffectRegistry } from "../../services/effect/cardEffectRegistryService";
+import { createComboExplorerState } from "../../services/combo/discovery/comboExplorerStateService";
+import { discoverAndRankCombos } from "../../services/combo/discovery/comboDiscoveryEvaluationService";
 import {
   loadPersistedEffects,
   persistRegistry,
-} from "../../services/cardEffectPersistenceService";
-import { parseCardEffects } from "../../services/cardEffectSchemaService";
+} from "../../services/effect/cardEffectPersistenceService";
+import { parseCardEffects } from "../../services/effect/definition/cardEffectSchemaService";
 
 import { ComboAIAnalysis } from "./ComboAIAnalysis";
 import { CardEffectBuilder } from "./CardEffectBuilder";

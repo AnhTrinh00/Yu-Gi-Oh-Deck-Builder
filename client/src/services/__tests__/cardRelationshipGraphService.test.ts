@@ -12,7 +12,7 @@ import {
   hasRelationshipPath,
   hasRelationshipCycle,
   getDisconnectedCardIds,
-} from "../cardRelationshipGraphService";
+} from "../relationship/cardRelationshipGraphService";
 
 const relationships: CardRelationship[] = [
   {

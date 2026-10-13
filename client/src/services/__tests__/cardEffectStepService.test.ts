@@ -5,22 +5,22 @@ import type { GameState } from "../../models/GameState";
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   getInstancesInZone,
   initializeCardInstances,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   placeCardInstanceOnField,
-} from "../fieldInstanceService";
+} from "../simulation/field/fieldInstanceService";
 
 import {
   executeEffectStep,
   executeEffectSteps,
-} from "../cardEffectStepService";
+} from "../effect/execution/cardEffectStepService";
 
 function createState(): GameState {
   const legacy: GameState = {

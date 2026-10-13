@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import type { CardRelationship, CardRelationshipType } from "../../models/CardRelationship";
 
-import { discoverComboCandidates, discoverComboCandidatesDetailed } from "../comboDiscoveryService";
+import { discoverComboCandidates, discoverComboCandidatesDetailed } from "../combo/comboDiscoveryService";
 
 const relationships: CardRelationship[] = [
   { sourceCardId: 1, targetCardId: 2, type: "searches" },

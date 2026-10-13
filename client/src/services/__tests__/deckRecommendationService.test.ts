@@ -6,7 +6,7 @@ import type { Deck } from "../../models/Deck";
 import type { CollectionCard } from "../../models/CollectionCard";
 import type { Combo } from "../../models/Combo";
 
-import { generateDeckRecommendations } from "../deckRecommendationService";
+import { generateDeckRecommendations } from "../deck/deckRecommendationService";
 
 function card(
   id: number,

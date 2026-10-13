@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import type { GameState } from "../../models/GameState";
 
-import { normalizeGameState } from "../extendedGameStateService";
+import { normalizeGameState } from "../simulation/extendedGameStateService";
 
 import {
   addGameRestriction,
@@ -11,7 +11,7 @@ import {
   hasUsedEffectThisTurn,
   recordEffectUsage,
   setDuelPhase,
-} from "../turnRestrictionService";
+} from "../simulation/turnRestrictionService";
 
 function createState(): GameState {
   return normalizeGameState({

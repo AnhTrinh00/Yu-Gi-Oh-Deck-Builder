@@ -1,4 +1,3 @@
-
 import {
   describe,
   expect,
@@ -16,29 +15,29 @@ import type {
 
 import {
   analyzeComboResources,
-} from "../comboResourceAnalysisService";
+} from "../combo/evaluation/comboResourceAnalysisService";
 
 import {
   analyzeComboInteractions,
-} from "../comboInteractionAnalysisService";
+} from "../combo/evaluation/comboInteractionAnalysisService";
 
 import {
   evaluateCombo,
-} from "../comboScoringService";
+} from "../combo/evaluation/comboScoringService";
 
 import {
   rankDiscoveredCombos,
-} from "../comboRankingService";
+} from "../combo/evaluation/comboRankingService";
 
 import {
   compareEvaluatedCombos,
-} from "../comboComparisonService";
+} from "../combo/evaluation/comboComparisonService";
 
 import {
   DEFAULT_COMBO_EVALUATION_CONFIG,
   validateEvaluationConfig,
   normalizeEvaluationWeights,
-} from "../comboEvaluationConfigService";
+} from "../combo/discovery/comboEvaluationConfigService";
 
 function state(
   hand: number[],

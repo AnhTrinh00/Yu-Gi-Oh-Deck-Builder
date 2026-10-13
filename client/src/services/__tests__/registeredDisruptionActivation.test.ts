@@ -18,11 +18,11 @@ import type {
 
 import {
   CardEffectRegistry,
-} from "../cardEffectRegistryService";
+} from "../effect/cardEffectRegistryService";
 
 import {
   analyzeRegisteredDisruptions,
-} from "../registeredDisruptionService";
+} from "../analysis/disruption/registeredDisruptionService";
 
 function createState(): GameState {
   return {

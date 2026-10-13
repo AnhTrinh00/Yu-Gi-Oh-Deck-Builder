@@ -1,5 +1,5 @@
 
-import type { DeckOwnershipReport } from "../../services/deckOwnershipService";
+import type { DeckOwnershipReport } from "../../services/deck/deckOwnershipService";
 
 interface DeckOwnershipWarningsProps {
   report: DeckOwnershipReport;

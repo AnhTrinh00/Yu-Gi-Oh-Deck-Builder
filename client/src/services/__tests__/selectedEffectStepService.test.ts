@@ -5,19 +5,19 @@ import type { GameState } from "../../models/GameState";
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   getCardInstance,
   getInstancesInZone,
   initializeCardInstances,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   executeSelectedEffectStep,
   executeSelectedEffectSteps,
-} from "../selectedEffectStepService";
+} from "../effect/execution/selectedEffectStepService";
 
 function createState(): GameState {
   const legacy: GameState = {

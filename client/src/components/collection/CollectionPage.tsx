@@ -14,7 +14,7 @@ import {
   type CollectionCategory,
   type CollectionFilters,
   type CollectionSort,
-} from "../../services/collectionFilterService";
+} from "../../services/collection/collectionFilterService";
 
 interface CollectionPageProps {
   collection: CollectionCard[];

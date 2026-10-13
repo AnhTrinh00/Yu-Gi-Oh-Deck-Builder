@@ -14,7 +14,7 @@ import type {
 
 import {
   analyzeDisruptions,
-} from "../disruptionAnalysisService";
+} from "../analysis/disruption/disruptionAnalysisService";
 
 function createTestState(): GameState {
   return {

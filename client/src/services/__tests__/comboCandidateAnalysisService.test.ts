@@ -5,7 +5,7 @@ import type { Card } from "../../models/Card";
 import type { Deck } from "../../models/Deck";
 import type { ComboCandidate } from "../../models/ComboCandidate";
 
-import { analyzeComboCandidates } from "../comboCandidateAnalysisService";
+import { analyzeComboCandidates } from "../combo/discovery/comboCandidateAnalysisService";
 
 function makeCard(id: number): Card {
   return {

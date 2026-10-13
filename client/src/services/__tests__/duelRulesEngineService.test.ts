@@ -12,27 +12,27 @@ import {
 
 import {
   validateActivation,
-} from "../duelActivationRulesService";
+} from "../simulation/duel/duelActivationRulesService";
 
 import {
   executeSummon,
   validateSummon,
-} from "../duelSummoningRulesService";
+} from "../simulation/duel/duelSummoningRulesService";
 
 import {
   validateTargets,
-} from "../duelTargetingRulesService";
+} from "../simulation/duel/duelTargetingRulesService";
 
 import {
   addChainLink,
   passChainPriority,
   negateChainLink,
   resolveChainOrder,
-} from "../duelChainRulesService";
+} from "../simulation/duel/duelChainRulesService";
 
 import {
   validateEffectLegality,
-} from "../duelRulesEngineService";
+} from "../simulation/duel/duelRulesEngineService";
 
 function card(
   instanceId: string,

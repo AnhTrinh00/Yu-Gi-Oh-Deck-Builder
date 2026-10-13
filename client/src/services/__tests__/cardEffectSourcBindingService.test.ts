@@ -14,7 +14,7 @@ import type {
 
 import {
   bindCardEffectSource,
-} from "../cardEffectSourceBindingService";
+} from "../effect/definition/cardEffectSourceBindingService";
 
 const effect: CardEffectDefinition = {
   id: "xyz-effect",

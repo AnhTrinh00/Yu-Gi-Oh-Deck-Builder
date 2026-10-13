@@ -1,6 +1,6 @@
 
 import type { Deck } from "../../models/Deck";
-import { getDeckCardCount } from "../../services/deckService";
+import { getDeckCardCount } from "../../services/deck/deckService";
 
 interface AnalysisOverviewProps {
   deck: Deck;

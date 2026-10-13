@@ -8,10 +8,10 @@ import {
   DECK_LIMITS,
   getDeckCardCount,
   validateDeck,
-} from "../../services/deckService";
+} from "../../services/deck/deckService";
 import DeckCardTile from "./DeckCardTile";
-import { checkDeckAddition } from "../../services/deckAdditionPolicyService";
-import { validateDeckOwnership } from "../../services/deckOwnershipService";
+import { checkDeckAddition } from "../../services/deck/deckAdditionPolicyService";
+import { validateDeckOwnership } from "../../services/deck/deckOwnershipService";
 import DeckOwnershipWarnings from "./DeckOwnershipWarnings";
 
 interface DeckManagerProps {

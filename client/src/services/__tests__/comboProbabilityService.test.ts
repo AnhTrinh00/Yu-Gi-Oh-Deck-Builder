@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Card } from "../../models/Card";
 import type { Deck } from "../../models/Deck";
 import type { Combo } from "../../models/Combo";
-import { calculateComboOpeningProbability } from "../comboProbabilityService";
+import { calculateComboOpeningProbability } from "../combo/evaluation/comboProbabilityService";
 
 const makeCard = (id: number): Card => ({
   id,

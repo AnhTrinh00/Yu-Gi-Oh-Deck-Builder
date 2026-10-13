@@ -5,8 +5,8 @@ import type { Deck } from "../../models/Deck";
 import {
   getCardRoles,
   getDeckRoleSummaries,
-} from "../cardRoleService";
-import { createEmptyDeck } from "../deckService";
+} from "../card/cardRoleService";
+import { createEmptyDeck } from "../deck/deckService";
 
 // Create a reusable mock card
 function createMockCard(

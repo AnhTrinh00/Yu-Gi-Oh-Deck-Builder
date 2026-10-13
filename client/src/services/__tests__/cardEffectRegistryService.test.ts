@@ -9,7 +9,7 @@ import type { GameState } from "../../models/GameState";
 
 import {
   CardEffectRegistry,
-} from "../cardEffectRegistryService";
+} from "../effect/cardEffectRegistryService";
 
 function createEffect(
   id: string,

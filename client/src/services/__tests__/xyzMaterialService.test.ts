@@ -5,22 +5,22 @@ import type { GameState } from "../../models/GameState";
 import {
   initializeCardInstances,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   isFieldSynchronized,
   placeCardOnField,
-} from "../fieldZoneService";
+} from "../simulation/field/fieldZoneService";
 
 import {
   attachXyzMaterials,
   detachXyzMaterial,
   getAttachedXyzMaterials,
-} from "../xyzMaterialService";
+} from "../simulation/summon/xyzMaterialService";
 
 function createState(): GameState {
   const initial: GameState = {

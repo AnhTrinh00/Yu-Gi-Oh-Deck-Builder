@@ -11,7 +11,7 @@ import type {
 
 import {
   buildComboAIContext,
-} from "../comboAIContextService";
+} from "../ai/comboAIContextService";
 
 function exampleCombo(): EvaluatedCombo {
   return {

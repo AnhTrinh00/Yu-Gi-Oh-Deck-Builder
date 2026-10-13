@@ -14,21 +14,21 @@ import type {
 
 import {
   initializeCardInstances,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   createEffectChain,
   activateChainEffect,
   resolveEffectChain,
-} from "../effectChainService";
+} from "../effect/effectChainService";
 
 import {
   cardEffectSchema,
-} from "../cardEffectSchemaService";
+} from "../effect/definition/cardEffectSchemaService";
 
 function createState(): GameState {
   const state: GameState = {

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type { Card } from "../../models/Card";
 import type { Deck } from "../../models/Deck";
 import type { Combo } from "../../models/Combo";
-import { validateCombo } from "../comboValidationService";
+import { validateCombo } from "../combo/comboValidationService";
 
 const card = (id: number): Card => ({
   id,

@@ -1,7 +1,7 @@
 
 import { describe, expect, it } from "vitest";
 import type { CardEffectDefinition } from "../../models/CardEffect";
-import { parseCardEffects } from "../cardEffectSchemaService";
+import { parseCardEffects } from "../effect/definition/cardEffectSchemaService";
 
 function createEffect(
   id = "test-effect"

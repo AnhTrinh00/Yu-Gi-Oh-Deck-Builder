@@ -6,18 +6,18 @@ import type { ChainResolutionEntry } from "../../models/EffectChain";
 
 import {
   createComboExplorerState,
-} from "../../services/comboExplorerStateService";
+} from "../../services/combo/discovery/comboExplorerStateService";
 
 import {
   cardEffectRegistry,
-} from "../../services/cardEffectRegistryService";
+} from "../../services/effect/cardEffectRegistryService";
 
 import {
   activateChainEffectForInstance,
   createEffectChain,
   negateChainLink,
   resolveEffectChain,
-} from "../../services/effectChainService";
+} from "../../services/effect/effectChainService";
 
 import type { EffectExecutionSelections } from "../../models/EffectExecutionSelection";
 import { ChainSelectionEditor } from "./ChainSelectionEditor";
@@ -28,31 +28,31 @@ import type {
 
 import {
   bindCardEffectSource,
-} from "../../services/cardEffectSourceBindingService";
+} from "../../services/effect/definition/cardEffectSourceBindingService";
 
 import {
   placeCardOnField,
-} from "../../services/fieldZoneService";
+} from "../../services/simulation/field/fieldZoneService";
 
 import {
   normalizeGameState,
-} from "../../services/extendedGameStateService";
+} from "../../services/simulation/extendedGameStateService";
 
 import {
   validateCardInstanceSync,
-} from "../../services/cardInstanceService";
+} from "../../services/simulation/cardInstanceService";
 
 import {
   isFieldSynchronized,
-} from "../../services/fieldZoneService";
+} from "../../services/simulation/field/fieldZoneService";
 
 import {
   executeChainXyzSummon,
-} from "../../services/chainXyzSummonService";
+} from "../../services/simulation/summon/chainXyzSummonService";
 
 import {
   getAttachedXyzMaterials,
-} from "../../services/xyzMaterialService";
+} from "../../services/simulation/summon/xyzMaterialService";
 
 interface Props {
   deck: Deck;

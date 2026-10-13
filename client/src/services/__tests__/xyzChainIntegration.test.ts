@@ -7,31 +7,31 @@ import type { GameState } from "../../models/GameState";
 import {
   initializeCardInstances,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   placeCardOnField,
   isFieldSynchronized,
-} from "../fieldZoneService";
+} from "../simulation/field/fieldZoneService";
 
 import {
   executeChainXyzSummon,
-} from "../chainXyzSummonService";
+} from "../simulation/summon/chainXyzSummonService";
 
 import {
   getAttachedXyzMaterials,
-} from "../xyzMaterialService";
+} from "../simulation/summon/xyzMaterialService";
 
 import {
   activateChainEffectForInstance,
   createEffectChain,
   negateChainLink,
   resolveEffectChain,
-} from "../effectChainService";
+} from "../effect/effectChainService";
 
 function makeCard(
   id: number,

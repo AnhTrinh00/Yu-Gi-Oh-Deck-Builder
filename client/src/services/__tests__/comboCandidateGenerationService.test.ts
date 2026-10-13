@@ -15,11 +15,11 @@ import type {
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   generateComboCandidates,
-} from "../comboCandidateGenerationService";
+} from "../combo/comboCandidateGenerationService";
 
 function createState(): GameState {
   return normalizeGameState({

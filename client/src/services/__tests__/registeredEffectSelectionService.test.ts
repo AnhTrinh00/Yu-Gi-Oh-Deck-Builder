@@ -15,22 +15,22 @@ import type {
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   getCardInstance,
   getInstancesInZone,
   initializeCardInstances,
   validateCardInstanceSync,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   executeRegisteredEffectWithSelections,
-} from "../registeredEffectSelectionService";
+} from "../effect/selection/registeredEffectSelectionService";
 
 import type {
   EffectRegistryReader,
-} from "../registeredEffectExecutionService";
+} from "../effect/registeredEffectExecutionService";
 
 function createState(): GameState {
   const legacy: GameState = {

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import type { ComboCandidate } from "../../models/ComboCandidate";
 
-import { candidateToComboDraft } from "../comboCandidateConversionService";
+import { candidateToComboDraft } from "../combo/comboCandidateConversionService";
 
 const candidate: ComboCandidate = {
   id: "1->2->3",

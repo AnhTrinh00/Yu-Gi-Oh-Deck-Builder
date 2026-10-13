@@ -15,23 +15,23 @@ import type {
 
 import {
   normalizeGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 import {
   initializeCardInstances,
-} from "../cardInstanceService";
+} from "../simulation/cardInstanceService";
 
 import {
   discoverCombos,
-} from "../automatedComboSearchService";
+} from "../combo/discovery/automatedComboSearchService";
 
 import {
   generateSelectionBranches,
-} from "../comboSelectionBranchService";
+} from "../combo/discovery/comboSelectionBranchService";
 
 import {
   getComboStateFingerprint,
-} from "../comboStateFingerprintService";
+} from "../combo/discovery/comboStateFingerprintService";
 
 function createState(): GameState {
   const base = normalizeGameState({

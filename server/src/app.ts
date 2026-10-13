@@ -5,6 +5,11 @@ import cors from "cors";
 import type { LLMProvider } from "./services/llmService.js";
 import { createAIRouter } from "./routes/aiRoutes.js";
 
+import {
+  errorHandler,
+  notFoundHandler,
+} from "./middleware/errorHandler.js";
+
 export function createApp(provider: LLMProvider) {
   const app = express();
 
@@ -20,7 +25,6 @@ export function createApp(provider: LLMProvider) {
 
   app.use(express.json({ limit: "32kb" }));
 
-  // Preserve the existing health endpoint.
   app.get("/api/health", (_req, res) => {
     res.json({
       status: "ok",
@@ -29,11 +33,16 @@ export function createApp(provider: LLMProvider) {
     });
   });
 
-  // New Phase 4.7 routes.
   app.use(
     "/api/ai",
     createAIRouter(provider)
   );
+
+  // Must come after all registered routes.
+  app.use(notFoundHandler);
+
+  // Express error middleware must be last.
+  app.use(errorHandler);
 
   return app;
 }

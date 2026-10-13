@@ -6,7 +6,7 @@ import type { Deck } from "../../models/Deck";
 
 import {
   createGameState,
-} from "../gameStateService";
+} from "../simulation/gameStateService";
 
 import {
   createEmptyFieldState,
@@ -14,7 +14,7 @@ import {
   createInitialTurnState,
   normalizeGameState,
   hasExtendedGameState,
-} from "../extendedGameStateService";
+} from "../simulation/extendedGameStateService";
 
 function card(id: number): Card {
   return {

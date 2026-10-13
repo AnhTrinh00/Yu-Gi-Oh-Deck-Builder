@@ -15,7 +15,7 @@ import type {
 import {
   createChainSelections,
   getChainSelectionRequirements,
-} from "../chainSelectionService";
+} from "../combo/chainSelectionService";
 
 const effect: CardEffectDefinition = {
   id: "test-selection",
