@@ -1,4 +1,4 @@
-import type { CardRelationship } from "../../models/CardRelationship";
+import type { CardRelationship } from "../../models/effect/CardRelationship";
 
 export type RelationshipGraph = Map<number, Set<number>>;
 

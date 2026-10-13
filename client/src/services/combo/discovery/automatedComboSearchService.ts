@@ -1,13 +1,13 @@
 
-import type { CardEffectDefinition } from "../../../models/CardEffect";
-import type { GameState } from "../../../models/GameState";
+import type { CardEffectDefinition } from "../../../models/effect/CardEffect";
+import type { GameState } from "../../../models/simulation/GameState";
 import type {
   ComboSearchAction,
   ComboSearchOptions,
   ComboSearchResult,
   ComboSearchStats,
   DiscoveredCombo,
-} from "../../../models/ComboSearch";
+} from "../../../models/combo/ComboSearch";
 
 import {
   generateComboCandidates,

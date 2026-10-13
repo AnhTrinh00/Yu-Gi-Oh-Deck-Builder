@@ -5,7 +5,7 @@ import {
 
 import type {
   EvaluatedCombo,
-} from "../../models/ComboEvaluation";
+} from "../../models/combo/ComboEvaluation";
 
 import {
   buildComboAIContext,

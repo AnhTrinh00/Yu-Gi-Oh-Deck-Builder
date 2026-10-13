@@ -1,6 +1,6 @@
 import type {
   EffectActivationDefinition,
-} from "../../../models/EffectActivation";
+} from "../../../models/effect/EffectActivation";
 
 export class EffectActivationRegistry {
   private definitions = new Map<

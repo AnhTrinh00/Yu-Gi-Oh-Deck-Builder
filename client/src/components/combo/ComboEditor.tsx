@@ -1,12 +1,12 @@
 
 import { useState } from "react";
-import type { Card } from "../models/Card";
+import type { Card } from "../../models/card/Card";
 import type {
   Combo,
   ComboAction,
   ComboCardRequirement,
   ComboZone,
-} from "../models/Combo";
+} from "../../models/combo/Combo";
 
 interface Props {
   cards: Card[];

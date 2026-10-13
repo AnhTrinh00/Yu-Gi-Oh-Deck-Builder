@@ -1,9 +1,9 @@
 
-import type { GameState } from "../../../models/GameState";
+import type { GameState } from "../../../models/simulation/GameState";
 import type {
   ComboInteractionMetrics,
   VerifiedInteraction,
-} from "../../../models/ComboEvaluation";
+} from "../../../models/combo/ComboEvaluation";
 
 export function analyzeComboInteractions(
   finalState: GameState,

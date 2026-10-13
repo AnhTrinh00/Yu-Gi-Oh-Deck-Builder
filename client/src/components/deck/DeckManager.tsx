@@ -1,9 +1,9 @@
 
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import type { Card } from "../../models/Card";
-import type { CollectionCard } from "../../models/CollectionCard";
-import type { Deck, DeckSection } from "../../models/Deck";
+import type { Card } from "../../models/card/Card";
+import type { CollectionCard } from "../../models/card/CollectionCard";
+import type { Deck, DeckSection } from "../../models/deck/Deck";
 import {
   DECK_LIMITS,
   getDeckCardCount,

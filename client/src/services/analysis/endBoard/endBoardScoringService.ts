@@ -1,14 +1,14 @@
-import type { GameState } from "../../../models/GameState";
+import type { GameState } from "../../../models/simulation/GameState";
 
 import type {
   DisruptionAnalysis,
-} from "../../../models/DisruptionAnalysis";
+} from "../../../models/analysis/DisruptionAnalysis";
 
 import type {
   EndBoardScore,
   EndBoardScoreWeights,
   EndBoardScoreComparison,
-} from "../../../models/EndBoardScore";
+} from "../../../models/analysis/EndBoardScore";
 
 import {
   analyzeEndBoard,

@@ -1,9 +1,9 @@
 
 import type {
   CardEffectDefinition,
-} from "../../models/CardEffect";
+} from "../../models/effect/CardEffect";
 
-import type { GameState } from "../../models/GameState";
+import type { GameState } from "../../models/simulation/GameState";
 
 import {
   validateCardEffect,

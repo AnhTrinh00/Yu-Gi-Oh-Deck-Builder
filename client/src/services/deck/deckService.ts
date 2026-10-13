@@ -1,5 +1,5 @@
-import type { Card } from "../../models/Card";
-import type { Deck, DeckCard, DeckSection } from "../../models/Deck";
+import type { Card } from "../../models/card/Card";
+import type { Deck, DeckCard, DeckSection } from "../../models/deck/Deck";
 import {
     getBanlistCopyLimit,
     getBanlistStatus,

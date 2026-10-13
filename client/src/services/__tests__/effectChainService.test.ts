@@ -6,11 +6,11 @@ import {
 
 import type {
   CardEffectDefinition,
-} from "../../models/CardEffect";
+} from "../../models/effect/CardEffect";
 
 import type {
   GameState,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import {
   normalizeGameState,

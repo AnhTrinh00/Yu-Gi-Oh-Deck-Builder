@@ -1,6 +1,6 @@
 
-import type { Deck } from "../../../models/Deck";
-import type { ComboCandidate } from "../../../models/ComboCandidate";
+import type { Deck } from "../../../models/deck/Deck";
+import type { ComboCandidate } from "../../../models/combo/ComboCandidate";
 
 export interface AnalyzedComboCandidate extends ComboCandidate {
   starterCopies: number;

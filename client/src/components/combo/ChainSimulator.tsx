@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import type { Deck } from "../../models/Deck";
-import type { EffectChainState } from "../../models/EffectChain";
-import type { ChainResolutionEntry } from "../../models/EffectChain";
+import type { Deck } from "../../models/deck/Deck";
+import type { EffectChainState } from "../../models/effect/EffectChain";
+import type { ChainResolutionEntry } from "../../models/effect/EffectChain";
 
 import {
   createComboExplorerState,
@@ -19,12 +19,12 @@ import {
   resolveEffectChain,
 } from "../../services/effect/effectChainService";
 
-import type { EffectExecutionSelections } from "../../models/EffectExecutionSelection";
+import type { EffectExecutionSelections } from "../../models/effect/EffectExecutionSelection";
 import { ChainSelectionEditor } from "./ChainSelectionEditor";
 
 import type {
   CardEffectDefinition,
-} from "../../models/CardEffect";
+} from "../../models/effect/CardEffect";
 
 import {
   bindCardEffectSource,

@@ -1,7 +1,7 @@
 
-import type { GameState } from "./GameState";
+import type { GameState } from "../simulation/GameState";
 import type { ComboCandidate } from "./ComboDiscovery";
-import type { EffectExecutionSelections } from "./EffectExecutionSelection";
+import type { EffectExecutionSelections } from "../effect/EffectExecutionSelection";
 
 export interface ComboSearchAction extends ComboCandidate {
   selections: EffectExecutionSelections;

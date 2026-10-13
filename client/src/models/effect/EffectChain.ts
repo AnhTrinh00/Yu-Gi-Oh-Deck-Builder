@@ -1,6 +1,6 @@
 import type { CardEffectDefinition } from "./CardEffect";
 import type { EffectExecutionSelections } from "./EffectExecutionSelection";
-import type { GameState } from "./GameState";
+import type { GameState } from "../simulation/GameState";
 
 export interface PendingEffectLink {
   chainLinkId: string;

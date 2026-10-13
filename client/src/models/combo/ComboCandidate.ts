@@ -1,4 +1,4 @@
-import type { CardRelationshipType } from "./CardRelationship";
+import type { CardRelationshipType } from "../effect/CardRelationship";
 
 export interface ComboCandidateStep {
   sourceCardId: number;

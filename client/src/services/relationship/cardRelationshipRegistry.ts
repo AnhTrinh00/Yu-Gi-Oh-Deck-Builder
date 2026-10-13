@@ -1,7 +1,7 @@
 
 import type {
   CardRelationship,
-} from "../../models/CardRelationship";
+} from "../../models/effect/CardRelationship";
 
 const STORAGE_KEY = "yugioh-card-relationships";
 

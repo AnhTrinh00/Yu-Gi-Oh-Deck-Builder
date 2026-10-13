@@ -9,7 +9,7 @@ import {
 
 import type {
   CardRelationship,
-} from "../../models/CardRelationship";
+} from "../../models/effect/CardRelationship";
 
 import {
   loadRelationships,

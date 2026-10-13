@@ -3,7 +3,7 @@ import type {
   EffectCondition,
   EffectCost,
   EffectStep,
-} from "../../models/CardEffect";
+} from "../../models/effect/CardEffect";
 import { cardEffectSchema } from "../effect/definition/cardEffectSchemaService";
 import { z } from "zod";
 

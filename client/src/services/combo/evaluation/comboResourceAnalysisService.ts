@@ -1,8 +1,8 @@
 
-import type { GameState } from "../../../models/GameState";
+import type { GameState } from "../../../models/simulation/GameState";
 import type {
   ComboResourceMetrics,
-} from "../../../models/ComboEvaluation";
+} from "../../../models/combo/ComboEvaluation";
 
 export function analyzeComboResources(
   initialState: GameState,

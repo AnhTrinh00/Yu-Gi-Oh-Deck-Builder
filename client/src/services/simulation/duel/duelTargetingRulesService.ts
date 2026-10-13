@@ -4,7 +4,7 @@ import type {
   PlayerId,
   RuleCheck,
   RuleZone,
-} from "../../../models/DuelRules";
+} from "../../../models/simulation/DuelRules";
 
 export interface TargetRule {
   player: PlayerId;

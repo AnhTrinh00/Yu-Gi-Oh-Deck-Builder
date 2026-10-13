@@ -1,6 +1,6 @@
 
-import type { Deck } from "../../models/Deck";
-import type { CollectionCard } from "../../models/CollectionCard";
+import type { Deck } from "../../models/deck/Deck";
+import type { CollectionCard } from "../../models/card/CollectionCard";
 
 export interface OwnershipIssue {
   cardId: number;

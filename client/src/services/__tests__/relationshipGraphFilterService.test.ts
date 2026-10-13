@@ -1,9 +1,9 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { Card } from "../../models/Card";
-import type { Deck } from "../../models/Deck";
-import type { CardRelationship } from "../../models/CardRelationship";
+import type { Card } from "../../models/card/Card";
+import type { Deck } from "../../models/deck/Deck";
+import type { CardRelationship } from "../../models/effect/CardRelationship";
 
 import {
   DEFAULT_GRAPH_FILTERS,

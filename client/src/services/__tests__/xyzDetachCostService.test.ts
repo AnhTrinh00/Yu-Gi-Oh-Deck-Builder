@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { GameState } from "../../models/GameState";
+import type { GameState } from "../../models/simulation/GameState";
 
 import {
   initializeCardInstances,

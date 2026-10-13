@@ -1,7 +1,7 @@
 
 import type {
   EvaluatedCombo,
-} from "../../models/ComboEvaluation";
+} from "../../models/combo/ComboEvaluation";
 
 export interface AIComboEvidence {
   id: string;

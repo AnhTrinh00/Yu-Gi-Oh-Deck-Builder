@@ -7,7 +7,7 @@ import {
   vi,
 } from "vitest";
 
-import type { Combo } from "../../models/Combo";
+import type { Combo } from "../../models/combo/Combo";
 
 import {
   loadCombos,

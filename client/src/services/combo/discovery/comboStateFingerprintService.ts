@@ -1,5 +1,5 @@
 
-import type { GameState } from "../../../models/GameState";
+import type { GameState } from "../../../models/simulation/GameState";
 
 function sorted<T>(
   items: T[],

@@ -5,8 +5,8 @@ import {
   it,
 } from "vitest";
 
-import type { Deck } from "../../models/Deck";
-import type { Card } from "../../models/Card";
+import type { Deck } from "../../models/deck/Deck";
+import type { Card } from "../../models/card/Card";
 
 import {
   createComboExplorerState,

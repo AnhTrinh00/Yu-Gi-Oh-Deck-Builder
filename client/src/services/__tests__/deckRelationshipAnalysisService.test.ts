@@ -1,10 +1,10 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { Card } from "../../models/Card";
+import type { Card } from "../../models/card/Card";
 import type {
   CardRelationship,
-} from "../../models/CardRelationship";
+} from "../../models/effect/CardRelationship";
 
 import { createEmptyDeck } from "../deck/deckService";
 

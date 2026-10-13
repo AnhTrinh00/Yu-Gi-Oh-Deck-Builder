@@ -1,5 +1,5 @@
 
-import type { EndBoardScore } from "../../models/EndBoardScore";
+import type { EndBoardScore } from "../../models/analysis/EndBoardScore";
 
 interface Props {
   score: EndBoardScore;

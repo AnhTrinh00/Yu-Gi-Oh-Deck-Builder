@@ -1,7 +1,7 @@
 
 import type {
   EffectExecutionSelections,
-} from "./EffectExecutionSelection";
+} from "../effect/EffectExecutionSelection";
 
 export interface ComboCandidate {
   id: string;

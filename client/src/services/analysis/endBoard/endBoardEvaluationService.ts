@@ -1,16 +1,16 @@
 
-import type { GameState } from "../../../models/GameState";
-import type { EndBoardAnalysis } from "../../../models/EndBoardAnalysis";
-import type { EndBoardResourceSnapshot } from "../../../models/EndBoardResources";
-import type { DisruptionAnalysis } from "../../../models/DisruptionAnalysis";
+import type { GameState } from "../../../models/simulation/GameState";
+import type { EndBoardAnalysis } from "../../../models/analysis/EndBoardAnalysis";
+import type { EndBoardResourceSnapshot } from "../../../models/analysis/EndBoardResources";
+import type { DisruptionAnalysis } from "../../../models/analysis/DisruptionAnalysis";
 import type {
   EndBoardScore,
   EndBoardScoreWeights,
-} from "../../../models/EndBoardScore";
+} from "../../../models/analysis/EndBoardScore";
 
 import type {
   EffectActivationDefinition,
-} from "../../../models/EffectActivation";
+} from "../../../models/effect/EffectActivation";
 
 import {
   analyzeEndBoard,

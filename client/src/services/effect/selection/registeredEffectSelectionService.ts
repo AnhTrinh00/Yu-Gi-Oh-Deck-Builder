@@ -1,11 +1,11 @@
 
 import type {
   GameState,
-} from "../../../models/GameState";
+} from "../../../models/simulation/GameState";
 
 import type {
   EffectExecutionSelections,
-} from "../../../models/EffectExecutionSelection";
+} from "../../../models/effect/EffectExecutionSelection";
 
 import {
   executeCardEffectWithSelections,

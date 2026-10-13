@@ -2,13 +2,13 @@ import type {
   CardInstance,
   GameState,
   GameZone,
-} from "../../../models/GameState";
+} from "../../../models/simulation/GameState";
 
 import type {
   DetectedDisruption,
   DisruptionAnalysis,
   DisruptionDefinition,
-} from "../../../models/DisruptionAnalysis";
+} from "../../../models/analysis/DisruptionAnalysis";
 
 import {
   validateCardInstanceSync,

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { CardEffectDefinition } from "../../models/CardEffect";
+import type { CardEffectDefinition } from "../../models/effect/CardEffect";
 
 import {
   createEffectFromTemplate,

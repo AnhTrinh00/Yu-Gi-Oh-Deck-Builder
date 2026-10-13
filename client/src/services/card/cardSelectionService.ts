@@ -3,12 +3,12 @@ import type {
   CardInstance,
   GameState,
   GameZone,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import type {
   CardInstanceSelection,
   CardSelectionContext,
-} from "../../models/CardSelection";
+} from "../../models/card/CardSelection";
 
 import {
   getCardInstance,

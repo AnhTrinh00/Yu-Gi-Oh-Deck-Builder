@@ -8,7 +8,7 @@ import {
 import {
   createDuelRulesState,
   type RuleCard,
-} from "../../models/DuelRules";
+} from "../../models/simulation/DuelRules";
 
 import {
   validateActivation,

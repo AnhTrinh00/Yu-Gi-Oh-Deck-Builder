@@ -4,7 +4,7 @@ import type {
   DuelRulesState,
   PlayerId,
   RuleResult,
-} from "../../../models/DuelRules";
+} from "../../../models/simulation/DuelRules";
 
 import {
   validateActivation,

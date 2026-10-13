@@ -1,12 +1,12 @@
 
-import type { Combo } from "../../models/Combo";
-import type { Deck } from "../../models/Deck";
+import type { Combo } from "../../models/combo/Combo";
+import type { Deck } from "../../models/deck/Deck";
 import type {
   ComboSimulationResult,
   GameState,
   GameZone,
   GameAction,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import {
   createExtendedGameState,

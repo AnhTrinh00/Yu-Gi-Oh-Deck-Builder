@@ -1,4 +1,4 @@
-import type { Card } from "../../models/Card";
+import type { Card } from "../../models/card/Card";
 
 const API_BASE_URL = "https://db.ygoprodeck.com/api/v7";
 

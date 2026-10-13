@@ -2,12 +2,12 @@ import type {
   GameState,
   GameZone,
   MonsterPosition,
-} from "../../../models/GameState";
+} from "../../../models/simulation/GameState";
 
 import type {
   SummonMaterialRequirement,
   SummonMaterialSelection,
-} from "../../../models/SummonMaterial";
+} from "../../../models/simulation/SummonMaterial";
 
 import {
   getCardInstance,
@@ -32,7 +32,7 @@ import {
 
 import type {
   SummonRulesRequest,
-} from "../../../models/SummonRules";
+} from "../../../models/simulation/SummonRules";
 
 import {
   validateSummonRules,

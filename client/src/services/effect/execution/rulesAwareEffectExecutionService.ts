@@ -1,15 +1,15 @@
 
 import type {
   GameState,
-} from "../../../models/GameState";
+} from "../../../models/simulation/GameState";
 
 import type {
   DuelRulesState,
-} from "../../../models/DuelRules";
+} from "../../../models/simulation/DuelRules";
 
 import type {
   EffectExecutionSelections,
-} from "../../../models/EffectExecutionSelection";
+} from "../../../models/effect/EffectExecutionSelection";
 
 import {
   executeRegisteredEffectWithSelections,

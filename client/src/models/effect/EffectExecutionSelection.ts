@@ -1,7 +1,7 @@
 
 import type {
   CardInstanceSelection,
-} from "./CardSelection";
+} from "../card/CardSelection";
 
 export interface EffectExecutionSelections {
   costSelections: CardInstanceSelection[];

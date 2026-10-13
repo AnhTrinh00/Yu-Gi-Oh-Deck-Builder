@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import type { Deck } from "../../models/Deck";
-import type { CardEffectDefinition } from "../../models/CardEffect";
+import type { Deck } from "../../models/deck/Deck";
+import type { CardEffectDefinition } from "../../models/effect/CardEffect";
 import type { ComboDiscoveryEvaluationResult } from "../../services/combo/discovery/comboDiscoveryEvaluationService";
 
 import { cardEffectRegistry } from "../../services/effect/cardEffectRegistryService";

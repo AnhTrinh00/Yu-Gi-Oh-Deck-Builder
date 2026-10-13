@@ -1,6 +1,6 @@
 import type {
   DisruptionAnalysis,
-} from "../../models/DisruptionAnalysis";
+} from "../../models/analysis/DisruptionAnalysis";
 
 interface Props {
   analysis: DisruptionAnalysis;

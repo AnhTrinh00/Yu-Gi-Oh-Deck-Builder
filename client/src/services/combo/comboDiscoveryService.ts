@@ -1,18 +1,18 @@
 import type {
   CardRelationship,
   CardRelationshipType,
-} from "../../models/CardRelationship";
+} from "../../models/effect/CardRelationship";
 
 import type {
   ComboCandidate,
   ComboCandidateStep,
   ComboDiscoveryOptions,
   ComboDiscoveryResult,
-} from "../../models/ComboCandidate";
+} from "../../models/combo/ComboCandidate";
 
 import {
   DEFAULT_DISCOVERY_OPTIONS,
-} from "../../models/ComboCandidate";
+} from "../../models/combo/ComboCandidate";
 
 type Adjacency = Map<
   number,

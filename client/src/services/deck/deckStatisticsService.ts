@@ -1,4 +1,4 @@
-import type { Deck } from "../../models/Deck";
+import type { Deck } from "../../models/deck/Deck";
 
 import { getDeckCardCount } from "./deckService";
 

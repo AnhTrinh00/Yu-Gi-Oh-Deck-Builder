@@ -1,12 +1,12 @@
 
-import type { GameState } from "../../../models/GameState";
-import type { DiscoveredCombo } from "../../../models/ComboSearch";
+import type { GameState } from "../../../models/simulation/GameState";
+import type { DiscoveredCombo } from "../../../models/combo/ComboSearch";
 import type {
   ComboCategoryScores,
   ComboEvaluationConfig,
   EvaluatedCombo,
   VerifiedInteraction,
-} from "../../../models/ComboEvaluation";
+} from "../../../models/combo/ComboEvaluation";
 
 import {
   DEFAULT_COMBO_EVALUATION_CONFIG,

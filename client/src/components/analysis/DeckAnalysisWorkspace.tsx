@@ -1,31 +1,31 @@
 import { useState, useMemo } from "react";
 
-import type { Deck } from "../models/Deck";
-import type { CollectionCard } from "../models/CollectionCard";
-import type { CardRelationship } from "../models/CardRelationship";
-import type { Combo } from "../models/Combo";
-import type { RecommendationPriority } from "../models/DeckRecommendation";
-import type { DeckFormat } from "../services/deck/banlistService";
+import type { Deck } from "../../models/deck/Deck";
+import type { CollectionCard } from "../../models/card/CollectionCard";
+import type { CardRelationship } from "../../models/effect/CardRelationship";
+import type { Combo } from "../../models/combo/Combo";
+import type { RecommendationPriority } from "../../models/deck/DeckRecommendation";
+import type { DeckFormat } from "../../services/deck/banlistService";
 
-import { useDeckAnalysis } from "../hooks/useDeckAnalysis";
-import { candidateToComboDraft } from "../services/combo/comboCandidateConversionService";
+import { useDeckAnalysis } from "../../hooks/useDeckAnalysis";
+import { candidateToComboDraft } from "../../services/combo/comboCandidateConversionService";
 
-import ComboEditor from "./ComboEditor";
-import ComboEvaluation from "./ComboEvaluation";
+import ComboEditor from "../combo/ComboEditor";
+import ComboEvaluation from "../combo/ComboEvaluation";
 
-import EndBoardAnalysisPanel from "./analysis/EndBoardAnalysisPanel";
+import EndBoardAnalysisPanel from "./EndBoardAnalysisPanel";
 
 import {
   evaluateEndBoard,
-} from "../services/analysis/endBoard/endBoardEvaluationService";
+} from "../../services/analysis/endBoard/endBoardEvaluationService";
 
 import type {
   EndBoardScoreWeights,
-} from "../models/EndBoardScore";
+} from "../../models/analysis/EndBoardScore";
 
 import {
   DEFAULT_SCORE_WEIGHTS,
-} from "../services/analysis/endBoard/endBoardScoringService";
+} from "../../services/analysis/endBoard/endBoardScoringService";
 
 type AnalysisTab =
   | "overview"

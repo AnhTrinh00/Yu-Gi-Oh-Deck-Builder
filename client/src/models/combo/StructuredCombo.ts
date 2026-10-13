@@ -1,6 +1,6 @@
 import type {
   EffectExecutionSelections,
-} from "./EffectExecutionSelection";
+} from "../effect/EffectExecutionSelection";
 
 export interface RegisteredComboAction {
   type: "registered-effect";

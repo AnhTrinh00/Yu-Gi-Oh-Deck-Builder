@@ -1,13 +1,13 @@
 import type {
   GameState,
   GameZone,
-} from "../../../models/GameState";
+} from "../../../models/simulation/GameState";
 
 import type {
   SummonMaterialRequirement,
   SummonMaterialSelection,
   SummonMaterialValidation,
-} from "../../../models/SummonMaterial";
+} from "../../../models/simulation/SummonMaterial";
 
 import {
   validateCardInstanceSync,

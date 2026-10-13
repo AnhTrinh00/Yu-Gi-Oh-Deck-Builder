@@ -1,4 +1,4 @@
-import type { Card, BanlistStatus } from "../../models/Card";
+import type { Card, BanlistStatus } from "../../models/card/Card";
 
 export type DeckFormat = "advanced" | "traditional";
 

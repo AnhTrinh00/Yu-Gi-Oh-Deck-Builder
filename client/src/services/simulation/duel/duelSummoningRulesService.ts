@@ -6,7 +6,7 @@ import type {
   RuleCheck,
   RuleResult,
   RuleZone,
-} from "../../../models/DuelRules";
+} from "../../../models/simulation/DuelRules";
 
 export interface SummonRequest {
   player: PlayerId;

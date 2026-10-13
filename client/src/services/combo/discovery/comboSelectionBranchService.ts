@@ -1,12 +1,12 @@
 
-import type { CardEffectDefinition } from "../../../models/CardEffect";
-import type { GameState, GameZone } from "../../../models/GameState";
+import type { CardEffectDefinition } from "../../../models/effect/CardEffect";
+import type { GameState, GameZone } from "../../../models/simulation/GameState";
 import type {
   CardInstanceSelection,
-} from "../../../models/CardSelection";
+} from "../../../models/card/CardSelection";
 import type {
   EffectExecutionSelections,
-} from "../../../models/EffectExecutionSelection";
+} from "../../../models/effect/EffectExecutionSelection";
 
 interface SelectionSlot {
   index: number;

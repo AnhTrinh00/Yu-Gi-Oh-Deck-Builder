@@ -4,14 +4,14 @@ import {
   it,
 } from "vitest";
 
-import type { GameState } from "../../models/GameState";
+import type { GameState } from "../../models/simulation/GameState";
 import type {
   DiscoveredCombo,
   ComboSearchResult,
-} from "../../models/ComboSearch";
+} from "../../models/combo/ComboSearch";
 import type {
   VerifiedInteraction,
-} from "../../models/ComboEvaluation";
+} from "../../models/combo/ComboEvaluation";
 
 import {
   analyzeComboResources,

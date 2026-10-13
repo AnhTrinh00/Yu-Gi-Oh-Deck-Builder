@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { CardRelationship, CardRelationshipType } from "../../models/CardRelationship";
+import type { CardRelationship, CardRelationshipType } from "../../models/effect/CardRelationship";
 
 import { discoverComboCandidates, discoverComboCandidatesDetailed } from "../combo/comboDiscoveryService";
 

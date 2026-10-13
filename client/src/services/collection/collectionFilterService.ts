@@ -1,5 +1,5 @@
 
-import type { CollectionCard } from "../../models/CollectionCard";
+import type { CollectionCard } from "../../models/card/CollectionCard";
 
 export type CollectionCategory =
   | "all"

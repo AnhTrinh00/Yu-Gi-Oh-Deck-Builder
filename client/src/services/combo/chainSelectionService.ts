@@ -1,22 +1,22 @@
 import type {
   CardEffectDefinition,
   EffectStep,
-} from "../../models/CardEffect";
+} from "../../models/effect/CardEffect";
 
 import type {
   CardInstanceSelection,
   CardSelectionKind,
-} from "../../models/CardSelection";
+} from "../../models/card/CardSelection";
 
 import type {
   EffectExecutionSelections,
-} from "../../models/EffectExecutionSelection";
+} from "../../models/effect/EffectExecutionSelection";
 
 import type {
   CardInstance,
   GameState,
   GameZone,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 export interface ChainSelectionOption {
   instanceId: string;

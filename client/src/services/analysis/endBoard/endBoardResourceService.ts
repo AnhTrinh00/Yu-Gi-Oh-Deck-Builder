@@ -1,13 +1,13 @@
 import type {
   GameState,
   GameZone,
-} from "../../../models/GameState";
+} from "../../../models/simulation/GameState";
 
 import type {
   ResourceCount,
   EndBoardResourceSnapshot,
   ResourceComparison,
-} from "../../../models/EndBoardResources";
+} from "../../../models/analysis/EndBoardResources";
 
 import {
   analyzeEndBoard,

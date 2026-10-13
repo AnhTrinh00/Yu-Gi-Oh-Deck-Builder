@@ -7,7 +7,7 @@ import {
 
 import type {
   GameState,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import {
   normalizeGameState,

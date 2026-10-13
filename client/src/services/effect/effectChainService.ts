@@ -3,20 +3,20 @@ import type {
   EffectChainState,
   ChainResolutionEntry,
   ChainResolutionResult,
-} from "../../models/EffectChain";
+} from "../../models/effect/EffectChain";
 
 import type {
   CardEffectDefinition,
   EffectStep,
-} from "../../models/CardEffect";
+} from "../../models/effect/CardEffect";
 
 import type {
   EffectExecutionSelections,
-} from "../../models/EffectExecutionSelection";
+} from "../../models/effect/EffectExecutionSelection";
 
 import type {
   GameState,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import {
   normalizeGameState,
@@ -45,7 +45,7 @@ import {
 
 import type {
   GameZone,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import {
   getAttachedXyzMaterials,

@@ -3,8 +3,8 @@ import type {
   EffectCondition,
   EffectCost,
   EffectStep,
-} from "../../../models/CardEffect";
-import type { GameZone } from "../../../models/GameState";
+} from "../../../models/effect/CardEffect";
+import type { GameZone } from "../../../models/simulation/GameState";
 import { cardEffectSchema } from "./cardEffectSchemaService";
 
 export const GAME_ZONES: GameZone[] = [

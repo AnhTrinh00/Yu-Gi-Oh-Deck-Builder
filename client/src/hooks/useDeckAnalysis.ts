@@ -1,10 +1,10 @@
 
 import { useMemo } from "react";
 
-import type { Deck } from "../models/Deck";
-import type { CollectionCard } from "../models/CollectionCard";
-import type { CardRelationship } from "../models/CardRelationship";
-import type { Combo } from "../models/Combo";
+import type { Deck } from "../models/deck/Deck";
+import type { CollectionCard } from "../models/card/CollectionCard";
+import type { CardRelationship } from "../models/effect/CardRelationship";
+import type { Combo } from "../models/combo/Combo";
 
 import type { DeckFormat } from "../services/deck/banlistService";
 

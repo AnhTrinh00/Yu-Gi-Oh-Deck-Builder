@@ -2,7 +2,7 @@ import type {
   DuelPhase,
   GameZone,
   PlayerId,
-} from "./GameState";
+} from "../simulation/GameState";
 
 export type ActivationSpeed = 1 | 2 | 3;
 

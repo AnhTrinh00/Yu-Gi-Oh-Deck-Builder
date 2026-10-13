@@ -1,5 +1,5 @@
 
-import type { CardEffectDefinition } from "../../models/CardEffect";
+import type { CardEffectDefinition } from "../../models/effect/CardEffect";
 import { CardEffectRegistry } from "./cardEffectRegistryService";
 import { parseCardEffects } from "./definition/cardEffectSchemaService";
 

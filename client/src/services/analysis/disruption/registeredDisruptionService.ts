@@ -1,21 +1,21 @@
 import type {
   CardEffectDefinition,
-} from "../../../models/CardEffect";
+} from "../../../models/effect/CardEffect";
 
 import type {
   EffectActivationDefinition,
-} from "../../../models/EffectActivation";
+} from "../../../models/effect/EffectActivation";
 
 import type {
   GameState,
-} from "../../../models/GameState";
+} from "../../../models/simulation/GameState";
 
 import type {
   DetectedDisruption,
   DisruptionAnalysis,
   DisruptionSpeed,
   DisruptionType,
-} from "../../../models/DisruptionAnalysis";
+} from "../../../models/analysis/DisruptionAnalysis";
 
 import {
   CardEffectRegistry,

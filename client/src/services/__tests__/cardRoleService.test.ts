@@ -1,7 +1,7 @@
 
 import { describe, expect, it } from "vitest";
-import type { Card } from "../../models/Card";
-import type { Deck } from "../../models/Deck";
+import type { Card } from "../../models/card/Card";
+import type { Deck } from "../../models/deck/Deck";
 import {
   getCardRoles,
   getDeckRoleSummaries,

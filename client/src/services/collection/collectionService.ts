@@ -1,5 +1,5 @@
-import type { Card } from "../../models/Card";
-import type { CollectionCard } from "../../models/CollectionCard";
+import type { Card } from "../../models/card/Card";
+import type { CollectionCard } from "../../models/card/CollectionCard";
 
 const STORAGE_KEY = "yugioh-collection";
 

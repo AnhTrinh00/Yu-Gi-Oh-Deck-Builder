@@ -1,4 +1,4 @@
-import type { GameZone } from "./GameState";
+import type { GameZone } from "../simulation/GameState";
 
 export type EffectOperation =
     | "draw"

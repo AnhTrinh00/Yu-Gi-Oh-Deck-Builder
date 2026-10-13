@@ -1,11 +1,11 @@
-import type { Combo, ComboStep } from "../../models/Combo";
-import type { Deck } from "../../models/Deck";
+import type { Combo, ComboStep } from "../../models/combo/Combo";
+import type { Deck } from "../../models/deck/Deck";
 import type {
   ComboSimulationResult,
   GameAction,
   GameState,
   GameZone,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import {
   createGameState,

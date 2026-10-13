@@ -2,7 +2,7 @@ import type {
   SummonRulesRequest,
   SummonRulesResult,
   SummonMaterialCard,
-} from "../../../models/SummonRules";
+} from "../../../models/simulation/SummonRules";
 
 function isMonster(type: string): boolean {
   return type.includes("Monster");

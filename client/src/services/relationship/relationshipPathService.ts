@@ -2,7 +2,7 @@
 import type {
   CardRelationship,
   CardRelationshipType,
-} from "../../models/CardRelationship";
+} from "../../models/effect/CardRelationship";
 
 export interface RelationshipPathStep {
   sourceCardId: number;

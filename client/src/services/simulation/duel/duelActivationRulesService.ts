@@ -6,7 +6,7 @@ import type {
   RuleCheck,
   RuleZone,
   SpellSpeed,
-} from "../../../models/DuelRules";
+} from "../../../models/simulation/DuelRules";
 
 export interface ActivationRule {
   effectId: string;

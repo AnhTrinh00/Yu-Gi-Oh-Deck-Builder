@@ -1,18 +1,18 @@
 import type {
   EndBoardAnalysis,
-} from "../../models/EndBoardAnalysis";
+} from "../../models/analysis/EndBoardAnalysis";
 
 import type {
   EndBoardResourceSnapshot,
-} from "../../models/EndBoardResources";
+} from "../../models/analysis/EndBoardResources";
 
 import type {
   DisruptionAnalysis,
-} from "../../models/DisruptionAnalysis";
+} from "../../models/analysis/DisruptionAnalysis";
 
 import type {
   EndBoardScore,
-} from "../../models/EndBoardScore";
+} from "../../models/analysis/EndBoardScore";
 
 import EndBoardScoreBreakdown from "./EndBoardScoreBreakdown";
 import EndBoardDisruptionList from "./EndBoardDisruptionList";

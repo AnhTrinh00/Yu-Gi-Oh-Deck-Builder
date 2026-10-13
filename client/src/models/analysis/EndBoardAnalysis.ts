@@ -5,7 +5,7 @@ import type {
   MonsterPosition,
   SpellTrapPosition,
   TurnState,
-} from "./GameState";
+} from "../simulation/GameState";
 
 export interface EndBoardCard {
   cardId: number;

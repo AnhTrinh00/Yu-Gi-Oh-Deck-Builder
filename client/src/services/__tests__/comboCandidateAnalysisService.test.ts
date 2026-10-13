@@ -1,9 +1,9 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { Card } from "../../models/Card";
-import type { Deck } from "../../models/Deck";
-import type { ComboCandidate } from "../../models/ComboCandidate";
+import type { Card } from "../../models/card/Card";
+import type { Deck } from "../../models/deck/Deck";
+import type { ComboCandidate } from "../../models/combo/ComboCandidate";
 
 import { analyzeComboCandidates } from "../combo/discovery/comboCandidateAnalysisService";
 

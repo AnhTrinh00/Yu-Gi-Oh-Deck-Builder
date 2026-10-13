@@ -1,16 +1,16 @@
 import type {
   CardEffectDefinition,
-} from "../../models/CardEffect";
+} from "../../models/effect/CardEffect";
 
 import type {
   GameState,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import type {
   ActivationRequirement,
   ActivationValidationResult,
   EffectActivationDefinition,
-} from "../../models/EffectActivation";
+} from "../../models/effect/EffectActivation";
 
 import {
   countCardInZone,

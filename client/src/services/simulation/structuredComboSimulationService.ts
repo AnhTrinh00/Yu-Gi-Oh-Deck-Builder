@@ -1,14 +1,14 @@
 
 import type {
   GameState,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import type {
   StructuredComboAction,
   StructuredComboOptions,
   StructuredComboResult,
   StructuredComboStepResult,
-} from "../../models/StructuredCombo";
+} from "../../models/combo/StructuredCombo";
 
 import {
   validateCardInstanceSync,

@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { findShortestPath } from "../relationship/cardRelationshipGraphService";
 import { getPathSteps } from "../relationship/relationshipPathService";
 
-import type { CardRelationship } from "../../models/CardRelationship";
+import type { CardRelationship } from "../../models/effect/CardRelationship";
 
 const relationships: CardRelationship[] = [
   {

@@ -1,5 +1,5 @@
 
-import type { Deck, DeckSection } from "../../models/Deck";
+import type { Deck, DeckSection } from "../../models/deck/Deck";
 import {
   DECK_LIMITS,
   getDeckCardCount,

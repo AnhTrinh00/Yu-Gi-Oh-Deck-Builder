@@ -3,7 +3,7 @@ import type {
   ComboEvaluationConfig,
   ComboEvaluationWeights,
   ComboScoreCategory,
-} from "../../../models/ComboEvaluation";
+} from "../../../models/combo/ComboEvaluation";
 
 export const COMBO_SCORE_CATEGORIES:
   ComboScoreCategory[] = [

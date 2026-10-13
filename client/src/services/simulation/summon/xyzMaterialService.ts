@@ -1,7 +1,7 @@
 import type {
   GameState,
   GameZone,
-} from "../../../models/GameState";
+} from "../../../models/simulation/GameState";
 
 import {
   normalizeGameState,

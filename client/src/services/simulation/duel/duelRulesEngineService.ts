@@ -2,7 +2,7 @@
 import type {
   DuelRulesState,
   RuleCheck,
-} from "../../../models/DuelRules";
+} from "../../../models/simulation/DuelRules";
 
 import {
   validateActivation,

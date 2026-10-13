@@ -1,4 +1,4 @@
-import type { Card } from "../../models/Card"
+import type { Card } from "../../models/card/Card"
 
 export type DeckSection = "main" | "extra" | "side";
 

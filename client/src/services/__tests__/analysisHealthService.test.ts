@@ -1,10 +1,10 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { Card } from "../../models/Card";
-import type { Deck } from "../../models/Deck";
-import type { CollectionCard } from "../../models/CollectionCard";
-import type { Combo } from "../../models/Combo";
+import type { Card } from "../../models/card/Card";
+import type { Deck } from "../../models/deck/Deck";
+import type { CollectionCard } from "../../models/card/CollectionCard";
+import type { Combo } from "../../models/combo/Combo";
 
 import { analyzeDataHealth } from "../analysis/analysisHealthService";
 

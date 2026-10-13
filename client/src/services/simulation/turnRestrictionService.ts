@@ -2,7 +2,7 @@ import type {
   DuelPhase,
   GameRestriction,
   GameState,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import {
   normalizeGameState,

@@ -2,12 +2,12 @@
 import type {
   CardEffectDefinition,
   EffectCondition,
-} from "../../models/CardEffect";
+} from "../../models/effect/CardEffect";
 
 import type {
   GameState,
   GameZone,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import { countCardInZone } from "../simulation/gameStateService";
 

@@ -1,6 +1,6 @@
 
-import type { Deck } from "../../../models/Deck";
-import type { GameState } from "../../../models/GameState";
+import type { Deck } from "../../../models/deck/Deck";
+import type { GameState } from "../../../models/simulation/GameState";
 
 import {
   createExtendedGameState,

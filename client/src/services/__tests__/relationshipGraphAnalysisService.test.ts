@@ -1,7 +1,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { CardRelationship } from "../../models/CardRelationship";
+import type { CardRelationship } from "../../models/effect/CardRelationship";
 
 import { analyzeRelationshipGraph } from "../relationship/relationshipGraphAnalysisService";
 

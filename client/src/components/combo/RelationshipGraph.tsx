@@ -1,7 +1,7 @@
 
 import { useMemo } from "react";
-import type { CardRelationship } from "../models/CardRelationship";
-import { createRelationshipGraphLayout } from "../services/relationship/relationshipGraphLayoutService";
+import type { CardRelationship } from "../../models/effect/CardRelationship";
+import { createRelationshipGraphLayout } from "../../services/relationship/relationshipGraphLayoutService";
 
 interface Props {
   cards: { id: number; name: string }[];

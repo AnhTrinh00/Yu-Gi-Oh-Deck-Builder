@@ -7,7 +7,7 @@ import {
   vi,
 } from "vitest";
 
-import type { CardEffectDefinition } from "../../models/CardEffect";
+import type { CardEffectDefinition } from "../../models/effect/CardEffect";
 
 import { CardEffectRegistry } from "../effect/cardEffectRegistryService";
 

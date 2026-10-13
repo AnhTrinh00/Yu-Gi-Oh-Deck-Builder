@@ -1,12 +1,12 @@
 
 import { useMemo, useState } from "react";
 
-import type { Combo } from "../models/Combo";
-import type { Deck } from "../models/Deck";
-import type { Card } from "../models/Card";
-import type { GameZone } from "../models/GameState";
+import type { Combo } from "../../models/combo/Combo";
+import type { Deck } from "../../models/deck/Deck";
+import type { Card } from "../../models/card/Card";
+import type { GameZone } from "../../models/simulation/GameState";
 
-import { simulateTrackedCombo } from "../services/simulation/trackedComboSimulationService";
+import { simulateTrackedCombo } from "../../services/simulation/trackedComboSimulationService";
 
 interface Props {
   deck: Deck;

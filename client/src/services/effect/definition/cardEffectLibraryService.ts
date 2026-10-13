@@ -1,7 +1,7 @@
 
 import type {
   CardEffectDefinition,
-} from "../../../models/CardEffect";
+} from "../../../models/effect/CardEffect";
 
 import {
   CardEffectRegistry,

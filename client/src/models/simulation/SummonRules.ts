@@ -1,4 +1,4 @@
-import type { Card } from "./Card";
+import type { Card } from "../card/Card";
 import type { ExtraDeckSummonType } from "./SummonMaterial";
 
 export interface SummonMaterialCard {

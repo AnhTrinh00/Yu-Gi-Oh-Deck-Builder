@@ -3,7 +3,7 @@ import type {
   CardInstanceState,
   GameState,
   GameZone,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import {
   normalizeGameState,

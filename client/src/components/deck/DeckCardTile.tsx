@@ -1,5 +1,5 @@
 
-import type { DeckCard } from "../../models/Deck";
+import type { DeckCard } from "../../models/deck/Deck";
 
 interface DeckCardTileProps {
   entry: DeckCard;

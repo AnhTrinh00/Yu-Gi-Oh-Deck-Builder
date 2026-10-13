@@ -1,7 +1,7 @@
 import type {
   GameState,
   MonsterPosition,
-} from "../../../models/GameState";
+} from "../../../models/simulation/GameState";
 
 import {
   normalizeGameState,

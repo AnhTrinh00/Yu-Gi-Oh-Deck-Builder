@@ -1,10 +1,10 @@
 
-import type { Card } from "../../models/Card";
-import type { Deck, DeckSection } from "../../models/Deck";
+import type { Card } from "../../models/card/Card";
+import type { Deck, DeckSection } from "../../models/deck/Deck";
 import type {
   CardRelationship,
   CardRelationshipType,
-} from "../../models/CardRelationship";
+} from "../../models/effect/CardRelationship";
 import { getCardRoles } from "../card/cardRoleService";
 import type { CardRole } from "../card/cardRoleService";
 

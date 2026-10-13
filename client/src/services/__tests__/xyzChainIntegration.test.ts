@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import type { Card } from "../../models/Card";
-import type { CardEffectDefinition } from "../../models/CardEffect";
-import type { GameState } from "../../models/GameState";
+import type { Card } from "../../models/card/Card";
+import type { CardEffectDefinition } from "../../models/effect/CardEffect";
+import type { GameState } from "../../models/simulation/GameState";
 
 import {
   initializeCardInstances,

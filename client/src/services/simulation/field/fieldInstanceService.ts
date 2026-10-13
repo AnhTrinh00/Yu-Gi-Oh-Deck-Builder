@@ -5,7 +5,7 @@ import type {
   GameZone,
   MonsterPosition,
   SpellTrapPosition,
-} from "../../../models/GameState";
+} from "../../../models/simulation/GameState";
 
 import {
   normalizeGameState,

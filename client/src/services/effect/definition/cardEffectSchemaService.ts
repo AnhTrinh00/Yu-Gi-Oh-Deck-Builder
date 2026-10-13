@@ -1,6 +1,6 @@
 
 import { z } from "zod";
-import type { CardEffectDefinition } from "../../../models/CardEffect";
+import type { CardEffectDefinition } from "../../../models/effect/CardEffect";
 
 const zoneSchema = z.enum([
   "hand",

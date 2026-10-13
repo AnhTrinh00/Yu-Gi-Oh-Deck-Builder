@@ -1,12 +1,12 @@
 
-import type { Deck } from "../../models/Deck";
+import type { Deck } from "../../models/deck/Deck";
 
 import type {
   GameAction,
   GameActionResult,
   GameState,
   GameZone,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 const zones: GameZone[] = [
   "hand",

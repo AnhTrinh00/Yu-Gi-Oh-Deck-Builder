@@ -2,7 +2,7 @@
 import type {
   ComboComparison,
   EvaluatedCombo,
-} from "../../../models/ComboEvaluation";
+} from "../../../models/combo/ComboEvaluation";
 
 import {
   COMBO_SCORE_CATEGORIES,

@@ -2,10 +2,10 @@
 import { describe, expect, it } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import type { Card } from "../../models/Card";
-import type { Deck } from "../../models/Deck";
-import type { CollectionCard } from "../../models/CollectionCard";
-import type { CardRelationship } from "../../models/CardRelationship";
+import type { Card } from "../../models/card/Card";
+import type { Deck } from "../../models/deck/Deck";
+import type { CollectionCard } from "../../models/card/CollectionCard";
+import type { CardRelationship } from "../../models/effect/CardRelationship";
 
 import { useDeckAnalysis } from "../useDeckAnalysis";
 

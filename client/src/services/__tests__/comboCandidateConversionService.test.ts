@@ -1,7 +1,7 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { ComboCandidate } from "../../models/ComboCandidate";
+import type { ComboCandidate } from "../../models/combo/ComboCandidate";
 
 import { candidateToComboDraft } from "../combo/comboCandidateConversionService";
 

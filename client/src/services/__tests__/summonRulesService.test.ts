@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { Card } from "../../models/Card";
+import type { Card } from "../../models/card/Card";
 
 import {
   validateSummonRules,

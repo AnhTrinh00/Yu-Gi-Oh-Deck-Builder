@@ -1,5 +1,5 @@
 
-import type { CardRelationship } from "../../models/CardRelationship";
+import type { CardRelationship } from "../../models/effect/CardRelationship";
 
 export interface CardGraphMetrics {
   cardId: number;

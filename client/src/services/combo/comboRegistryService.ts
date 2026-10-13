@@ -1,5 +1,5 @@
 
-import type { Combo } from "../../models/Combo";
+import type { Combo } from "../../models/combo/Combo";
 
 const STORAGE_KEY = "yugioh-combos-v1";
 

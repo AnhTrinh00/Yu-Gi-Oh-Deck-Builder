@@ -2,15 +2,15 @@ import { useState } from "react";
 
 import type {
   CardEffectDefinition,
-} from "../../models/CardEffect";
+} from "../../models/effect/CardEffect";
 
 import type {
   EffectExecutionSelections,
-} from "../../models/EffectExecutionSelection";
+} from "../../models/effect/EffectExecutionSelection";
 
 import type {
   GameState,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import {
   createChainSelections,

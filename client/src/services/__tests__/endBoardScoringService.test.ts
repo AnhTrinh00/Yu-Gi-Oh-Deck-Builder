@@ -6,11 +6,11 @@ import {
 
 import type {
   GameState,
-} from "../../models/GameState";
+} from "../../models/simulation/GameState";
 
 import type {
   DisruptionAnalysis,
-} from "../../models/DisruptionAnalysis";
+} from "../../models/analysis/DisruptionAnalysis";
 
 import {
   scoreEndBoard,

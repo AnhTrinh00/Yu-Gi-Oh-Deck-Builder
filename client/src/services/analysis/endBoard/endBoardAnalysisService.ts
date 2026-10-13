@@ -1,14 +1,14 @@
 import type {
   GameState,
   GameZone,
-} from "../../../models/GameState";
+} from "../../../models/simulation/GameState";
 
 import type {
   EndBoardAnalysis,
   EndBoardMonster,
   EndBoardSpellTrap,
   EndBoardResources,
-} from "../../../models/EndBoardAnalysis";
+} from "../../../models/analysis/EndBoardAnalysis";
 
 import {
   validateCardInstanceSync,

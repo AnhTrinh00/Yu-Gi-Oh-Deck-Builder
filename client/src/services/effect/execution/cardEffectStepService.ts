@@ -3,11 +3,11 @@ import type {
   CardInstance,
   GameState,
   GameZone,
-} from "../../../models/GameState";
+} from "../../../models/simulation/GameState";
 
 import type {
   EffectStep,
-} from "../../../models/CardEffect";
+} from "../../../models/effect/CardEffect";
 
 import {
   getInstancesInZone,

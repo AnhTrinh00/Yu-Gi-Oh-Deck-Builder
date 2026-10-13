@@ -1,6 +1,6 @@
 
-import type { Combo } from "../../models/Combo";
-import type { ComboCandidate } from "../../models/ComboCandidate";
+import type { Combo } from "../../models/combo/Combo";
+import type { ComboCandidate } from "../../models/combo/ComboCandidate";
 
 export function candidateToComboDraft(
   candidate: ComboCandidate,

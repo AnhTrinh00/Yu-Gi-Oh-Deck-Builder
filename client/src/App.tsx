@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "./components/layouts/AppLayout";
 import DeckPreview from "./components/deck/DeckPreview";
 import DeckSummary from "./components/deck/DeckSummary";
-import type { Deck, DeckSection } from "./models/Deck";
+import type { Deck, DeckSection } from "./models/deck/Deck";
 import {
   createEmptyDeck,
   addCardToDeck,
@@ -20,11 +20,11 @@ import {
   getCollection,
   removeFromCollection,
 } from "./services/collection/collectionService";
-import type { Card } from "./models/Card";
-import type { CollectionCard } from "./models/CollectionCard";
+import type { Card } from "./models/card/Card";
+import type { CollectionCard } from "./models/card/CollectionCard";
 import { getDeckStatistics } from "./services/deck/deckStatisticsService";
 import { getArchetypeSummaries } from "./services/card/archetypeService";
-import type { CardRelationship, CardRelationshipType } from "./models/CardRelationship";
+import type { CardRelationship, CardRelationshipType } from "./models/effect/CardRelationship";
 import {
   loadRelationships,
   addRelationship,
@@ -38,7 +38,7 @@ import {
 } from "./services/relationship/cardRelationshipService";
 import { findShortestPath } from "./services/relationship/cardRelationshipGraphService";
 import { getPathSteps } from "./services/relationship/relationshipPathService";
-import RelationshipGraph from "./components/RelationshipGraph";
+import RelationshipGraph from "./components/combo/RelationshipGraph";
 import {
   DEFAULT_GRAPH_FILTERS,
   filterRelationshipGraph,
@@ -48,8 +48,8 @@ import type {
 } from "./services/relationship/relationshipGraphFilterService";
 import type { CardRole } from "./services/card/cardRoleService";
 import { analyzeRelationshipGraph } from "./services/relationship/relationshipGraphAnalysisService";
-import ComboEditor from "./components/ComboEditor";
-import type { Combo } from "./models/Combo";
+import ComboEditor from "./components/combo/ComboEditor";
+import type { Combo } from "./models/combo/Combo";
 import {
   loadCombos,
   upsertCombo,
@@ -57,7 +57,7 @@ import {
 } from "./services/combo/comboRegistryService";
 import { validateCombo } from "./services/combo/comboValidationService";
 import { calculateComboOpeningProbability } from "./services/combo/evaluation/comboProbabilityService";
-import DeckAnalysisWorkspace from "./components/DeckAnalysisWorkspace";
+import DeckAnalysisWorkspace from "./components/analysis/DeckAnalysisWorkspace";
 import CollectionPage from "./components/collection/CollectionPage";
 import DeckManager from "./components/deck/DeckManager";
 import AnalysisTabs from "./components/analysis/AnalysisTabs";

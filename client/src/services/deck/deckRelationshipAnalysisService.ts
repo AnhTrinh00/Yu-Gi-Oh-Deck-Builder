@@ -1,8 +1,8 @@
-import type { Deck } from "../../models/Deck";
+import type { Deck } from "../../models/deck/Deck";
 import type {
   CardRelationship,
   CardRelationshipType,
-} from "../../models/CardRelationship";
+} from "../../models/effect/CardRelationship";
 
 import {
   getDeckRelationships,

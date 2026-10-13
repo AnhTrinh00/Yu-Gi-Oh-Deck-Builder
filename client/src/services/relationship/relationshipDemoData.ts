@@ -1,7 +1,7 @@
 
 import type {
   CardRelationship,
-} from "../../models/CardRelationship";
+} from "../../models/effect/CardRelationship";
 
 // Fictional card IDs for testing graph behavior.
 // These are not verified Yu-Gi-Oh! card interactions.

@@ -1,8 +1,8 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { Card } from "../../models/Card";
-import type { CollectionCard } from "../../models/CollectionCard";
+import type { Card } from "../../models/card/Card";
+import type { CollectionCard } from "../../models/card/CollectionCard";
 
 import {
   addCardToDeck,

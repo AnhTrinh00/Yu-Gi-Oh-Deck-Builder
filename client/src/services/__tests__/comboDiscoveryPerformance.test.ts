@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import type {
   CardRelationship,
   CardRelationshipType,
-} from "../../models/CardRelationship";
+} from "../../models/effect/CardRelationship";
 
 import {
   discoverComboCandidatesDetailed,

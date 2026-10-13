@@ -1,5 +1,5 @@
-import type { Card } from "../../../models/Card";
-import type { GameState } from "../../../models/GameState";
+import type { Card } from "../../../models/card/Card";
+import type { GameState } from "../../../models/simulation/GameState";
 
 import {
   executeExtraDeckSummon,
