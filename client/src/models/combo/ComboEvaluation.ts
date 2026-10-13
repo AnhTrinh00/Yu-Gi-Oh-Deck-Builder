@@ -1,4 +1,3 @@
-
 import type { DiscoveredCombo } from "./ComboSearch";
 
 export type ComboScoreCategory =

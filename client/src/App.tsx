@@ -1,4 +1,10 @@
-import { useEffect, useState, useMemo } from "react";
+import { 
+  lazy, 
+  Suspense, 
+  useEffect, 
+  useState, 
+  useMemo 
+} from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import AppLayout from "./components/layouts/AppLayout";
 import DeckPreview from "./components/deck/DeckPreview";
@@ -38,7 +44,6 @@ import {
 } from "./services/relationship/cardRelationshipService";
 import { findShortestPath } from "./services/relationship/cardRelationshipGraphService";
 import { getPathSteps } from "./services/relationship/relationshipPathService";
-import RelationshipGraph from "./components/combo/RelationshipGraph";
 import {
   DEFAULT_GRAPH_FILTERS,
   filterRelationshipGraph,
@@ -48,7 +53,6 @@ import type {
 } from "./services/relationship/relationshipGraphFilterService";
 import type { CardRole } from "./services/card/cardRoleService";
 import { analyzeRelationshipGraph } from "./services/relationship/relationshipGraphAnalysisService";
-import ComboEditor from "./components/combo/ComboEditor";
 import type { Combo } from "./models/combo/Combo";
 import {
   loadCombos,
@@ -57,13 +61,27 @@ import {
 } from "./services/combo/comboRegistryService";
 import { validateCombo } from "./services/combo/comboValidationService";
 import { calculateComboOpeningProbability } from "./services/combo/evaluation/comboProbabilityService";
-import DeckAnalysisWorkspace from "./components/analysis/DeckAnalysisWorkspace";
 import CollectionPage from "./components/collection/CollectionPage";
 import DeckManager from "./components/deck/DeckManager";
 import AnalysisTabs from "./components/analysis/AnalysisTabs";
 import AnalysisOverview from "./components/analysis/AnalysisOverview";
 import { checkDeckAddition } from "./services/deck/deckAdditionPolicyService";
-import ComboExplorer from "./components/combo/ComboExplorer";
+
+const RelationshipGraph = lazy(
+  () => import("./components/combo/RelationshipGraph")
+);
+
+const ComboEditor = lazy(
+  () => import("./components/combo/ComboEditor")
+);
+
+const ComboExplorer = lazy(
+  () => import("./components/combo/ComboExplorer")
+);
+
+const DeckAnalysisWorkspace = lazy(
+  () => import("./components/analysis/DeckAnalysisWorkspace")
+);
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -1244,13 +1262,15 @@ function App() {
 
   return (
     <AppLayout>
-      <Routes>
-        <Route path="/" element={builderContent} />
-        <Route path="/collection" element={collectionContent} />
-        <Route path="/deck" element={deckContent} />
-        <Route path="/analysis" element={analysisContent} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Suspense fallback={<p>Loading workspace...</p>}>
+        <Routes>
+          <Route path="/" element={builderContent} />
+          <Route path="/collection" element={collectionContent} />
+          <Route path="/deck" element={deckContent} />
+          <Route path="/analysis" element={analysisContent} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </AppLayout>
   );
 }
