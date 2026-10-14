@@ -1,15 +1,14 @@
-
 import type {
   AIDeckContext,
 } from "../../models/ai/AIDeckContext";
 
 import type {
-  AIDeckRecommendationResult,
-} from "../../models/ai/AIDeckRecommendation";
+  ValidatedDeckRecommendationApiResponse,
+} from "../../models/ai/AIDeckRecommendationValidation";
 
 const API_BASE_URL = (
   import.meta.env.VITE_API_BASE_URL ??
-  "http://127.0.0.1:3001"
+  ""
 ).replace(/\/$/, "");
 
 const REQUEST_TIMEOUT_MS = 30_000;
@@ -22,7 +21,7 @@ export interface AIRecommendationRequest {
 export async function requestAIDeckRecommendations(
   request: AIRecommendationRequest,
   signal?: AbortSignal
-): Promise<AIDeckRecommendationResult> {
+): Promise<ValidatedDeckRecommendationApiResponse> {
   const timeoutSignal = AbortSignal.timeout(
     REQUEST_TIMEOUT_MS
   );
@@ -73,12 +72,14 @@ export async function requestAIDeckRecommendations(
     typeof result !== "object" ||
     result === null ||
     !("analysis" in result) ||
-    !("grounding" in result)
+    !("grounding" in result) ||
+    !("validation" in result) ||
+    !("simulation" in result)
   ) {
     throw new Error(
       "The AI recommendation service returned an invalid response."
     );
   }
 
-  return result as AIDeckRecommendationResult;
+  return result as ValidatedDeckRecommendationApiResponse;
 }

@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 
 import type { Deck } from "../../models/deck/Deck";
 import type { CollectionCard } from "../../models/card/CollectionCard";
@@ -27,6 +27,17 @@ import {
   DEFAULT_SCORE_WEIGHTS,
 } from "../../services/analysis/endBoard/endBoardScoringService";
 
+import AIRecommendationPanel from "./AIRecommendationPanel";
+
+import { buildAIDeckContext } from "../../services/ai/aiDeckContextService";
+
+import { requestAIDeckRecommendations } from "../../services/ai/aiDeckRecommendationApiService";
+
+import {
+  normalizeAIRecommendations,
+  type NormalizedAIRecommendationResult,
+} from "../../services/ai/aiRecommendationNormalizationService";
+
 type AnalysisTab =
   | "overview"
   | "discovery"
@@ -42,6 +53,26 @@ interface Props {
   onSaveCombo: (combo: Combo) => boolean;
 }
 
+type AIRequestState =
+  | { status: "idle" }
+  | {
+      status: "loading";
+      contextKey: string;
+      requestId: number;
+      generation: number;
+    }
+  | {
+      status: "success";
+      contextKey: string;
+      generation: number;
+      result: NormalizedAIRecommendationResult;
+    }
+  | {
+      status: "error";
+      contextKey: string;
+      generation: number;
+      message: string;
+    };
 
 type ScorePreset =
   | "balanced"
@@ -85,6 +116,18 @@ export default function DeckAnalysisWorkspace({
   format,
   onSaveCombo,
 }: Props) {
+  const [aiRequest, setAIRequest] =
+    useState<AIRequestState>({ status: "idle" });
+
+  const aiRequestCounter = useRef(0);
+  const activeAIRequest = useRef<{
+    contextKey: string;
+    requestId: number;
+    controller: AbortController;
+  } | null>(null);
+
+  const [aiRequestGeneration, setAIRequestGeneration] = useState(0);
+
   const [activeTab, setActiveTab] =
     useState<AnalysisTab>("overview");
 
@@ -151,6 +194,50 @@ export default function DeckAnalysisWorkspace({
       recommendation.priority === priorityFilter
   );
 
+  const aiContext = useMemo(
+    () =>
+      buildAIDeckContext(deck, collection, {
+        relationships,
+        savedCombos: combos,
+      }),
+    [deck, collection, relationships, combos]
+  );
+
+  const aiContextKey = JSON.stringify(aiContext);
+
+  // Cancel requests when the deck context changes
+  // or when the workspace unmounts.
+  useEffect(() => {
+    return () => {
+      aiRequestCounter.current += 1;
+
+      activeAIRequest.current?.controller.abort();
+      activeAIRequest.current = null;
+
+      setAIRequestGeneration((generation) => generation + 1);
+    };
+  }, [aiContextKey]);
+
+  const currentAIRequest =
+    aiRequest.status !== "idle" &&
+    aiRequest.contextKey === aiContextKey &&
+    aiRequest.generation === aiRequestGeneration
+      ? aiRequest
+      : null;
+
+  const aiLoading =
+    currentAIRequest?.status === "loading";
+
+  const aiResult =
+    currentAIRequest?.status === "success"
+      ? currentAIRequest.result
+      : null;
+
+  const aiError =
+    currentAIRequest?.status === "error"
+      ? currentAIRequest.message
+      : null;
+
   function startComboDraft(
     candidate: (typeof candidates)[number]
   ) {
@@ -161,6 +248,86 @@ export default function DeckAnalysisWorkspace({
 
     setDraftCombo(draft);
     setActiveTab("discovery");
+  }
+
+  async function handleGenerateAIRecommendations() {
+    if (
+      activeAIRequest.current?.contextKey ===
+      aiContextKey
+    ) {
+      return;
+    }
+
+    // Cancel an unfinished request for another deck.
+    activeAIRequest.current?.controller.abort();
+
+    const controller = new AbortController();
+    const requestId = ++aiRequestCounter.current;
+    const requestedContextKey = aiContextKey;
+    const generation = aiRequestGeneration;
+
+    activeAIRequest.current = {
+      requestId,
+      contextKey: requestedContextKey,
+      controller,
+    };
+
+    setAIRequest({
+      status: "loading",
+      contextKey: requestedContextKey,
+      requestId,
+      generation,
+    });
+
+    try {
+      const response =
+        await requestAIDeckRecommendations(
+          {
+            question:
+              "Recommend improvements to this deck using my owned cards. Prioritize consistency, useful interactions, and legal deck construction.",
+            context: aiContext,
+          },
+          controller.signal
+        );
+
+      const normalized =
+        normalizeAIRecommendations(response);
+
+      if (
+        activeAIRequest.current?.requestId !== requestId ||
+        activeAIRequest.current?.controller.signal.aborted
+      ) {
+        return;
+      }
+
+      setAIRequest({
+        status: "success",
+        contextKey: requestedContextKey,
+        generation,
+        result: normalized,
+      });
+    } catch (error) {
+      if (
+        activeAIRequest.current?.requestId !== requestId ||
+        activeAIRequest.current?.controller.signal.aborted
+      ) {
+        return;
+      }
+
+      setAIRequest({
+        status: "error",
+        contextKey: requestedContextKey,
+        generation,
+        message:
+          error instanceof Error
+            ? error.message
+            : "Unable to generate AI recommendations.",
+      });
+    } finally {
+      if (activeAIRequest.current?.requestId === requestId) {
+        activeAIRequest.current = null;
+      }
+    }
   }
 
   return (
@@ -604,8 +771,50 @@ export default function DeckAnalysisWorkspace({
               )}
             </div>
           )}
+          <section
+            className="ai-recommendation-workspace"
+            aria-label="AI recommendations"
+          >
+            <h3>AI-Assisted Recommendations</h3>
+
+            <p>
+              Generate collection-aware suggestions using
+              Gemini. Every proposed change is checked by
+              the backend before being displayed.
+            </p>
+
+            <button
+              type="button"
+              onClick={handleGenerateAIRecommendations}
+              disabled={aiLoading}
+            >
+              {aiLoading
+                ? "Generating Recommendations..."
+                : "Generate AI Recommendations"}
+            </button>
+
+            {aiLoading && (
+              <p role="status">
+                Analyzing your deck and collection...
+              </p>
+            )}
+
+            {aiError && (
+              <p role="alert" className="analysis-error">
+                {aiError}
+              </p>
+            )}
+
+            {aiResult && (
+              <AIRecommendationPanel
+                result={aiResult}
+                cardNames={cardNames}
+              />
+            )}
+          </section>
         </div>
       )}
+
     </section>
   );
 }

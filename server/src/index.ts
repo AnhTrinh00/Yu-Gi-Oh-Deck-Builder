@@ -1,4 +1,3 @@
-
 import "dotenv/config";
 
 import { createApp } from "./app.js";
@@ -15,7 +14,7 @@ const PORT = Number(process.env.PORT ?? 3000);
 
 const apiKey = process.env.GEMINI_API_KEY;
 const model =
-  process.env.GEMINI_MODEL ?? "gemini-3.5-flash-lite";
+  process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
 
 if (!apiKey) {
   throw new Error(
@@ -38,8 +37,8 @@ const provider = new GeminiComboProvider(
 
 const recommendationProvider =
   new GeminiDeckRecommendationProvider(
-    process.env.GEMINI_API_KEY ?? "",
-    process.env.GEMINI_MODEL ?? "gemini-2.5-flash"
+    apiKey,
+    model
   );
 
 const app = createApp(

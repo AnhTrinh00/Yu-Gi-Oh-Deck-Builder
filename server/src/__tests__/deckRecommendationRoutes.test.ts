@@ -1,4 +1,3 @@
-
 import {
   afterEach,
   describe,
@@ -115,6 +114,12 @@ describe("deck recommendation route", () => {
     expect(body.analysis.version).toBe(1);
     expect(body.grounding.groundedCount).toBe(0);
     expect(recommend).toHaveBeenCalledOnce();
+
+    expect(body.validation).toBeDefined();
+    expect(body.simulation).toBeDefined();
+
+    expect(body.validation.validCount).toBe(0);
+    expect(body.simulation.appliedCount).toBe(0);
   });
 
   it("rejects invalid requests without calling Gemini", async () => {

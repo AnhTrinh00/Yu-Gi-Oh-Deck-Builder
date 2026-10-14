@@ -1,4 +1,3 @@
-
 import type {
   AIDeckContext,
 } from "../../models/ai/AIDeckContext";
@@ -33,7 +32,7 @@ export class AIDeckApiError extends Error {
 
 const API_BASE_URL = (
   import.meta.env.VITE_API_BASE_URL ??
-  "http://lcalhost:3000"
+  ""
 ).replace(/\/$/, "");
 
 const REQUEST_TIMEOUT_MS = 20_000;

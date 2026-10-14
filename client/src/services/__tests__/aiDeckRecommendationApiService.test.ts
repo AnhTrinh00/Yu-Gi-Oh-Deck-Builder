@@ -1,4 +1,3 @@
-
 import {
   afterEach,
   describe,
@@ -45,10 +44,35 @@ const validResponse = {
     weaknesses: [],
     warnings: [],
   },
+
   grounding: {
     recommendations: [],
     groundedCount: 0,
     rejectedCount: 0,
+  },
+
+  validation: {
+    recommendations: [],
+    validCount: 0,
+    invalidCount: 0,
+  },
+
+  simulation: {
+    recommendations: [],
+    appliedCount: 0,
+    rejectedCount: 0,
+
+    initialCounts: {
+      main: 0,
+      extra: 0,
+      side: 0,
+    },
+
+    finalCounts: {
+      main: 0,
+      extra: 0,
+      side: 0,
+    },
   },
 };
 
@@ -75,6 +99,26 @@ describe("requestAIDeckRecommendations", () => {
     );
 
     expect(result.grounding.groundedCount).toBe(0);
+
+    expect(result.validation.validCount).toBe(0);
+
+    expect(result.validation.invalidCount).toBe(0);
+
+    expect(result.simulation.appliedCount).toBe(0);
+
+    expect(result.simulation.rejectedCount).toBe(0);
+
+    expect(result.simulation.initialCounts).toEqual({
+      main: 0,
+      extra: 0,
+      side: 0,
+    });
+
+    expect(result.simulation.finalCounts).toEqual({
+      main: 0,
+      extra: 0,
+      side: 0,
+    });
 
     expect(fetchMock).toHaveBeenCalledOnce();
 
@@ -154,5 +198,25 @@ describe("requestAIDeckRecommendations", () => {
     ).rejects.toThrow(
       "invalid response"
     );
+  });
+
+  it("rejects responses missing validation results", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        analysis: validResponse.analysis,
+        grounding: validResponse.grounding,
+      }),
+    })
+  );
+
+  await expect(
+    requestAIDeckRecommendations(request)
+  ).rejects.toThrow(
+    "The AI recommendation service returned an invalid response."
+  );
   });
 });

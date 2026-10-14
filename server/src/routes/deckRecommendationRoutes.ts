@@ -1,4 +1,3 @@
-
 import { Router } from "express";
 import rateLimit from "express-rate-limit";
 
@@ -10,6 +9,10 @@ import {
   generateDeckRecommendations,
   type DeckRecommendationProvider,
 } from "../services/deckRecommendationService.js";
+
+import {
+  buildValidatedDeckRecommendationResponse,
+} from "../services/validateDeckRecommendationService.js";
 
 export function createDeckRecommendationRouter(
   provider: DeckRecommendationProvider
@@ -41,8 +44,24 @@ export function createDeckRecommendationRouter(
         provider
       );
 
-      res.status(200).json(result);
-    } catch {
+      const validatedResponse =
+        buildValidatedDeckRecommendationResponse(
+          parsed.data,
+          result.analysis,
+          result.grounding
+        );
+
+      res.status(200).json({
+        analysis: result.analysis,
+        grounding: result.grounding,
+        validation:
+          validatedResponse.validation.independentValidation,
+        simulation:
+          validatedResponse.validation.simulation,
+      });
+    } catch (error) {
+      console.error("[Deck Recommendation API]", error);
+
       res.status(502).json({
         error: "Unable to generate deck recommendations.",
       });

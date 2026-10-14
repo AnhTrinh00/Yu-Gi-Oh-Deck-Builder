@@ -2445,3 +2445,94 @@ header {
   margin-top: 0.5rem;
   opacity: 0.8;
 }
+
+
+/* Phase 5.5 - AI Recommendations */
+
+.ai-recommendation-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.ai-recommendation-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.ai-recommendation-summary p {
+  margin: 0;
+}
+
+.ai-recommendation-card {
+  border-left: 4px solid var(--border-color, #64748b);
+}
+
+.ai-recommendation-card.accepted {
+  border-left-color: #16a34a;
+}
+
+.ai-recommendation-card.rejected {
+  border-left-color: #dc2626;
+}
+
+.ai-recommendation-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.ai-recommendation-header h4 {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.ai-recommendation-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.ai-recommendation-status.accepted {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.ai-recommendation-status.rejected {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.ai-recommendation-card details {
+  margin-top: 0.75rem;
+}
+
+.ai-recommendation-card details ul {
+  padding-left: 1.5rem;
+}
+
+.ai-recommendation-workspace {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color, #475569);
+}
+
+.ai-recommendation-workspace > button {
+  margin-top: 0.75rem;
+}
+
+.ai-recommendation-workspace [role="status"] {
+  margin-top: 1rem;
+}
+
+.ai-recommendation-workspace [role="alert"] {
+  margin-top: 1rem;
+  color: #ef4444;
+}
