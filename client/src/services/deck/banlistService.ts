@@ -33,3 +33,20 @@ export function getBanlistCopyLimit(
             return 3;
     }
 }
+
+export function getKnownBanlistCopyLimit(
+  card: Card,
+  format: DeckFormat
+): number | undefined {
+  if (format === "advanced") {
+    const status = card.banlistInfo?.tcg;
+
+    if (status === undefined) {
+      return undefined;
+    }
+
+    return getBanlistCopyLimit(card, format);
+  }
+
+  return getBanlistCopyLimit(card, format);
+}

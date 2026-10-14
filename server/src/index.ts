@@ -7,6 +7,10 @@ import {
   GeminiComboProvider,
 } from "./services/llmService.js";
 
+import {
+  GeminiDeckRecommendationProvider,
+} from "./services/geminiDeckRecommendationService.js";
+
 const PORT = Number(process.env.PORT ?? 3000);
 
 const apiKey = process.env.GEMINI_API_KEY;
@@ -32,7 +36,16 @@ const provider = new GeminiComboProvider(
   model
 );
 
-const app = createApp(provider);
+const recommendationProvider =
+  new GeminiDeckRecommendationProvider(
+    process.env.GEMINI_API_KEY ?? "",
+    process.env.GEMINI_MODEL ?? "gemini-2.5-flash"
+  );
+
+const app = createApp(
+  provider,
+  recommendationProvider
+);
 
 app.listen(PORT, "127.0.0.1", () => {
   console.log(

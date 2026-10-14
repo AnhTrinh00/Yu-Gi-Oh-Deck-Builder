@@ -1,4 +1,3 @@
-
 import type {
   DeckAnalysisRequest,
 } from "../schemas/deckContext.js";
@@ -46,16 +45,19 @@ export function groundDeckRecommendations(
     );
   }
 
+  const knownCardIds = new Set<number>([
+    ...cardsById.keys(),
+    ...(context.availableCollectionCards ?? []).map(
+      card => card.id
+    ),
+  ]);
+
   function groundOne(
     recommendation: DeckRecommendation
   ): GroundedDeckRecommendation {
     const reasons: RecommendationGroundingReason[] = [];
 
-    const sourceCard = cardsById.get(
-      recommendation.cardId
-    );
-
-    if (!sourceCard) {
+    if (!knownCardIds.has(recommendation.cardId)) {
       reasons.push("UNKNOWN_CARD");
     }
 
@@ -70,12 +72,9 @@ export function groundDeckRecommendations(
         )
       ) ?? 0;
 
-      if (available === 0 && sourceCard) {
+      if (available === 0) {
         reasons.push("CARD_NOT_IN_SECTION");
-      } else if (
-        available > 0 &&
-        available < recommendation.quantity
-      ) {
+      } else if (available < recommendation.quantity) {
         reasons.push("INSUFFICIENT_COPIES");
       }
     }
@@ -90,7 +89,7 @@ export function groundDeckRecommendations(
 
       if (
         replacementId === undefined ||
-        !cardsById.has(replacementId)
+        !knownCardIds.has(replacementId)
       ) {
         reasons.push("UNKNOWN_REPLACEMENT");
       }

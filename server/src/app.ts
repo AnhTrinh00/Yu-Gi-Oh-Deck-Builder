@@ -14,7 +14,18 @@ import {
   createDeckAnalysisRouter,
 } from "./routes/deckAnalysisRoutes.js";
 
-export function createApp(provider: LLMProvider) {
+import type {
+  DeckRecommendationProvider,
+} from "./services/deckRecommendationService.js";
+
+import {
+  createDeckRecommendationRouter,
+} from "./routes/deckRecommendationRoutes.js";
+
+export function createApp(
+  provider: LLMProvider,
+  recommendationProvider?: DeckRecommendationProvider
+) {
   const app = express();
 
   app.disable("x-powered-by");
@@ -46,6 +57,15 @@ export function createApp(provider: LLMProvider) {
     "/api/ai/analyze-deck",
     createDeckAnalysisRouter()
   );
+
+  if (recommendationProvider) {
+    app.use(
+      "/api/ai/recommend-deck",
+      createDeckRecommendationRouter(
+        recommendationProvider
+      )
+    );
+  }
 
   // Must come after all registered routes.
   app.use(notFoundHandler);

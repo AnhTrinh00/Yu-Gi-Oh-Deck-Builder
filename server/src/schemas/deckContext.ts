@@ -1,4 +1,3 @@
-
 import { z } from "zod";
 
 const text = (max: number) => z.string().max(max);
@@ -29,6 +28,28 @@ const deckCardSchema = z.object({
     "Unlimited",
   ]),
   allowedCopies: z.number().int().min(0).max(3),
+});
+
+const availableCollectionCardSchema = z.object({
+  id: z.number().int().positive(),
+  name: z.string().min(1).max(200),
+  type: z.string().min(1).max(100),
+  description: z.string().max(500),
+  ownedQuantity: z.number().int().min(1).max(999),
+  deckQuantity: z.number().int().min(0).max(130),
+  availableQuantity: z.number().int().min(1).max(999),
+  allowedCopies: z.number().int().min(0).max(3).optional(),
+}).strict().superRefine((card, ctx) => {
+  if (
+    card.availableQuantity !==
+    Math.max(0, card.ownedQuantity - card.deckQuantity)
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["availableQuantity"],
+      message: "Available quantity is inconsistent.",
+    });
+  }
 });
 
 const statisticsSchema = z.object({
@@ -92,6 +113,13 @@ export const deckContextSchema = z.object({
   statistics: statisticsSchema,
   evidence: evidenceSchema.optional(),
   limitations: z.array(text(300)).max(20),
+
+  availableCollectionCards: z
+    .array(availableCollectionCardSchema)
+    .max(100)
+    .optional(),
+
+  collectionCatalogTruncated: z.boolean().optional(),
 }).superRefine((context, ctx) => {
   const totals = { main: 0, extra: 0, side: 0 };
   const cardIds = new Set<number>();
@@ -107,6 +135,48 @@ export const deckContextSchema = z.object({
         code: "custom",
         message: "Missing quantity exceeds deck quantity.",
         path: ["cards"],
+      });
+    }
+  }
+
+  const deckQuantities = new Map<number, number>();
+
+  for (const card of context.cards) {
+    deckQuantities.set(
+      card.id,
+      (deckQuantities.get(card.id) ?? 0) +
+        card.quantity
+    );
+  }
+
+  const collectionIds = new Set<number>();
+
+  for (const [index, card] of (
+    context.availableCollectionCards ?? []
+  ).entries()) {
+    if (collectionIds.has(card.id)) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Duplicate collection card ID.",
+        path: ["availableCollectionCards", index, "id"],
+      });
+    }
+
+    collectionIds.add(card.id);
+
+    const actualDeckQuantity =
+      deckQuantities.get(card.id) ?? 0;
+
+    if (card.deckQuantity !== actualDeckQuantity) {
+      ctx.addIssue({
+        code: "custom",
+        message:
+          "Collection deck quantity does not match deck entries.",
+        path: [
+          "availableCollectionCards",
+          index,
+          "deckQuantity",
+        ],
       });
     }
   }

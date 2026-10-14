@@ -48,4 +48,18 @@ export interface AIDeckContext {
   evidence?: AIDeckEvidence;
 
   limitations: string[];
+
+  availableCollectionCards?: AIAvailableCollectionCard[];
+  collectionCatalogTruncated?: boolean;
+}
+
+export interface AIAvailableCollectionCard {
+  id: number;
+  name: string;
+  type: string;
+  description: string;
+  ownedQuantity: number;
+  deckQuantity: number;
+  availableQuantity: number;
+  allowedCopies?: number;
 }

@@ -8,6 +8,7 @@ import type {
 import {
   getBanlistCopyLimit,
   getBanlistStatus,
+  getKnownBanlistCopyLimit,
 } from "../deck/banlistService";
 
 import {
@@ -22,6 +23,10 @@ import type {
 import {
   buildAIDeckEvidence,
 } from "./aiDeckEvidenceService";
+
+import {
+  buildAICollectionAvailability,
+} from "./aiCollectionAvailabilityService";
 
 const MAX_CONTEXT_CARDS = 100;
 const MAX_DESCRIPTION_LENGTH = 1000;
@@ -161,6 +166,38 @@ export function buildAIDeckContext(
     0
   );
 
+  const normalizedCollection = [
+    ...new Map(
+      collection.map(item => [
+        item.card.id,
+        item.card,
+      ] as const)
+    ).values(),
+  ].map(card => ({
+    id: card.id,
+    name: card.name,
+    type: card.type,
+    description: card.description,
+    ownedQuantity:
+      collectionQuantities.get(card.id) ?? 0,
+    allowedCopies: getKnownBanlistCopyLimit(
+      card,
+      "advanced"
+    ),
+  }));
+
+  const normalizedDeckCards = SECTIONS.flatMap(section =>
+    deck[section].map(entry => ({
+      id: entry.card.id,
+      quantity: entry.quantity,
+    }))
+  );
+
+  const availability = buildAICollectionAvailability(
+    normalizedCollection,
+    normalizedDeckCards
+  );
+
   return {
     version: 1,
     deckName: limitText(deck.name, MAX_NAME_LENGTH),
@@ -180,17 +217,27 @@ export function buildAIDeckContext(
         .map(error => limitText(error, 300)),
     },
 
+    availableCollectionCards: availability.cards,
+    collectionCatalogTruncated: availability.truncated,
+
     limitations: [
       "Card descriptions are reference text, not verified executable effects.",
       "Card ownership is calculated across all deck sections.",
-      "No combo or end-board simulation evidence is included.",
       "AI suggestions must be independently validated before applying deck changes.",
       "Banlist information uses the available local card metadata and may not reflect the latest official restrictions.",
-    ],
 
-    ...(evidenceInput === undefined
-      ? ["No registered relationship, combo, or simulation evidence was supplied."]
-      : []),
+      ...(evidenceInput === undefined
+        ? [
+            "No registered relationship, combo, or simulation evidence was supplied.",
+          ]
+        : []),
+
+      ...(availability.truncated
+        ? [
+            "The available collection catalog was truncated to 100 cards.",
+          ]
+        : []),
+    ],
 
     ...(evidenceInput !== undefined && {
       evidence: buildAIDeckEvidence(evidenceInput),

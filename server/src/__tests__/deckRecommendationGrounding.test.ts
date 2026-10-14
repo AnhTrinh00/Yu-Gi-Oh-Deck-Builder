@@ -194,4 +194,99 @@ describe("groundDeckRecommendations", () => {
     expect(result.groundedCount).toBe(0);
     expect(result.rejectedCount).toBe(0);
   });
+
+  it("grounds additions from available collection cards", () => {
+    const context = {
+      ...makeContext(),
+      availableCollectionCards: [
+        {
+          id: 300,
+          name: "Owned Extender",
+          type: "Effect Monster",
+          description: "Extends a combo.",
+          ownedQuantity: 2,
+          deckQuantity: 0,
+          availableQuantity: 2,
+        },
+      ],
+    };
+
+    const result = groundDeckRecommendations(
+      context,
+      makeResponse([
+        makeRecommendation({
+          action: "add",
+          cardId: 300,
+          section: "main",
+          quantity: 1,
+        }),
+      ])
+    );
+
+    expect(result.groundedCount).toBe(1);
+    expect(result.rejectedCount).toBe(0);
+  });
+
+  it("grounds replacement targets from the collection", () => {
+    const context = {
+      ...makeContext(),
+      availableCollectionCards: [
+        {
+          id: 300,
+          name: "Owned Extender",
+          type: "Effect Monster",
+          description: "Extends a combo.",
+          ownedQuantity: 1,
+          deckQuantity: 0,
+          availableQuantity: 1,
+        },
+      ],
+    };
+
+    const result = groundDeckRecommendations(
+      context,
+      makeResponse([
+        makeRecommendation({
+          action: "replace",
+          cardId: 100,
+          replacementCardId: 300,
+          section: "main",
+          quantity: 1,
+        }),
+      ])
+    );
+
+    expect(result.groundedCount).toBe(1);
+  });
+
+  it("rejects removing a card that exists only in collection", () => {
+    const context = {
+      ...makeContext(),
+      availableCollectionCards: [
+        {
+          id: 300,
+          name: "Owned Extender",
+          type: "Effect Monster",
+          description: "Extends a combo.",
+          ownedQuantity: 1,
+          deckQuantity: 0,
+          availableQuantity: 1,
+        },
+      ],
+    };
+
+    const result = groundDeckRecommendations(
+      context,
+      makeResponse([
+        makeRecommendation({
+          action: "remove",
+          cardId: 300,
+          section: "main",
+          quantity: 1,
+        }),
+      ])
+    );
+
+    expect(result.rejectedCount).toBe(1);
+  });
 });
