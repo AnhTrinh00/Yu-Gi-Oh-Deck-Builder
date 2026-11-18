@@ -11,15 +11,13 @@ import DeckPreview from "./components/deck/DeckPreview";
 import DeckSummary from "./components/deck/DeckSummary";
 import type { Deck, DeckSection } from "./models/deck/Deck";
 import {
-  createEmptyDeck,
   addCardToDeck,
   removeCardFromDeck,
   removeAllCardsFromDeck,
-  saveDeck,
-  loadDeck,
-  clearSavedDeck
 } from "./services/deck/deckService";
 import "./App.css";
+import { useActiveDeckController } from "./hooks/useActiveDeckController";
+import { DeckWorkspaceManager } from "./components/deck/DeckWorkspaceManager";
 import { searchCards } from "./services/card/cardApi";
 import {
   addToCollection,
@@ -83,11 +81,44 @@ const DeckAnalysisWorkspace = lazy(
   () => import("./components/analysis/DeckAnalysisWorkspace")
 );
 
+type ActiveDeckController = ReturnType<typeof useActiveDeckController>;
+
 function App() {
+  const controller = useActiveDeckController();
+  const { initialize } = controller;
+
+  useEffect(() => {
+    void initialize().catch(() => {
+      // Startup errors are displayed through the workspace controller.
+    });
+  }, [initialize]);
+
+  if (!controller.deck) {
+    return (
+      <AppLayout>
+        <section aria-label="Deck workspace startup">
+          <h2>Loading your decks</h2>
+          {controller.workspaceError ? (
+            <>
+              <p role="alert">{controller.workspaceError}</p>
+              <button type="button" onClick={() => void initialize().catch(() => {})}>
+                Retry loading
+              </button>
+            </>
+          ) : (
+            <p role="status">Preparing your saved deck workspace...</p>
+          )}
+        </section>
+      </AppLayout>
+    );
+  }
+
+  return <LoadedApp key={controller.activeDeckId ?? "active"} controller={controller} deck={controller.deck} />;
+}
+
+function LoadedApp({ controller, deck }: { controller: ActiveDeckController; deck: Deck }) {
+  const setDeck = controller.updateDeck;
   const [searchTerm, setSearchTerm] = useState("");
-  const [deck, setDeck] = useState<Deck>(() => {
-    return loadDeck() ?? createEmptyDeck()
-  });
   const [selectedSection, setSelectedSection] = useState<DeckSection>("main");
   const [cards, setCards] = useState<Card[]>([]);
   const [collection, setCollection] = useState<CollectionCard[]>(
@@ -108,10 +139,6 @@ function App() {
   const [combos, setCombos] = useState<Combo[]>(() => loadCombos());
   const [editingCombo, setEditingCombo] = useState<Combo | null>(null);
   const [showComboEditor, setShowComboEditor] = useState(false);
-
-  useEffect(() => {
-    saveDeck(deck);
-  }, [deck]);
 
   async function handleSearch() {
     if (!searchTerm.trim()) {
@@ -337,14 +364,19 @@ function App() {
     );
   }
   function handleManagerRenameDeck(name: string) {
-    setDeck((current) => ({
-      ...current,
-      name,
-    }))
+    const activeId = controller.activeDeckId;
+    if (!activeId) return;
+    void controller.renameDeck(activeId, name).catch(() => {
+      // The workspace manager displays operation errors.
+    });
   }
   function handleManagerClearDeck() {
-    clearSavedDeck();
-    setDeck(createEmptyDeck());
+    setDeck((current) => ({
+      ...current,
+      main: [],
+      extra: [],
+      side: [],
+    }));
   }
 
   const deckStatistics = getDeckStatistics(deck);
@@ -579,7 +611,24 @@ function App() {
   );
 
   const deckContent = (
-    <DeckManager
+    <div className="deck-workspace-page">
+      <DeckWorkspaceManager manager={controller.workspaceManager} />
+      <div role="status" aria-live="polite">
+        {controller.saveStatus === "saving" && "Saving deck..."}
+        {controller.saveStatus === "saved" && "Deck saved"}
+        {controller.saveStatus === "error" && (
+          <>
+            <span>{controller.saveError ?? "Deck save failed"}</span>
+            <button
+              type="button"
+              onClick={() => void controller.retrySave().catch(() => {})}
+            >
+              Retry save
+            </button>
+          </>
+        )}
+      </div>
+      <DeckManager
       deck={deck}
       collection={collection}
       selectedSection={selectedSection}
@@ -589,7 +638,8 @@ function App() {
       onRemoveCard={handleManagerRemoveCard}
       onRemoveAll={handleManagerRemoveAll}
       onClearDeck={handleManagerClearDeck}
-    />
+      />
+    </div>
   );
 
   const overviewDetails = (
