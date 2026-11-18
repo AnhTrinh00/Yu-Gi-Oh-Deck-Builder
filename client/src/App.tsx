@@ -629,6 +629,7 @@ function LoadedApp({ controller, deck }: { controller: ActiveDeckController; dec
         )}
       </div>
       <DeckManager
+      key={deck.name}
       deck={deck}
       collection={collection}
       selectedSection={selectedSection}

@@ -160,3 +160,36 @@ describe("DeckAutosaveService", () => {
     ).rejects.toThrow(/without an ID/);
   });
 });
+
+describe("DeckAutosaveService recovery", () => {
+  it("waitForIdle resolves after a failed write", async () => {
+    const save = vi.fn(async (): Promise<StoredDeck> => {
+      throw new Error("IndexedDB unavailable");
+    });
+    const service = new DeckAutosaveService(save);
+    await expect(service.save("deck-1", makeDeck("Unsaved")))
+      .rejects.toThrow("IndexedDB unavailable");
+    await expect(service.waitForIdle()).resolves.toBeUndefined();
+    expect(service.hasPendingSaves()).toBe(false);
+    expect(service.getLastError()?.message).toBe("IndexedDB unavailable");
+  });
+
+  it("records a later successful full snapshot", async () => {
+    let attempts = 0;
+    const savedNames: string[] = [];
+    const save = vi.fn(async (id: string, deck: Deck) => {
+      attempts += 1;
+      if (attempts === 1) throw new Error("Temporary failure");
+      savedNames.push(deck.name);
+      return makeStoredDeck(id, deck);
+    });
+    const service = new DeckAutosaveService(save);
+    const first = service.save("deck-1", makeDeck("Old"));
+    const second = service.save("deck-1", makeDeck("Latest"));
+    await expect(first).rejects.toThrow("Temporary failure");
+    await expect(second).resolves.toMatchObject({ name: "Latest" });
+    await service.waitForIdle();
+    expect(savedNames).toEqual(["Latest"]);
+    expect(service.getLastError()).toBeNull();
+  });
+});

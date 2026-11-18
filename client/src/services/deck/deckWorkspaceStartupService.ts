@@ -29,20 +29,28 @@ export function startDeckWorkspace():
     return startupPromise;
   }
 
-  startupPromise = (async () => {
+  const pending = (async () => {
     const migration = await migrateLegacyDeck();
-
     const workspace = await initializeDeckWorkspace();
 
     return {
       workspace,
-      migratedLegacyDeck:
-        migration.status === "migrated",
+      migratedLegacyDeck: migration.status === "migrated",
     };
-  })().catch((error: unknown) => {
-    startupPromise = null;
-    throw error;
-  });
+  })();
 
-  return startupPromise;
+  startupPromise = pending;
+
+  // Deduplicate in-flight starts, but never cache a completed
+  // workspace: a later mount must read the current active deck.
+  void pending.then(
+    () => {
+      if (startupPromise === pending) startupPromise = null;
+    },
+    () => {
+      if (startupPromise === pending) startupPromise = null;
+    },
+  );
+
+  return pending;
 }

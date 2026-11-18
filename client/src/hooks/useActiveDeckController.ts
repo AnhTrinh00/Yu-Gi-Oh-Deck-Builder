@@ -64,6 +64,7 @@ export function useActiveDeckController() {
   const savedRevisionRef = useRef(0);
 
   const transitionRef = useRef(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const mountedRef = useRef(false);
 
   useEffect(() => {
@@ -171,6 +172,10 @@ export function useActiveDeckController() {
 
       const updated = updater(current);
 
+      if (updated === current) {
+        return;
+      }
+
       const revision = revisionRef.current + 1;
       revisionRef.current = revision;
 
@@ -241,9 +246,12 @@ export function useActiveDeckController() {
   const retrySave = useCallback(async () => {
     if (transitionRef.current) {
       throw new Error(
-        "Cannot retry during a deck transition.",
+        "A deck operation is already in progress.",
       );
     }
+
+    transitionRef.current = true;
+    setIsTransitioning(true);
 
     try {
       await ensureSaved();
@@ -254,6 +262,9 @@ export function useActiveDeckController() {
       }
 
       throw error;
+    } finally {
+      transitionRef.current = false;
+      if (mountedRef.current) setIsTransitioning(false);
     }
   }, [ensureSaved]);
 
@@ -268,10 +279,13 @@ export function useActiveDeckController() {
       }
 
       transitionRef.current = true;
+      setIsTransitioning(true);
+      let savingEdits = true;
 
       try {
         // Complete all outstanding edits first.
         await ensureSaved();
+        savingEdits = false;
 
         // Execute the IndexedDB operation.
         const nextWorkspace =
@@ -290,7 +304,9 @@ export function useActiveDeckController() {
         setSaveStatus("idle");
         setSaveError(null);
       } catch (error) {
-        if (mountedRef.current) {
+        // Workspace failures are reported by useDeckWorkspace.
+        // Do not misrepresent them as autosave failures.
+        if (savingEdits && mountedRef.current) {
           setSaveStatus("error");
           setSaveError(toError(error).message);
         }
@@ -298,6 +314,7 @@ export function useActiveDeckController() {
         throw error;
       } finally {
         transitionRef.current = false;
+        if (mountedRef.current) setIsTransitioning(false);
       }
     },
     [ensureSaved, executeWorkspaceTransition],
@@ -336,19 +353,38 @@ export function useActiveDeckController() {
     [runTransition],
   );
 
+  const displayWorkspace = workspace && deck ? {
+    ...workspace,
+    activeDeck: deck,
+    decks: workspace.decks.map((record) =>
+      record.id === workspace.activeDeckId
+        ? {
+            ...record,
+            name: deck.name,
+            main: deck.main.map(({ card, quantity }) => ({ cardId: card.id, quantity })),
+            extra: deck.extra.map(({ card, quantity }) => ({ cardId: card.id, quantity })),
+            side: deck.side.map(({ card, quantity }) => ({ cardId: card.id, quantity })),
+          }
+        : record,
+    ),
+  } : workspace;
+
   return {
     workspaceManager: {
-        ...manager,
-        selectDeck,
-        createDeck,
-        duplicateDeck,
-        deleteDeck,
-        renameDeck,
+      ...manager,
+      workspace: displayWorkspace,
+      isLoading: isLoading || isTransitioning,
+      selectDeck,
+      createDeck,
+      duplicateDeck,
+      deleteDeck,
+      renameDeck,
     },
     deck,
     activeDeckId: workspaceDeckId,
     decks: workspace?.decks ?? [],
     isLoading,
+    isTransitioning,
     workspaceError,
     saveStatus,
     saveError,

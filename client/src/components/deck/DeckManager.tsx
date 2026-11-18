@@ -49,6 +49,8 @@ export default function DeckManager({
 }: DeckManagerProps) {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [confirmClear, setConfirmClear] = useState(false);
+  const [nameDraft, setNameDraft] = useState(deck.name);
+
 
   const validation = validateDeck(deck);
   const selectedCards = deck[selectedSection];
@@ -81,15 +83,28 @@ export default function DeckManager({
       </header>
 
       <section className="deck-manager-info">
-        <div className="deck-manager-name">
+        <form
+          className="deck-manager-name"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const name = nameDraft.trim();
+            if (name && name !== deck.name) onRenameDeck(name);
+          }}
+        >
           <label htmlFor="deck-manager-name">Deck Name</label>
           <input
             id="deck-manager-name"
-            value={deck.name}
-            onChange={(event) => onRenameDeck(event.target.value)}
+            value={nameDraft}
+            onChange={(event) => setNameDraft(event.target.value)}
             maxLength={100}
           />
-        </div>
+          <button
+            type="submit"
+            disabled={!nameDraft.trim() || nameDraft.trim() === deck.name}
+          >
+            Save Name
+          </button>
+        </form>
 
         <div className="deck-manager-actions">
           {!confirmClear ? (
