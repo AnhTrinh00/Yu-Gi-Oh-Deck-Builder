@@ -17,23 +17,16 @@ import {
 } from "./services/deck/deckService";
 import "./App.css";
 import { useActiveDeckController } from "./hooks/useActiveDeckController";
+import { usePersonalWorkspace } from "./hooks/usePersonalWorkspace";
 import { DeckWorkspaceManager } from "./components/deck/DeckWorkspaceManager";
 import { searchCards } from "./services/card/cardApi";
-import {
-  addToCollection,
-  getCollection,
-  removeFromCollection,
-} from "./services/collection/collectionService";
 import type { Card } from "./models/card/Card";
 import type { CollectionCard } from "./models/card/CollectionCard";
+import type { PersonalWorkspaceData } from "./hooks/usePersonalWorkspace";
+import WorkspaceBackupPanel from "./components/deck/WorkspaceBackupPanel";
 import { getDeckStatistics } from "./services/deck/deckStatisticsService";
 import { getArchetypeSummaries } from "./services/card/archetypeService";
 import type { CardRelationship, CardRelationshipType } from "./models/effect/CardRelationship";
-import {
-  loadRelationships,
-  addRelationship,
-  removeRelationship
-} from "./services/relationship/cardRelationshipRegistry";
 import {
   analyzeDeckRelationships,
 } from "./services/deck/deckRelationshipAnalysisService";
@@ -52,11 +45,6 @@ import type {
 import type { CardRole } from "./services/card/cardRoleService";
 import { analyzeRelationshipGraph } from "./services/relationship/relationshipGraphAnalysisService";
 import type { Combo } from "./models/combo/Combo";
-import {
-  loadCombos,
-  upsertCombo,
-  deleteCombo,
-} from "./services/combo/comboRegistryService";
 import { validateCombo } from "./services/combo/comboValidationService";
 import { calculateComboOpeningProbability } from "./services/combo/evaluation/comboProbabilityService";
 import CollectionPage from "./components/collection/CollectionPage";
@@ -85,6 +73,7 @@ type ActiveDeckController = ReturnType<typeof useActiveDeckController>;
 
 function App() {
   const controller = useActiveDeckController();
+  const personal = usePersonalWorkspace();
   const { initialize } = controller;
 
   useEffect(() => {
@@ -93,15 +82,15 @@ function App() {
     });
   }, [initialize]);
 
-  if (!controller.deck) {
+  if (!controller.deck || !personal.data) {
     return (
       <AppLayout>
         <section aria-label="Deck workspace startup">
           <h2>Loading your decks</h2>
-          {controller.workspaceError ? (
+          {controller.workspaceError || personal.error ? (
             <>
-              <p role="alert">{controller.workspaceError}</p>
-              <button type="button" onClick={() => void initialize().catch(() => {})}>
+              <p role="alert">{controller.workspaceError ?? personal.error}</p>
+              <button type="button" onClick={() => { void initialize().catch(() => {}); void personal.refresh().catch(() => {}); }}>
                 Retry loading
               </button>
             </>
@@ -113,18 +102,23 @@ function App() {
     );
   }
 
-  return <LoadedApp key={controller.activeDeckId ?? "active"} controller={controller} deck={controller.deck} />;
+  return <LoadedApp key={controller.activeDeckId ?? "active"} controller={controller} deck={controller.deck} personal={personal} data={personal.data} />;
 }
 
-function LoadedApp({ controller, deck }: { controller: ActiveDeckController; deck: Deck }) {
+type PersonalController = ReturnType<typeof usePersonalWorkspace>;
+
+function LoadedApp({ controller, deck, personal, data }: {
+  controller: ActiveDeckController;
+  deck: Deck;
+  personal: PersonalController;
+  data: PersonalWorkspaceData;
+}) {
   const setDeck = controller.updateDeck;
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSection, setSelectedSection] = useState<DeckSection>("main");
   const [cards, setCards] = useState<Card[]>([]);
-  const [collection, setCollection] = useState<CollectionCard[]>(
-    getCollection()
-  );
-  const [relationships, setRelationships] = useState<CardRelationship[]>(() => loadRelationships());
+  const collection: CollectionCard[] = data.collection;
+  const relationships: CardRelationship[] = data.relationships;
   const [sourceCardId, setSourceCardId] = useState("");
   const [targetCardId, setTargetCardId] = useState("");
   const [pathSourceId, setPathSourceId] = useState("");
@@ -136,7 +130,7 @@ function LoadedApp({ controller, deck }: { controller: ActiveDeckController; dec
     useState<RelationshipGraphFilters>({
       ...DEFAULT_GRAPH_FILTERS,
     });
-  const [combos, setCombos] = useState<Combo[]>(() => loadCombos());
+  const combos: Combo[] = data.combos;
   const [editingCombo, setEditingCombo] = useState<Combo | null>(null);
   const [showComboEditor, setShowComboEditor] = useState(false);
 
@@ -167,8 +161,7 @@ function LoadedApp({ controller, deck }: { controller: ActiveDeckController; dec
   }
 
   function handleAddCard(card: Card) {
-    addToCollection(card, 1);
-    setCollection([...getCollection()]);
+    void personal.addCard(card).catch(() => {});
   } 
   function handleAddToDeck(card: Card) {
     const result = checkDeckAddition(
@@ -202,8 +195,7 @@ function LoadedApp({ controller, deck }: { controller: ActiveDeckController; dec
     });
   }
   function handleRemoveCard(cardId: number) {
-    removeFromCollection(cardId, 1);
-    setCollection([...getCollection()]);
+    void personal.removeCard(cardId).catch(() => {});
   }
   function getCardQuantity(cardId: number): number {
     const collectionCard = collection.find(
@@ -265,24 +257,16 @@ function LoadedApp({ controller, deck }: { controller: ActiveDeckController; dec
       relationshipType
     );
 
-    const updated = addRelationship(relationship);
-
-    setRelationships(updated);
+    void personal.addRelationship(relationship).catch(() => {});
   }
   function handleRemoveRelationship(
     sourceId: number,
     targetId: number,
     type: CardRelationshipType
   ) {
-    const updated = removeRelationship(
-      sourceId,
-      targetId,
-      type
-    );
-
-    setRelationships(updated);
+    void personal.removeRelationship(sourceId, targetId, type).catch(() => {});
   }
-  function handleSaveCombo(combo: Combo): boolean {
+  async function handleSaveCombo(combo: Combo): Promise<boolean> {
     const result = validateCombo(combo, deck);
 
     if (!result.valid) {
@@ -291,9 +275,7 @@ function LoadedApp({ controller, deck }: { controller: ActiveDeckController; dec
     }
 
     try {
-      const updated = upsertCombo(combo);
-
-      setCombos(updated);
+      await personal.upsertCombo(combo);
       setEditingCombo(null);
       setShowComboEditor(false);
 
@@ -306,11 +288,9 @@ function LoadedApp({ controller, deck }: { controller: ActiveDeckController; dec
   function handleDeleteCombo(comboId: string) {
     if (!window.confirm("Delete this combo?")) return;
 
-    try {
-      setCombos(deleteCombo(comboId));
-    } catch {
+    void personal.removeCombo(comboId).catch(() => {
       window.alert("Unable to delete combo.");
-    }
+    });
   }
   function handleEditCombo(combo: Combo) {
     setEditingCombo(combo);
@@ -612,7 +592,16 @@ function LoadedApp({ controller, deck }: { controller: ActiveDeckController; dec
 
   const deckContent = (
     <div className="deck-workspace-page">
+      {personal.isSaving && <p role="status">Saving personal data...</p>}
       <DeckWorkspaceManager manager={controller.workspaceManager} />
+      <WorkspaceBackupPanel
+        beforeBackup={async () => {
+          await controller.ensureSaved();
+        }}
+        beforeRestore={async () => {
+          await controller.ensureSaved();
+        }}
+      />
       <div role="status" aria-live="polite">
         {controller.saveStatus === "saving" && "Saving deck..."}
         {controller.saveStatus === "saved" && "Deck saved"}
@@ -1139,7 +1128,7 @@ function LoadedApp({ controller, deck }: { controller: ActiveDeckController; dec
             key={editingCombo?.id ?? "new-combo"}
             cards={uniqueDeckCards}
             editingCombo={editingCombo}
-            onSave={handleSaveCombo}
+            onSave={(combo) => { void handleSaveCombo(combo); }}
             onCancel={() => {
               setEditingCombo(null);
               setShowComboEditor(false);
@@ -1313,6 +1302,7 @@ function LoadedApp({ controller, deck }: { controller: ActiveDeckController; dec
 
   return (
     <AppLayout>
+      {personal.error && <p role="alert">Personal data error: {personal.error}</p>}
       <Suspense fallback={<p>Loading workspace...</p>}>
         <Routes>
           <Route path="/" element={builderContent} />

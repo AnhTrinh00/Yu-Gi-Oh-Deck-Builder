@@ -1,4 +1,9 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import {
+  getSavedCustomTemplates,
+  replaceSavedCustomTemplates,
+} from "../../services/persistence/personalDefinitionRepository";
+import { enqueuePersonalWrite, waitForPersonalWrites } from "../../services/persistence/personalWriteQueue";
 
 import type { CardEffectDefinition } from "../../models/effect/CardEffect";
 
@@ -7,8 +12,6 @@ import {
   exportEffectTemplates,
   getBuiltInTemplates,
   importEffectTemplates,
-  loadCustomTemplates,
-  saveCustomTemplates,
   type CardEffectTemplate,
 } from "../../services/effect/cardEffectTemplateService";
 
@@ -37,6 +40,7 @@ export function EffectTemplateManager({
   const [importJson, setImportJson] = useState("");
   const [showImport, setShowImport] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const writing = useRef(false);
 
   const templates = [...builtIns, ...custom];
 
@@ -46,11 +50,12 @@ export function EffectTemplateManager({
       : "Template operation failed.";
   }
 
-  function initialize(): void {
+  async function initialize(): Promise<void> {
     if (loaded) return;
 
     try {
-      setCustom(loadCustomTemplates());
+      await waitForPersonalWrites();
+      setCustom(await getSavedCustomTemplates());
       setLoaded(true);
       setError(null);
     } catch (cause) {
@@ -87,19 +92,25 @@ export function EffectTemplateManager({
     }
   }
 
-  function persist(next: CardEffectTemplate[]): void {
+  async function persist(next: CardEffectTemplate[]): Promise<void> {
     if (blocked) {
       throw new Error(
         "Template storage is blocked until its data is repaired."
       );
     }
 
-    saveCustomTemplates(next);
-    setCustom(next);
-    setError(null);
+    if (writing.current) throw new Error("A template save is already in progress.");
+    writing.current = true;
+    try {
+      await enqueuePersonalWrite(() => replaceSavedCustomTemplates(next));
+      setCustom(next);
+      setError(null);
+    } finally {
+      writing.current = false;
+    }
   }
 
-  function saveCurrentAsTemplate(): void {
+  async function saveCurrentAsTemplate(): Promise<void> {
     try {
       const name = templateName.trim();
 
@@ -114,16 +125,16 @@ export function EffectTemplateManager({
         effect: structuredClone(currentEffect),
       };
 
-      persist([...custom, template]);
+      await persist([...custom, template]);
       setTemplateName("");
     } catch (cause) {
       setError(message(cause));
     }
   }
 
-  function removeTemplate(id: string): void {
+  async function removeTemplate(id: string): Promise<void> {
     try {
-      persist(custom.filter(item => item.id !== id));
+      await persist(custom.filter(item => item.id !== id));
 
       if (selectedId === id) {
         setSelectedId(builtIns[0]?.id ?? "");
@@ -133,14 +144,14 @@ export function EffectTemplateManager({
     }
   }
 
-  function importTemplates(): void {
+  async function importTemplates(): Promise<void> {
     try {
       const next = importEffectTemplates(
         importJson,
         custom
       );
 
-      persist(next);
+      await persist(next);
       setImportJson("");
       setShowImport(false);
     } catch (cause) {

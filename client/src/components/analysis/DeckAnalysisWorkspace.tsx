@@ -50,7 +50,7 @@ interface Props {
   relationships: CardRelationship[];
   combos: Combo[];
   format: DeckFormat;
-  onSaveCombo: (combo: Combo) => boolean;
+  onSaveCombo: (combo: Combo) => boolean | Promise<boolean>;
 }
 
 type AIRequestState =
@@ -538,10 +538,12 @@ export default function DeckAnalysisWorkspace({
                 cards={cards}
                 editingCombo={draftCombo}
                 onSave={(combo) => {
-                  if (onSaveCombo(combo)) {
-                    setDraftCombo(null);
-                    setActiveTab("evaluation");
-                  }
+                  void Promise.resolve(onSaveCombo(combo)).then((saved) => {
+                    if (saved) {
+                      setDraftCombo(null);
+                      setActiveTab("evaluation");
+                    }
+                  });
                 }}
                 onCancel={() => setDraftCombo(null)}
               />

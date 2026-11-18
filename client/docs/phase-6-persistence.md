@@ -1,6 +1,6 @@
 # Phase 6 — Persistence Architecture
 
-**Status:** Phase 6.1 design approved; implementation pending  
+**Status:** Phase 6 implementation prepared; project verification pending
 **Scope:** Browser-local workspace with a shared, read-only MongoDB knowledge layer  
 **Project:** Yu-Gi-Oh! Deck Builder
 
@@ -195,9 +195,9 @@ Implement a versioned JSON workspace export containing decks, collection, combos
 | **6.2** | IndexedDB initialization, typed repositories, tests |
 | **6.3** | Multiple saved deck management and React hydration |
 | **6.4** | Collection, combo, effect, template and relationship persistence |
-| **6.5** | Mongoose shared-knowledge models, curated data and read-only Express routes |
-| **6.6** | Idempotent localStorage migration, JSON backup/restore |
-| **6.7** | Integration tests, documentation, verification, Phase 7 handoff |
+| **6.5** | Idempotent localStorage migration, JSON backup and transactional restore |
+| **6.6** | Integration tests, documentation and release verification |
+| **Future (optional)** | MongoDB curated shared-knowledge models and read-only endpoints |
 
 ## 10. Decisions and future considerations
 
@@ -207,4 +207,57 @@ Implement a versioned JSON workspace export containing decks, collection, combos
 - YGOPRODeck remains the card catalog source; card metadata caches are not authoritative for changing banlists.
 - AI recommendations are advisory; deterministic validation remains authoritative.
 - Preserve existing model interfaces and keep storage details behind adapters/repositories.
-- Phase 6.1 is design-only. Begin application code in Phase 6.2 and proceed incrementally with tests.
+- Phase 6.1 was the design milestone; its implementation is described below.
+
+## Phase 6 completion: local workspace implementation
+
+**Implementation:** Local browser persistence, multiple decks, migration, user-data
+repositories, and JSON backup/restore are implemented. **Verification:** Run the
+full test suite, lint, and build on the project's supported Node version before
+marking Phase 6 closed. MongoDB remains optional future work.
+
+### Authoritative stores
+
+- `decks`, `cards`, `collection`, `combos`, `cardEffects`, `effectTemplates`,
+  `relationships`, and `metadata` are stored in IndexedDB.
+- Legacy `localStorage` deck and personal data are copied once into IndexedDB
+  after validation. Original keys are preserved as a fallback backup, but the
+  live UI reads and updates IndexedDB after startup.
+- All personal UI writes are serialized using `personalWriteQueue.ts`;
+  deck writes remain ordered through `DeckAutosaveService`. An IndexedDB failure
+  is shown in the UI rather than silently deleting user data.
+- Combos and relationships are global personal definitions rather than
+  records scoped to one deck. They are evaluated against the active deck.
+
+### Backup and restore
+
+The Deck page includes **Download Workspace Backup** and **Restore Backup**.
+The exported JSON uses `format: "yugioh-deck-builder-backup"`, `version: 1` and
+contains every IndexedDB store. The restore operation validates the file,
+asks for explicit confirmation, and replaces all stores in **one IndexedDB
+transaction**. Invalid input does not change existing IndexedDB contents.
+The page reloads after a successful restore so React controllers cannot keep
+stale data. Restore also marks legacy migrations complete to avoid importing
+older localStorage values over the restored workspace.
+
+**Operational safety:** Download a backup before restoring. Restore is a
+**replacement**, not a merge. Avoid editing the same browser workspace from
+multiple open tabs while backing up or restoring. Browser site-data removal
+will delete IndexedDB. No automatic cloud sync or background backup exists.
+
+### Verification
+
+From `client/`:
+
+```powershell
+npm ci
+npm run lint
+npm run build
+npm test -- --run
+```
+
+Then manually check: legacy migration; add/remove collection cards; create,
+rename, duplicate, delete and switch decks; rapid autosave; register/edit card
+effects; import/export templates; create/delete combos and relationships;
+export a backup, make changes, restore the backup and reload; and corrupt-file
+restore rejection without changing saved data.

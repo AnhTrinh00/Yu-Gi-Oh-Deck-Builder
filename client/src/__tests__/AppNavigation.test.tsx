@@ -5,12 +5,16 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { MemoryRouter } from "react-router-dom";
 import { createEmptyDeck } from "../services/deck/deckService";
 
-const { mockController } = vi.hoisted(() => ({
+const { mockController, mockPersonal } = vi.hoisted(() => ({
   mockController: vi.fn(),
+  mockPersonal: vi.fn(),
 }));
 
 vi.mock("../hooks/useActiveDeckController", () => ({
   useActiveDeckController: mockController,
+}));
+vi.mock("../hooks/usePersonalWorkspace", () => ({
+  usePersonalWorkspace: mockPersonal,
 }));
 
 import App from "../App";
@@ -25,6 +29,18 @@ function renderAt(path: string): string {
 
 describe("Application navigation", () => {
   beforeEach(() => {
+    mockPersonal.mockReturnValue({
+      data: { collection: [], combos: [], relationships: [] },
+      error: null,
+      isSaving: false,
+      refresh: vi.fn(async () => {}),
+      addCard: vi.fn(async () => {}),
+      removeCard: vi.fn(async () => {}),
+      upsertCombo: vi.fn(async () => {}),
+      removeCombo: vi.fn(async () => {}),
+      addRelationship: vi.fn(async () => {}),
+      removeRelationship: vi.fn(async () => {}),
+    });
     const deck = createEmptyDeck("Navigation Test Deck");
     const noOp = vi.fn(async () => {});
 

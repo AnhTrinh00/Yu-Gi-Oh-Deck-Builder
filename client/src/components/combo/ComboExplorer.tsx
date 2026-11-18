@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { Deck } from "../../models/deck/Deck";
 import type { CardEffectDefinition } from "../../models/effect/CardEffect";
@@ -8,9 +8,10 @@ import { cardEffectRegistry } from "../../services/effect/cardEffectRegistryServ
 import { createComboExplorerState } from "../../services/combo/discovery/comboExplorerStateService";
 import { discoverAndRankCombos } from "../../services/combo/discovery/comboDiscoveryEvaluationService";
 import {
-  loadPersistedEffects,
-  persistRegistry,
-} from "../../services/effect/cardEffectPersistenceService";
+  getSavedCardEffects,
+  replaceSavedCardEffects,
+} from "../../services/persistence/personalDefinitionRepository";
+import { enqueuePersonalWrite, waitForPersonalWrites } from "../../services/persistence/personalWriteQueue";
 import { parseCardEffects } from "../../services/effect/definition/cardEffectSchemaService";
 
 import { ComboAIAnalysis } from "./ComboAIAnalysis";
@@ -20,35 +21,6 @@ import { ChainSimulator } from "./ChainSimulator";
 interface Props {
   deck: Deck;
 }
-
-/*
- * Initialize the shared registry once per module lifetime.
- * Saved effects are loaded before ComboExplorer renders.
- */
-let registryInitialized = false;
-let registryInitializationError: string | null = null;
-
-function initializeEffectRegistry(): void {
-  if (registryInitialized) return;
-
-  try {
-    const effects = loadPersistedEffects();
-    cardEffectRegistry.registerEffects(effects);
-    registryInitialized = true;
-  } catch (cause) {
-    registryInitializationError =
-      cause instanceof Error
-        ? cause.message
-        : "Unable to restore saved effects.";
-
-    console.error(
-      "Failed to initialize card effect registry:",
-      cause
-    );
-  }
-}
-
-initializeEffectRegistry();
 
 export default function ComboExplorer({ deck }: Props) {
   const [hand, setHand] = useState<number[]>([]);
@@ -66,13 +38,27 @@ export default function ComboExplorer({ deck }: Props) {
   const [result, setResult] =
     useState<ComboDiscoveryEvaluationResult | null>(null);
 
-  const [error, setError] = useState<string | null>(
-    registryInitializationError
-  );
+  const [error, setError] = useState<string | null>(null);
+  const [storageBlocked, setStorageBlocked] = useState(true);
+  const [effectsLoaded, setEffectsLoaded] = useState(false);
 
-  const [storageBlocked] = useState(
-    registryInitializationError !== null
-  );
+  useEffect(() => {
+    let current = true;
+    void waitForPersonalWrites().then(() => getSavedCardEffects()).then(effects => {
+      if (!current) return;
+      cardEffectRegistry.clear();
+      cardEffectRegistry.registerEffects(effects);
+      setStorageBlocked(false);
+      setEffectsLoaded(true);
+      setRegistryVersion(version => version + 1);
+    }).catch(cause => {
+      if (!current) return;
+      setError(cause instanceof Error ? cause.message : "Unable to load saved effects.");
+      setStorageBlocked(true);
+      setEffectsLoaded(true);
+    });
+    return () => { current = false; };
+  }, []);
 
   const [running, setRunning] = useState(false);
 
@@ -112,33 +98,21 @@ export default function ComboExplorer({ deck }: Props) {
    * Apply a registry mutation and persist it.
    * If persistence fails, restore the previous registry.
    */
-  function commitRegistryChange(
-    mutation: () => void
-  ): void {
-    const previousEffects =
-      cardEffectRegistry.getAllEffects();
-
-    try {
-      mutation();
-      persistRegistry(cardEffectRegistry);
-
-      refreshRegistry();
-      setError(null);
-    } catch (cause) {
+  async function commitRegistryChange(mutation: () => void): Promise<void> {
+    await enqueuePersonalWrite(async () => {
+      const previous = cardEffectRegistry.getAllEffects();
       try {
+        mutation();
+        await replaceSavedCardEffects(cardEffectRegistry.getAllEffects());
+        refreshRegistry();
+        setError(null);
+      } catch (cause) {
         cardEffectRegistry.clear();
-        cardEffectRegistry.registerEffects(previousEffects);
-      } catch (rollbackError) {
-        console.error(
-          "Registry rollback failed:",
-          rollbackError
-        );
+        cardEffectRegistry.registerEffects(previous);
+        refreshRegistry();
+        throw cause;
       }
-
-      refreshRegistry();
-
-      throw cause;
-    }
+    });
   }
 
   function addToHand(cardId: number): void {
@@ -175,7 +149,7 @@ export default function ComboExplorer({ deck }: Props) {
   /*
    * Register new effects or save an existing effect.
    */
-  function handleSaveEffects(): void {
+  async function handleSaveEffects(): Promise<void> {
     try {
       if (storageBlocked) {
         setError(
@@ -203,7 +177,7 @@ export default function ComboExplorer({ deck }: Props) {
           );
         }
 
-        commitRegistryChange(() => {
+        await commitRegistryChange(() => {
           cardEffectRegistry.replaceEffect(updatedEffect);
         });
       } else {
@@ -213,7 +187,7 @@ export default function ComboExplorer({ deck }: Props) {
           );
         }
 
-        commitRegistryChange(() => {
+        await commitRegistryChange(() => {
           cardEffectRegistry.registerEffects(effects);
         });
       }
@@ -239,7 +213,7 @@ export default function ComboExplorer({ deck }: Props) {
     setError(null);
   }
 
-  function handleDeleteEffect(effectId: string): void {
+  async function handleDeleteEffect(effectId: string): Promise<void> {
     try {
       if (storageBlocked) {
         setError(
@@ -248,7 +222,7 @@ export default function ComboExplorer({ deck }: Props) {
         );
         return;
       }
-      commitRegistryChange(() => {
+      await commitRegistryChange(() => {
         const removed =
           cardEffectRegistry.removeEffect(effectId);
 
@@ -272,9 +246,9 @@ export default function ComboExplorer({ deck }: Props) {
     }
   }
 
-  function handleBuilderSave(
+  async function handleBuilderSave(
     effect: CardEffectDefinition
-  ): void {
+  ): Promise<void> {
     try {
       if (storageBlocked) {
         throw new Error(
@@ -283,7 +257,7 @@ export default function ComboExplorer({ deck }: Props) {
         );
       }
 
-      commitRegistryChange(() => {
+      await commitRegistryChange(() => {
         if (builderInitial) {
           if (effect.id !== builderInitial.id) {
             throw new Error(
@@ -373,6 +347,7 @@ export default function ComboExplorer({ deck }: Props) {
   return (
     <section className="combo-explorer">
       <h2>Combo Explorer</h2>
+      {!effectsLoaded && <p role="status">Loading saved card effects...</p>}
 
       <p>
         Explore effect-based combo lines from a selected
